@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:annotea="http://www.w3.org/2000/10/annotation-ns#">
+
+    <!-- about -->
+    
+    <rdf:Description rdf:about="http://caboto.org/schema/annotations#">
+        <rdfs:comment>A namespace for describing annotations used in the Caboto system</rdfs:comment>
+        <rdfs:seeAlso rdf:resource="http://caboto.org" />
+        <dc:title>The Caboto Annotation Schema</dc:title>
+    </rdf:Description>
+
+    <!-- classes -->
+
+    <rdfs:Class rdf:about="http://caboto.org/schema/annotations#SimpleComment" 
+                rdfs:label="SimpleComment" rdfs:comment="A simple comment">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#" />
+    </rdfs:Class>
+    
+    <rdfs:Class rdf:about="http://caboto.org/schema/annotations#LinkedComment" 
+                rdfs:label="LinkedComment" rdfs:comment="A linked comment">
+        <rdfs:subClassOf rdf:resource="http://caboto.org/schema/annotations#SimpleComment" />
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://caboto.org/schema/annotations#PhotoComment" 
+                rdfs:label="PhotoComment" rdfs:comment="A comment linking to a photo">
+        <rdfs:subClassOf rdf:resource="http://caboto.org/schema/annotations#LinkedComment" />
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://caboto.org/schema/annotations#IrcLogComment" 
+                rdfs:label="IrcComment" rdfs:comment="A comment linking to an IRC log">
+        <rdfs:subClassOf rdf:resource="http://caboto.org/schema/annotations#LinkedComment" />
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://caboto.org/schema/annotations#WebLogComment" 
+                rdfs:label="WebLogComment" rdfs:comment="A comment linking to an Blog post">
+        <rdfs:subClassOf rdf:resource="http://caboto.org/schema/annotations#LinkedComment" />
+    </rdfs:Class>
+
+    <rdfs:Class rdf:about="http://caboto.org/schema/annotations#PaperComment" 
+                rdfs:label="PaperComment" rdfs:comment="A comment linking to a paper">
+        <rdfs:subClassOf rdf:resource="http://caboto.org/schema/annotations#LinkedComment" />
+    </rdfs:Class>
+
+    <!-- properties -->
+
+    <rdf:Property rdf:ID="linkToItem">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#seeAlso" />
+        <rdfs:domain rdf:resource="http://caboto.org/schema/annotations#LinkedComment"/>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="linkToPhoto">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#linkToItem" />
+        <rdfs:domain rdf:resource="http://caboto.org/schema/annotations#PhotoComment"/>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="linkToIrcLog">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#linkToItem" />
+        <rdfs:domain rdf:resource="http://caboto.org/schema/annotations#IrcLogComment"/>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="linkToWebLog">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#linkToItem" />
+        <rdfs:domain rdf:resource="http://caboto.org/schema/annotations#WebLogComment"/>
+    </rdf:Property>
+    
+    <rdf:Property rdf:ID="linkToPaper">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/10/annotation-ns#linkToItem" />
+        <rdfs:domain rdf:resource="http://caboto.org/schema/annotations#PaperComment"/>
+    </rdf:Property>
+
+
+</rdf:RDF>
