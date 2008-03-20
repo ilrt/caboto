@@ -47,6 +47,18 @@
 
     <!-- properties -->
 
+    <!--
+       The following properties just extend rdf:seeAlso as a way to provide links of interest.
+       There is a property to match the different classes, e.g. there is a linkToPhoto property 
+       to be used with the PhotoComment class. This would be useful in creating a SPARQL query 
+       to pull photos from public graphs.
+       
+       We should also have a (Jena) rule that also ensures the super class relations appear:
+       
+          (?A caboto:linkToPhoto ?B) -> ()?A caboto:linkToItem ?B) .
+       
+    -->
+
     <rdf:Property rdf:ID="linkToItem">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#seeAlso" />
         <rdfs:domain rdf:resource="http://caboto.org/schema/annotations#LinkedComment"/>
