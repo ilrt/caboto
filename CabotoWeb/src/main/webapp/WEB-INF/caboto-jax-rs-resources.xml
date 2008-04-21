@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <!-- JAX-RS resources -->
+
+    <bean id="aboutResource" class="org.caboto.rest.resources.AboutResource"
+          scope="prototype"/>
+
+    <bean id="groupAnnotationResource" class="org.caboto.rest.resources.GroupAnnotationResource"
+          scope="prototype"/>
+
+    <bean id="groupResource" class="org.caboto.rest.resources.GroupResource"
+          scope="prototype"/>
+
+    <bean id="privateAnnotationResource"
+          class="org.caboto.rest.resources.PersonPrivateAnnotationResource"
+          scope="prototype"/>
+
+    <bean id="publicAnnotationResource"
+          class="org.caboto.rest.resources.PersonPublicAnnotationResource"
+          scope="prototype"/>
+
+    <bean id="personResource" class="org.caboto.rest.resources.PersonResource"
+          scope="prototype"/>
+
+    <bean id="sparqlResource" class="org.caboto.rest.resources.SparqlResource"
+          scope="prototype"/>
+    
+</beans>

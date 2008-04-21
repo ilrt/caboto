@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+                             http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <display-name>Caboto</display-name>
+
+    <!-- location of the spring context files -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/caboto-jax-rs-resources.xml</param-value>
+    </context-param>
+
+    <!-- Spring context listener -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>Jersey Spring</servlet-name>
+        <servlet-class>com.sun.ws.rest.spring.SpringServlet</servlet-class>
+        <init-param>
+            <param-name>com.sun.ws.rest.config.property.resourceConfigClass</param-name>
+            <param-value>com.sun.ws.rest.api.core.PackagesResourceConfig</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.ws.rest.config.property.packages</param-name>
+            <param-value>org.caboto.rest.resources</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Jersey Spring</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <!--
+    <servlet>
+        <servlet-name>Caboto</servlet-name>
+        <servlet-class>com.sun.ws.rest.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>com.sun.ws.rest.config.property.resourceConfigClass</param-name>
+            <param-value>com.sun.ws.rest.api.core.PackagesResourceConfig</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.ws.rest.config.property.packages</param-name>
+            <param-value>org.caboto.rest.resources</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Caboto</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    -->
+
+
+</web-app>
