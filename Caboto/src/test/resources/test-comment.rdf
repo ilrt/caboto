@@ -1,0 +1,17 @@
+<rdf:RDF
+    xmlns:caboto="http://caboto.org/schema/annotations#"
+    xmlns:annotea="http://www.w3.org/2000/10/annotation-ns#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/" >
+  <rdf:Description rdf:about="http://caboto.org/person/MikeJ/public/2474362d-c1eb-4a80-b971-c883e73d8406">
+    <annotea:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-05-14T12:34:41+0100</annotea:created>
+    <annotea:annotates rdf:resource="http://chillyinside.com/blog/?p=47"/>
+    <rdf:type rdf:resource="http://caboto.org/schema/annotations#SimpleComment"/>
+    <annotea:author rdf:resource="http://caboto.org/person/MikeJ/"/>
+    <annotea:body rdf:resource="http://caboto.org/person/MikeJ/public/2474362d-c1eb-4a80-b971-c883e73d8406#body"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://caboto.org/person/MikeJ/public/2474362d-c1eb-4a80-b971-c883e73d8406#body">
+    <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Some description of the annotation</dc:description>
+    <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A title to the annotation</dc:title>
+  </rdf:Description>
+</rdf:RDF>
