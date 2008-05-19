@@ -31,11 +31,6 @@
  */
 package org.caboto.profile;
 
-import org.caboto.profile.Profile;
-import org.caboto.profile.ProfileEntry;
-import org.caboto.profile.ProfileRepository;
-import org.caboto.profile.ProfileRepositoryException;
-
 /**
  *
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)

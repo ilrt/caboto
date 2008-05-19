@@ -32,10 +32,6 @@
 package org.caboto.profile;
 
 import junit.framework.TestCase;
-import org.caboto.profile.Profile;
-import org.caboto.profile.ProfileRepository;
-import org.caboto.profile.ProfileRepositoryException;
-import org.caboto.profile.ProfileRepositoryXmlImpl;
 
 /**
  *
