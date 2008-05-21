@@ -1,0 +1,18 @@
+Caboto is currently using a non stable release of Jersey. You need to check out the code
+from the Jersey subversion repository and install it into your local maven repository.
+
+1) Obtain the source code:
+
+   svn checkout https://jersey.dev.java.net/svn/jersey/trunk jersey --username username
+
+2) Build Jersey:
+
+   cd jersey/jersey
+   maven -f maven/pom.xml clean install
+
+3) Build the Spring integration:
+
+4) Install the Spring contribution to Jersey
+
+   cd ../../contribs/spring/
+   mvn install
