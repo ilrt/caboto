@@ -32,6 +32,7 @@
 package org.caboto.dao;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.store.StoreFormatter;
@@ -53,11 +54,11 @@ public class AnnotationDaoImplTest extends TestCase {
 
 
     public void setUp() {
-        String storePath = this.getClass().getResource("/sdb.ttl").getPath();
+        String storePath = this.getClass().getResource(sdbConfigFile).getPath();
         store = SDBFactory.connectStore(storePath);
         StoreFormatter storeFormatter = store.getTableFormatter();
         storeFormatter.format();
-        annotationDao = new AnnotationDaoImpl(store, new MockProfileRepositoryImpl());
+        annotationDao = new AnnotationDaoImpl(sdbConfigFile, new MockProfileRepositoryImpl());
     }
 
     public void testAddAnnotation() {
@@ -96,16 +97,17 @@ public class AnnotationDaoImplTest extends TestCase {
 
             // add some test data to the model
             InputStream is = this.getClass().getResourceAsStream("/test-comment.rdf");
-            Model model = SDBFactory.connectNamedModel(store, "http://caboto.org/person/MikeJ/public/");
+            Model model = SDBFactory.connectNamedModel(store,
+                    "http://caboto.org/person/MikeJ/public/");
             model.read(is, null);
 
-            Model m = annotationDao.findAnnotation("http://caboto.org/person/MikeJ/public/" +
+            Resource r = annotationDao.findAnnotation("http://caboto.org/person/MikeJ/public/" +
                     "2474362d-c1eb-4a80-b971-c883e73d8406");
 
 
-            assertNotNull("The model from the construct is null", m);
+            assertNotNull("The resource from the construct is null", r);
             assertEquals("Unexpected model size returned from the construct", model.size(),
-                    m.size());
+                    r.getModel().size());
 
         } catch (AnnotationDaoException e) {
             e.printStackTrace();
@@ -115,4 +117,5 @@ public class AnnotationDaoImplTest extends TestCase {
 
     private Store store;
     private AnnotationDao annotationDao;
+    private String sdbConfigFile = "/sdb.ttl";
 }
