@@ -33,6 +33,7 @@ package org.caboto.domain;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  *
@@ -113,11 +114,23 @@ public class Annotation {
         this.type = type;
     }
 
+    public String toString() {
+        return new StringBuffer("[id: ").append(id).append(";\n")
+                .append("graphId: ").append(graphId).append(";\n")
+                .append("annotates: ").append(annotates).append(";\n")
+                .append("author: ").append(author).append(";\n")
+                .append("created: ").append(created.toString()).append(";\n")
+                .append("type: ").append(type).append(";\n")
+                .append("body: ").append(body.toString())
+                .append("]").toString();
+    }
+
+
     private String id;
     private String graphId;
     private String annotates;
     private String author;
     private Date created;
-    private Map<String, String> body;
-    private String type;
+    private Map<String, String> body = new HashMap<String, String>();
+    private String type = "";
 }
