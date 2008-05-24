@@ -17,7 +17,7 @@
     </listener>
 
     <servlet>
-        <servlet-name>Jersey Spring Integrationn</servlet-name>
+        <servlet-name>Jersey Spring Integration</servlet-name>
         <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
@@ -25,13 +25,54 @@
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>org.caboto.rest.resources</param-value>
+            <param-value>org.caboto.rest</param-value>
         </init-param>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>Jersey Spring Integrationn</servlet-name>
+        <servlet-name>Jersey Spring Integration</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Caboto Startup Servlet</servlet-name>
+        <servlet-class>org.caboto.servlet.CabotoStartupServlet</servlet-class>
+        <init-param>
+            <param-name>configFile</param-name>
+            <param-value>/startup.properties</param-value>
+        </init-param>
+        <init-param>
+            <param-name>formatProps</param-name>
+            <param-value>sdb.store.formatted</param-value>
+        </init-param>
+        <init-param>
+            <param-name>sdbConfigFile</param-name>
+            <param-value>/sdb.ttl</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <security-constraint>
+        <display-name>pp</display-name>
+        <web-resource-collection>
+            <web-resource-name>DropBox</web-resource-name>
+            <description></description>
+            <url-pattern>/person/*</url-pattern>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Have to be a USER</description>
+            <role-name>USERS</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>Caboto Realm</realm-name>
+    </login-config>
+    <security-role>
+        <description>The standard role for users</description>
+        <role-name>USERS</role-name>
+    </security-role>
+
 
 </web-app>
