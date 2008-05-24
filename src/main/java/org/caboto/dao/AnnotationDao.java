@@ -31,8 +31,8 @@
  */
 package org.caboto.dao;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 import org.caboto.domain.Annotation;
-import com.hp.hpl.jena.rdf.model.Model;
 
 /**
  *
@@ -44,6 +44,6 @@ public interface AnnotationDao {
 
     void addAnnotation(Annotation annotation) throws AnnotationDaoException;
 
-    Model findAnnotation(String id) throws AnnotationDaoException;
+    Resource findAnnotation(String id) throws AnnotationDaoException;
 
 }
