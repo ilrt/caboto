@@ -65,11 +65,11 @@ import java.util.Date;
  **/
 public class AnnotationDaoImpl implements AnnotationDao {
 
-    public AnnotationDaoImpl(Store store, ProfileRepository profileRepository) {
-        this.store = store;
+    public AnnotationDaoImpl(String sdbConfigFile, ProfileRepository profileRepository) {
+        this.sdbConfigFile = sdbConfigFile;
         this.profileRepository = profileRepository;
-
         findAnnotationSparql = loadSparqlFromFile(findAnnotation);
+        initStore();
     }
 
     public void addAnnotation(Annotation annotation) throws AnnotationDaoException {
@@ -158,7 +158,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
 
     }
 
-    public Model findAnnotation(String id) throws AnnotationDaoException {
+    public Resource findAnnotation(String id) throws AnnotationDaoException {
 
         // extract the graph from the id
         String graph = id.substring(0, (id.lastIndexOf('/') + 1));
@@ -175,7 +175,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
         QueryExecution qe = QueryExecutionFactory.create(findAnnotationSparql, dataset,
                 initialBindings);
 
-        return qe.execConstruct();
+        return qe.execConstruct().createResource(id);
     }
 
 
@@ -203,8 +203,15 @@ public class AnnotationDaoImpl implements AnnotationDao {
     }
 
 
+    private void initStore() {
+        String storePath = this.getClass().getResource(sdbConfigFile).getPath();
+        store = SDBFactory.connectStore(storePath);
+    }
+
+
     private Store store;
     private ProfileRepository profileRepository;
     private String findAnnotationSparql;
     private String findAnnotation = "/sparql/findAnnotation.rql";
+    private String sdbConfigFile;
 }
