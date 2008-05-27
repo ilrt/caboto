@@ -32,7 +32,8 @@
 package org.caboto.rest.resources;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.sun.jersey.spi.resource.Singleton;
+import com.sun.jersey.spi.resource.Inject;
+import com.sun.jersey.spi.resource.PerRequest;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoException;
 import org.caboto.domain.Annotation;
@@ -63,8 +64,8 @@ import java.net.URI;
  * @version: $Id$
  *
  **/
+@PerRequest
 @Path("/person/{uid}/public/")
-@Singleton
 public class PersonPublicAnnotation {
 
     public PersonPublicAnnotation(AnnotationDao annotationDao) {
@@ -124,11 +125,16 @@ public class PersonPublicAnnotation {
     @Path("{id}")
     @GET
     @ProduceMime({"application/rdf+xml", "text/rdf+n3"})
-    public Response getAnnotation(@PathParam("id")String id) {
+    public Response getAnnotation() {
 
         try {
-            Resource resource = annotationDao.findAnnotation(id);
-            return Response.status(Response.Status.OK).entity(resource).build();
+            Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
+
+            if (resource.getModel().isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            } else {
+                return Response.status(Response.Status.OK).entity(resource).build();
+            }
         } catch (AnnotationDaoException e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -143,6 +149,7 @@ public class PersonPublicAnnotation {
     @Context
     private SecurityContext securityContext = null;
 
+    @Inject
     private AnnotationDao annotationDao;
 
 }
