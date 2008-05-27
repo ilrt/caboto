@@ -33,8 +33,10 @@ package org.caboto.dao;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -44,8 +46,8 @@ import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.caboto.CabotoUtility;
-import org.caboto.profile.Profile;
 import org.caboto.domain.Annotation;
+import org.caboto.profile.Profile;
 import org.caboto.profile.ProfileEntry;
 import org.caboto.profile.ProfileRepository;
 import org.caboto.profile.ProfileRepositoryException;
@@ -169,13 +171,16 @@ public class AnnotationDaoImpl implements AnnotationDao {
         // create bindings
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("id", ResourceFactory.createResource(id));
-        initialBindings.add("graph",ResourceFactory.createResource(graph));
+        initialBindings.add("graph", ResourceFactory.createResource(graph));
+
+        Query query = QueryFactory.create(findAnnotationSparql);
 
         // execute query
-        QueryExecution qe = QueryExecutionFactory.create(findAnnotationSparql, dataset,
-                initialBindings);
+        QueryExecution qe = QueryExecutionFactory.create(query, dataset, initialBindings);
 
-        return qe.execConstruct().createResource(id);
+        Model m = qe.execConstruct();
+
+        return m.createResource(id);
     }
 
 
