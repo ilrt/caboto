@@ -183,6 +183,29 @@ public class AnnotationDaoImpl implements AnnotationDao {
         return m.createResource(id);
     }
 
+    public Model findAnnotations(String about) throws AnnotationDaoException {
+
+        // obtain the dataset
+        Dataset dataset = SDBFactory.connectDataset(store);
+
+        // create bindings
+        QuerySolutionMap initialBindings = new QuerySolutionMap();
+        initialBindings.add("annotates", ResourceFactory.createResource(about));
+
+        Query query = QueryFactory.create(findAnnotationSparql);
+
+        // execute query
+        QueryExecution qe = QueryExecutionFactory.create(query, dataset, initialBindings);
+
+        Model m = qe.execConstruct();
+
+        m.write(System.out);
+        
+        return m;
+
+
+    }
+
 
     private String loadSparqlFromFile(final String sparqlPath) {
 
