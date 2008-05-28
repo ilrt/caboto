@@ -79,7 +79,7 @@ public class JenaResourceRdfProvider implements MessageBodyWriter<Object> {
         if (mediaType.getType().equals("text") && mediaType.getSubtype().equals("rdf+n3")) {
             resource.getModel().write(outputStream, "N3");
         } else {
-            resource.getModel().write(outputStream, "RDF/XML");
+            resource.getModel().write(outputStream, "RDF/XML-ABBREV");
         }
 
     }
