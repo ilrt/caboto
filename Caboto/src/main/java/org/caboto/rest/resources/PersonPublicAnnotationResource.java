@@ -46,17 +46,18 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.Validator;
 
 import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.MediaType;
 import java.net.URI;
 
 /**
@@ -68,10 +69,6 @@ import java.net.URI;
 @PerRequest
 @Path("/person/{uid}/public/")
 public class PersonPublicAnnotationResource {
-
-    public PersonPublicAnnotationResource(AnnotationDao annotationDao) {
-        this.annotationDao = annotationDao;
-    }
 
     @POST
     @ConsumeMime(MediaType.APPLICATION_FORM_URLENCODED)
@@ -143,7 +140,35 @@ public class PersonPublicAnnotationResource {
         }
 
     }
-    
+
+    @Path("{id}")
+    @DELETE
+    public Response findAnnotations(@PathParam("uid")String uid) {
+
+        try {
+
+            Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
+
+            if (resource.getModel().isEmpty()) {
+                Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            if (securityContext.getUserPrincipal().getName().equals(uid) ||
+                    securityContext.isUserInRole("ADMIN")) {
+                annotationDao.deleteAnnotation(resource);
+                return Response.ok().build();
+            } else {
+                return Response.status(Response.Status.UNAUTHORIZED).build();
+            }
+
+        } catch (AnnotationDaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Oops, an error has occured: " + e.getMessage()).build();
+        }
+
+
+    }
 
     @Context
     private UriInfo uriInfo = null;
@@ -152,6 +177,6 @@ public class PersonPublicAnnotationResource {
     private SecurityContext securityContext = null;
 
     @Inject
-    private AnnotationDao annotationDao;
+    private AnnotationDao annotationDao = null;
 
 }
