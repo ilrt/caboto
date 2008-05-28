@@ -206,6 +206,21 @@ public class AnnotationDaoImpl implements AnnotationDao {
 
     }
 
+    public void deleteAnnotation(Resource resource) throws AnnotationDaoException {
+
+        String id = resource.getURI();
+
+        // extract the graph from the id
+        String graph = id.substring(0, (id.lastIndexOf('/') + 1));
+
+        Dataset dataset = SDBFactory.connectDataset(store);
+
+        Model model = dataset.getNamedModel(graph);
+
+        model.remove(resource.getModel());
+
+    }
+
 
     private String loadSparqlFromFile(final String sparqlPath) {
 

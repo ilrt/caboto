@@ -133,6 +133,29 @@ public class AnnotationDaoImplTest extends TestCase {
 
     }
 
+    public void testDeleteAnnotation() {
+
+        try {
+
+            Model m = SDBFactory.connectNamedModel(store, "http://caboto.org/person/mikej/public/")
+                    .read(this.getClass().getResourceAsStream("/test-graph1.rdf"), null);
+
+            assertEquals("The start size is incorrect", 14, m.size());
+
+            Resource resource = annotationDao.findAnnotation("http://caboto.org/person/mikej/" +
+                    "public/e609962d-47ee-4248-9fcc-2c9f6256c330");
+
+            assertTrue("Unable to find resorce to delete", !resource.getModel().isEmpty());
+
+            annotationDao.deleteAnnotation(resource);
+
+            assertEquals("The resource was not deleted", 7, m.size());
+
+        } catch (AnnotationDaoException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private Store store;
     private AnnotationDao annotationDao;
