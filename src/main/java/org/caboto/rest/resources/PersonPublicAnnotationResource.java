@@ -56,6 +56,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.MediaType;
 import java.net.URI;
 
 /**
@@ -66,14 +67,14 @@ import java.net.URI;
  **/
 @PerRequest
 @Path("/person/{uid}/public/")
-public class PersonPublicAnnotation {
+public class PersonPublicAnnotationResource {
 
-    public PersonPublicAnnotation(AnnotationDao annotationDao) {
+    public PersonPublicAnnotationResource(AnnotationDao annotationDao) {
         this.annotationDao = annotationDao;
     }
 
     @POST
-    @ConsumeMime("application/x-www-form-urlencoded")
+    @ConsumeMime(MediaType.APPLICATION_FORM_URLENCODED)
     public Response addAnnotation(@PathParam("uid")String uid,
                                   MultivaluedMap<String, String> params) {
 
@@ -142,6 +143,7 @@ public class PersonPublicAnnotation {
         }
 
     }
+    
 
     @Context
     private UriInfo uriInfo = null;
