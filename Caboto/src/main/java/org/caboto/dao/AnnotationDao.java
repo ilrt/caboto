@@ -49,4 +49,6 @@ public interface AnnotationDao {
 
     Model findAnnotations(String about) throws AnnotationDaoException;
 
+    void deleteAnnotation(Resource resource) throws AnnotationDaoException;
+
 }
