@@ -150,8 +150,6 @@ public class AnnotationDaoImpl implements AnnotationDao {
             model.add(model.createStatement(annotationResource, RDF.type,
                     model.createResource(profile.getType())));
 
-            //model.write(System.out);
-
 
         } catch (ProfileRepositoryException e) {
             throw new AnnotationDaoException(e.getMessage());
@@ -197,12 +195,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
         // execute query
         QueryExecution qe = QueryExecutionFactory.create(query, dataset, initialBindings);
 
-        Model m = qe.execConstruct();
-
-        m.write(System.out);
-        
-        return m;
-
+        return qe.execConstruct();
 
     }
 
