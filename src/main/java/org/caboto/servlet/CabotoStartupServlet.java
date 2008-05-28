@@ -39,6 +39,20 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import javax.servlet.http.HttpServlet;
 
 /**
+ * <p>This servlet ensures that the system is correctly initiated.</p>
+ *
+ * <p>The Caboto project uses an RDF store that is backed by a relational database. The
+ * unerlying implementation uses Jena SDB which means we need to ensure that the database
+ * is correctly formated before it is used. The servlet has three initialization
+ * parameters:</p>
+ *
+ * <ul>
+ *  <li><em>configFile</em> -  a configuration file that specifes whether or not the database
+ *      has already been formatted.</li>
+ *  <li><em>formatProps</em> - the property name used to hold a "true" or "false" value for
+ *      indicating if the database has been formatted.</li>
+ *  <li><em>configFile</em> - a configuration file that holds the database details.</li>
+ * </ul>
  *
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id$
