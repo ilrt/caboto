@@ -64,9 +64,9 @@ public class AnnotationDaoImplTest extends TestCase {
     public void testAddAnnotation() {
 
         Annotation annotation = new Annotation();
-        annotation.setGraphId("http://caboto.org/person/MikeJ/public/");
+        annotation.setGraphId("http://caboto.org/person/mikej/public/");
         annotation.setAnnotates("http://chillyinside.com/blog/?p=47");
-        annotation.setAuthor("http://caboto.org/person/MikeJ/");
+        annotation.setAuthor("http://caboto.org/person/mikej/");
         annotation.setType("SimpleComment");
 
         Map<String, String> map = new HashMap<String, String>();
@@ -96,22 +96,41 @@ public class AnnotationDaoImplTest extends TestCase {
         try {
 
             // add some test data to the model
-            InputStream is = this.getClass().getResourceAsStream("/test-comment.rdf");
+            InputStream is = this.getClass().getResourceAsStream("/test-graph1.rdf");
             Model model = SDBFactory.connectNamedModel(store,
-                    "http://caboto.org/person/MikeJ/public/");
+                    "http://caboto.org/person/mikej/public/");
             model.read(is, null);
 
-            Resource r = annotationDao.findAnnotation("http://caboto.org/person/MikeJ/public/" +
-                    "2474362d-c1eb-4a80-b971-c883e73d8406");
-
+            Resource r = annotationDao.findAnnotation("http://caboto.org/person/mikej/public/" +
+                    "e609962d-47ee-4248-9fcc-2c9f6256c330");
 
             assertNotNull("The resource from the construct is null", r);
-            assertEquals("Unexpected model size returned from the construct", model.size(),
+            assertEquals("Unexpected model size returned from the construct", 7,
                     r.getModel().size());
 
         } catch (AnnotationDaoException e) {
             e.printStackTrace();
-        } 
+        }
+    }
+
+    public void testFindAnnotations() {
+        try {
+
+            SDBFactory.connectNamedModel(store, "http://caboto.org/person/mikej/public/")
+                    .read(this.getClass().getResourceAsStream("/test-graph1.rdf"), null);
+
+            SDBFactory.connectNamedModel(store, "http://caboto.org/person/mikel/public/")
+                    .read(this.getClass().getResourceAsStream("/test-graph2.rdf"), null);
+
+            Model m = annotationDao.findAnnotations("http://chillyinside.com/blog/?p=45");
+
+            m.write(System.out);
+
+        } catch (AnnotationDaoException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 
