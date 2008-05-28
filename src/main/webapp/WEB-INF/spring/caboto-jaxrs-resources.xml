@@ -13,8 +13,4 @@
         <constructor-arg index="1" ref="profileRepository"/>
     </bean>
 
-    <bean id="personPublicAnnotation" class="org.caboto.rest.resources.PersonPublicAnnotationResource">
-        <constructor-arg index="0" ref="annotationDao"/>
-    </bean>
-
 </beans>
