@@ -60,7 +60,11 @@ public class CabotoUtility {
 
     public static String parseDate(Date date) {
 
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
+        String temp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
+
+        return temp.substring(0, temp.length() - 2) + ":" +
+                temp.substring(temp.length() - 2, temp.length());
     }
+
 
 }
