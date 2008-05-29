@@ -34,12 +34,15 @@ package org.caboto.rest.resources;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.spi.resource.Inject;
 import com.sun.jersey.spi.resource.PerRequest;
+import org.caboto.CabotoJsonSupport;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoException;
 import org.caboto.domain.Annotation;
 import org.caboto.domain.AnnotationFactory;
 import org.caboto.profile.ProfileRepositoryXmlImpl;
 import org.caboto.validation.AnnotationValidatorImpl;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -141,9 +144,34 @@ public class PersonPublicAnnotationResource {
 
     }
 
+
+    @Path("{id}")
+    @GET
+    @ProduceMime(MediaType.APPLICATION_JSON)
+    public Response getAnnotationAsJson() throws JSONException {
+
+        try {
+            Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
+
+            if (resource.getModel().isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            } else {
+
+                JSONObject jsonObject = jsonSupport.generateJsonObject(resource);
+
+                return Response.status(Response.Status.OK).entity(jsonObject).build();
+            }
+        } catch (AnnotationDaoException e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Oops, an error has occured: " + e.getMessage()).build();
+        }
+
+    }
+
     @Path("{id}")
     @DELETE
-    public Response findAnnotations(@PathParam("uid")String uid) {
+    public Response deleteAnnotation(@PathParam("uid")String uid) {
 
         try {
 
@@ -178,5 +206,8 @@ public class PersonPublicAnnotationResource {
 
     @Inject
     private AnnotationDao annotationDao = null;
+
+    @Inject
+    private CabotoJsonSupport jsonSupport = null;
 
 }
