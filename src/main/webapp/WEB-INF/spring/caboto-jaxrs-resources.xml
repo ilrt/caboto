@@ -13,4 +13,6 @@
         <constructor-arg index="1" ref="profileRepository"/>
     </bean>
 
+    <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport" />
+
 </beans>
