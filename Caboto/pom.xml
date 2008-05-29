@@ -40,20 +40,7 @@
                 </configuration>
             </plugin>
 
-            <!-- temp -->
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/AnnotationValidationTest.java</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-            -->
         </plugins>
-
 
     </build>
     <repositories>
@@ -159,6 +146,13 @@
             <artifactId>commons-configuration</artifactId>
             <version>1.5</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+            <version>1.0-RC2</version>
+        </dependency>
+
 
     </dependencies>
 
