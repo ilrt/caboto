@@ -1,6 +1,7 @@
 PREFIX caboto:  <http://caboto.org/schema/annotations#>
 PREFIX annotea: <http://www.w3.org/2000/10/annotation-ns#>
 PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:     <http://www.w3.org/2001/XMLSchema#>
 CONSTRUCT {
     ?id annotea:created ?created .
     ?id annotea:annotates ?annotates .
@@ -19,3 +20,4 @@ WHERE {
         ?body ?p ?o
     } .
 }
+ORDER BY (xsd:dateTime(?created))
