@@ -42,6 +42,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
+ * <p>A utility class used to convert RDF (Jena Model and Resource classes) to JSON.</p> 
  *
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id$
