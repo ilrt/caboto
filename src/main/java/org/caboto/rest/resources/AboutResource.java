@@ -55,11 +55,12 @@ import javax.ws.rs.core.Response;
  **/
 @PerRequest
 @Path("/about/")
-public class AboutResource {
+public final class AboutResource {
 
     @GET
     @ProduceMime({"application/rdf+xml", "text/rdf+n3"})
-    public Response findAnnotations(@QueryParam("id")String about) throws AnnotationDaoException {
+    public Response findAnnotations(@QueryParam("id") final String about)
+            throws AnnotationDaoException {
 
         Model results = annotationDao.findAnnotations(about);
 
@@ -72,8 +73,8 @@ public class AboutResource {
 
     @GET
     @ProduceMime(MediaType.APPLICATION_JSON)
-    public Response findAnnotationsAsJson(@QueryParam("id")String about) throws JSONException,
-            AnnotationDaoException {
+    public Response findAnnotationsAsJson(@QueryParam("id") final String about)
+            throws JSONException, AnnotationDaoException {
 
         Model results = annotationDao.findAnnotations(about);
 

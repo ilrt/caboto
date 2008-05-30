@@ -55,9 +55,9 @@ import java.util.List;
  * @version: $Id$
  *
  **/
-public class ProfileRepositoryXmlImpl implements ProfileRepository {
+public final class ProfileRepositoryXmlImpl implements ProfileRepository {
 
-    public ProfileRepositoryXmlImpl(String xmlFileName) throws ProfileRepositoryException {
+    public ProfileRepositoryXmlImpl(final String xmlFileName) throws ProfileRepositoryException {
 
         try {
             loadXmlDocument(xmlFileName);
@@ -71,7 +71,7 @@ public class ProfileRepositoryXmlImpl implements ProfileRepository {
 
     }
 
-    private void loadXmlDocument(String xmlFileName) throws ParserConfigurationException,
+    private void loadXmlDocument(final String xmlFileName) throws ParserConfigurationException,
             IOException, SAXException {
         String xmlFileNamePath = getClass().getClassLoader().getResource(xmlFileName).getPath();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -81,7 +81,7 @@ public class ProfileRepositoryXmlImpl implements ProfileRepository {
     }
 
 
-    public Profile findProfile(String profileId) throws ProfileRepositoryException {
+    public Profile findProfile(final String profileId) throws ProfileRepositoryException {
 
         Profile profile = null;
 
@@ -138,7 +138,7 @@ public class ProfileRepositoryXmlImpl implements ProfileRepository {
         return profile;
     }
 
-    private ProfileEntry getProfileEntry(Node node) {
+    private ProfileEntry getProfileEntry(final Node node) {
 
         ProfileEntry entry = new ProfileEntry();
 

@@ -52,20 +52,22 @@ import java.lang.reflect.Type;
  **/
 @Provider
 @ProduceMime({"application/rdf+xml", "text/rdf+n3"})
-public class JenaModelRdfProvider implements MessageBodyWriter<Object> {
+public final class JenaModelRdfProvider implements MessageBodyWriter<Object> {
 
-    public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations) {
+    public boolean isWriteable(final Class<?> aClass, final Type type,
+                               final Annotation[] annotations) {
         return Model.class.isAssignableFrom(aClass);
     }
 
-    public long getSize(Object o) {
+    public long getSize(final Object o) {
         return -1;
     }
 
-    public void writeTo(Object o, Class<?> aClass, Type type, Annotation[] annotations,
-                        MediaType mediaType,
-                        MultivaluedMap<String, Object> stringObjectMultivaluedMap,
-                        OutputStream outputStream) throws IOException, WebApplicationException {
+    public void writeTo(final Object o, final Class<?> aClass, final Type type,
+                        final Annotation[] annotations, final MediaType mediaType,
+                        final MultivaluedMap<String, Object> stringObjectMultivaluedMap,
+                        final OutputStream outputStream) throws IOException,
+            WebApplicationException {
 
         Model model = (Model) o;
 

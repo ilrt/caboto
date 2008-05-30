@@ -41,14 +41,15 @@ import java.util.HashMap;
  * @version: $Id$
  *
  **/
-public class Annotation {
+public final class Annotation {
 
 
     public Annotation() {
     }
 
-    public Annotation(String id, String graphId, String annotates, String author,
-                      Date created, Map<String, String> body, String type) {
+    public Annotation(final String id, final String graphId, final String annotates,
+                      final String author, final Date created, final Map<String, String> body,
+                      final String type) {
         this.id = id;
         this.graphId = graphId;
         this.annotates = annotates;
@@ -62,7 +63,7 @@ public class Annotation {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -70,7 +71,7 @@ public class Annotation {
         return graphId;
     }
 
-    public void setGraphId(String graphId) {
+    public void setGraphId(final String graphId) {
         this.graphId = graphId;
     }
 
@@ -78,7 +79,7 @@ public class Annotation {
         return annotates;
     }
 
-    public void setAnnotates(String annotates) {
+    public void setAnnotates(final String annotates) {
         this.annotates = annotates;
     }
 
@@ -86,7 +87,7 @@ public class Annotation {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(final String author) {
         this.author = author;
     }
 
@@ -94,7 +95,7 @@ public class Annotation {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(final Date created) {
         this.created = created;
     }
 
@@ -102,7 +103,7 @@ public class Annotation {
         return body;
     }
 
-    public void setBody(Map<String, String> body) {
+    public void setBody(final Map<String, String> body) {
         this.body = body;
     }
 
@@ -110,7 +111,7 @@ public class Annotation {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 

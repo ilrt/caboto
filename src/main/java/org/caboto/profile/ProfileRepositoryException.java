@@ -39,7 +39,7 @@ package org.caboto.profile;
  **/
 public class ProfileRepositoryException extends Exception {
 
-    public ProfileRepositoryException(String message) {
+    public ProfileRepositoryException(final String message) {
         super(message);
     }
 

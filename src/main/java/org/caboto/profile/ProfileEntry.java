@@ -34,7 +34,7 @@ package org.caboto.profile;
 /**
  * <p>A description or profile of an annotation is made up of a number of
  * profile entries.</p>
- * 
+ *
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id$
  *
@@ -45,7 +45,7 @@ public final class ProfileEntry {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -53,7 +53,7 @@ public final class ProfileEntry {
         return propertyType;
     }
 
-    public void setPropertyType(String propertyType) {
+    public void setPropertyType(final String propertyType) {
         this.propertyType = propertyType;
     }
 
@@ -61,7 +61,7 @@ public final class ProfileEntry {
         return required;
     }
 
-    public void setRequired(boolean required) {
+    public void setRequired(final boolean required) {
         this.required = required;
     }
 
@@ -69,7 +69,7 @@ public final class ProfileEntry {
         return objectDatatype;
     }
 
-    public void setObjectDatatype(String objectDatatype) {
+    public void setObjectDatatype(final String objectDatatype) {
         this.objectDatatype = objectDatatype;
     }
 
