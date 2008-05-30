@@ -13,6 +13,6 @@
       </rdf:Description>
     </annotea:body>
     <annotea:annotates rdf:resource="http://chillyinside.com/blog/?p=45"/>
-    <annotea:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-05-27T14:50:48+0100</annotea:created>
+    <annotea:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-05-27T14:50:48+01:00</annotea:created>
   </caboto:SimpleComment>
 </rdf:RDF>
