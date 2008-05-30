@@ -39,13 +39,13 @@ import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoException;
 import org.caboto.domain.Annotation;
 import org.caboto.domain.AnnotationFactory;
+import org.caboto.profile.ProfileRepositoryException;
 import org.caboto.profile.ProfileRepositoryXmlImpl;
 import org.caboto.validation.AnnotationValidatorImpl;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.Validator;
 
 import javax.ws.rs.ConsumeMime;
@@ -62,6 +62,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -76,7 +77,8 @@ public class PersonPublicAnnotationResource {
     @POST
     @ConsumeMime(MediaType.APPLICATION_FORM_URLENCODED)
     public Response addAnnotation(@PathParam("uid")String uid,
-                                  MultivaluedMap<String, String> params) {
+                                  MultivaluedMap<String, String> params)
+            throws AnnotationDaoException, ProfileRepositoryException, URISyntaxException {
 
         // the uid in the URI *must* match the principal name
         if (!securityContext.getUserPrincipal().getName().equals(uid)) {
@@ -86,60 +88,39 @@ public class PersonPublicAnnotationResource {
         // encapsulate the post parameters into a useful object
         Annotation annotation = AnnotationFactory.createAnnotation(uriInfo.getRequestUri(), params);
 
+        Validator validator = new AnnotationValidatorImpl(
+                new ProfileRepositoryXmlImpl("profiles.xml"));
 
-        try {
-            Validator validator = new AnnotationValidatorImpl(
-                    new ProfileRepositoryXmlImpl("profiles.xml"));
+        //validate what is sent
+        Errors errors = new BeanPropertyBindingResult(annotation, "Annotation");
 
-            //validate what is sent
-            Errors errors = new BeanPropertyBindingResult(annotation, "Annotation");
+        validator.validate(annotation, errors);
 
-            validator.validate(annotation, errors);
+        if (errors.hasErrors()) {
 
-            if (errors.hasErrors()) {
-
-                for (Object error : errors.getAllErrors()) {
-
-                    System.out.println("> " + ((FieldError) error).getCode());
-                }
-
-
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Oops, there are validation errors!\n").build();
-
-            }
-
-            // add what is sent to the RDF store
-            annotationDao.addAnnotation(annotation);
-
-            // return the URI of the added annotation
-            return Response.created(new URI(annotation.getId())).build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Oops, an error has occured: " + e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Oops, there are validation errors!\n").build();
         }
 
+        // add what is sent to the RDF store
+        annotationDao.addAnnotation(annotation);
+
+        // return the URI of the added annotation
+        return Response.created(new URI(annotation.getId())).build();
     }
+
 
     @Path("{id}")
     @GET
     @ProduceMime({"application/rdf+xml", "text/rdf+n3"})
-    public Response getAnnotation() {
+    public Response getAnnotation() throws AnnotationDaoException {
 
-        try {
-            Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
+        Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
 
-            if (resource.getModel().isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            } else {
-                return Response.status(Response.Status.OK).entity(resource).build();
-            }
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Oops, an error has occured: " + e.getMessage()).build();
+        if (resource.getModel().isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return Response.status(Response.Status.OK).entity(resource).build();
         }
 
     }
@@ -148,53 +129,38 @@ public class PersonPublicAnnotationResource {
     @Path("{id}")
     @GET
     @ProduceMime(MediaType.APPLICATION_JSON)
-    public Response getAnnotationAsJson() throws JSONException {
+    public Response getAnnotationAsJson() throws AnnotationDaoException, JSONException {
 
-        try {
-            Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
+        Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
 
-            if (resource.getModel().isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            } else {
+        if (resource.getModel().isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
 
-                JSONObject jsonObject = jsonSupport.generateJsonObject(resource);
+            JSONObject jsonObject = jsonSupport.generateJsonObject(resource);
 
-                return Response.status(Response.Status.OK).entity(jsonObject).build();
-            }
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Oops, an error has occured: " + e.getMessage()).build();
+            return Response.status(Response.Status.OK).entity(jsonObject).build();
         }
 
     }
 
     @Path("{id}")
     @DELETE
-    public Response deleteAnnotation(@PathParam("uid")String uid) {
+    public Response deleteAnnotation(@PathParam("uid")String uid) throws AnnotationDaoException {
 
-        try {
+        Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
 
-            Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
-
-            if (resource.getModel().isEmpty()) {
-                Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            if (securityContext.getUserPrincipal().getName().equals(uid) ||
-                    securityContext.isUserInRole("ADMIN")) {
-                annotationDao.deleteAnnotation(resource);
-                return Response.ok().build();
-            } else {
-                return Response.status(Response.Status.UNAUTHORIZED).build();
-            }
-
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Oops, an error has occured: " + e.getMessage()).build();
+        if (resource.getModel().isEmpty()) {
+            Response.status(Response.Status.NOT_FOUND).build();
         }
 
+        if (securityContext.getUserPrincipal().getName().equals(uid) ||
+                securityContext.isUserInRole("ADMIN")) {
+            annotationDao.deleteAnnotation(resource);
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
 
     }
 
