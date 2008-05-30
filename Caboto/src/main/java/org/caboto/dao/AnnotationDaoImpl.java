@@ -65,16 +65,17 @@ import java.util.Date;
  * @version: $Id$
  *
  **/
-public class AnnotationDaoImpl implements AnnotationDao {
+public final class AnnotationDaoImpl implements AnnotationDao {
 
-    public AnnotationDaoImpl(String sdbConfigFile, ProfileRepository profileRepository) {
+    public AnnotationDaoImpl(final String sdbConfigFile,
+                             final ProfileRepository profileRepository) {
         this.sdbConfigFile = sdbConfigFile;
         this.profileRepository = profileRepository;
         findAnnotationSparql = loadSparqlFromFile(findAnnotation);
         initStore();
     }
 
-    public void addAnnotation(Annotation annotation) throws AnnotationDaoException {
+    public void addAnnotation(final Annotation annotation) throws AnnotationDaoException {
 
         try {
 
@@ -82,8 +83,8 @@ public class AnnotationDaoImpl implements AnnotationDao {
             Profile profile = profileRepository.findProfile(annotation.getType());
 
             if (profile == null) {
-                throw new AnnotationDaoException("Unable to find a profile for " +
-                        "the annotation type: " + annotation.getType());
+                throw new AnnotationDaoException("Unable to find a profile for "
+                        + "the annotation type: " + annotation.getType());
             }
 
             // obtain the named graph (model)
@@ -146,7 +147,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
             // add the body to the resource
             annotationResource.addProperty(Annotea.body, bodyResource);
 
-            // add the type as a statement 
+            // add the type as a statement
             model.add(model.createStatement(annotationResource, RDF.type,
                     model.createResource(profile.getType())));
 
@@ -158,7 +159,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
 
     }
 
-    public Resource findAnnotation(String id) throws AnnotationDaoException {
+    public Resource findAnnotation(final String id) throws AnnotationDaoException {
 
         // extract the graph from the id
         String graph = id.substring(0, (id.lastIndexOf('/') + 1));
@@ -181,7 +182,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
         return m.createResource(id);
     }
 
-    public Model findAnnotations(String about) throws AnnotationDaoException {
+    public Model findAnnotations(final String about) throws AnnotationDaoException {
 
         // obtain the dataset
         Dataset dataset = SDBFactory.connectDataset(store);
@@ -199,7 +200,7 @@ public class AnnotationDaoImpl implements AnnotationDao {
 
     }
 
-    public void deleteAnnotation(Resource resource) throws AnnotationDaoException {
+    public void deleteAnnotation(final Resource resource) throws AnnotationDaoException {
 
         String id = resource.getURI();
 

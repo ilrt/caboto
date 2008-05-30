@@ -36,14 +36,30 @@ import java.net.URI;
 import java.util.Date;
 
 /**
+ * <p>A simple factory for creating Annotation objects.</p>
  *
  * @author: Mike Jones (mike.a.jones@gmail.com)
  * @version: $Id$
  *
  **/
-public class AnnotationFactory {
+public final class AnnotationFactory {
 
-    public static Annotation createAnnotation(URI uri, MultivaluedMap<String, String> params) {
+    /**
+     * <p>Private constructor - no public constructor since the class only has static methods.</p>
+     */
+    private AnnotationFactory() {
+    }
+
+    /**
+     * <p>Creates an annotation object based on values received from a map - the map values
+     * would have been derived from a HTTP POST.</p>
+     *
+     * @param uri       the URI of the named graph that will hold the annotation.
+     * @param params    the parameters from an HTTP POST.
+     * @return          an annotation object based on the HTTP POST values.
+     */
+    public static Annotation createAnnotation(final URI uri,
+                                              final MultivaluedMap<String, String> params) {
 
         // the uri of the graphUri for holding annotations
         String graphUri = uri.toString();
@@ -65,7 +81,7 @@ public class AnnotationFactory {
             annotation.setAnnotates(params.remove("annotates").get(0));
         }
 
-        if (params.get("type") != null){
+        if (params.get("type") != null) {
             annotation.setType(params.remove("type").get(0));
         }
 
