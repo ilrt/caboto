@@ -41,29 +41,31 @@ import java.util.UUID;
  * @version: $Id$
  *
  **/
-public class CabotoUtility {
+public final class CabotoUtility {
 
 
     private CabotoUtility() {
     }
 
 
-    public static String generateId(String graphId) {
+    public static String generateId(final String graphId) {
+
+        String id = UUID.randomUUID().toString();
 
         if (!graphId.endsWith("/")) {
-            graphId = graphId + "/";
+            id = "/" + id;
         }
 
-        return graphId + UUID.randomUUID();
+        return graphId + id;
     }
 
 
-    public static String parseDate(Date date) {
+    public static String parseDate(final Date date) {
 
         String temp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
 
-        return temp.substring(0, temp.length() - 2) + ":" +
-                temp.substring(temp.length() - 2, temp.length());
+        return temp.substring(0, temp.length() - 2) + ":"
+                + temp.substring(temp.length() - 2, temp.length());
     }
 
 

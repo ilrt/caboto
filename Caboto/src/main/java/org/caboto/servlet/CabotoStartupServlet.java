@@ -61,7 +61,10 @@ import javax.servlet.http.HttpServlet;
 public class CabotoStartupServlet extends HttpServlet {
 
 
-    public void init() {
+    /**
+     * <p>Initialize the system on servlet start up.</p>
+     */
+    public final void init() {
 
         // pull in init parameter values
         String configFile = getInitParameter("configFile");
