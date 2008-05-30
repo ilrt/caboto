@@ -49,17 +49,17 @@ import java.util.Set;
  * @version: $Id$
  *
  **/
-public class AnnotationValidatorImpl implements Validator {
+public final class AnnotationValidatorImpl implements Validator {
 
-    public AnnotationValidatorImpl(ProfileRepository profileRepository) {
+    public AnnotationValidatorImpl(final ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
     }
 
-    public boolean supports(Class aClass) {
+    public boolean supports(final Class aClass) {
         return Annotation.class.equals(aClass);
     }
 
-    public void validate(Object o, Errors errors) {
+    public void validate(final Object o, final Errors errors) {
 
         // get the object we need to validate
         Annotation annotation = (Annotation) o;
