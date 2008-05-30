@@ -124,7 +124,8 @@ public class AnnotationDaoImplTest extends TestCase {
 
             Model m = annotationDao.findAnnotations("http://chillyinside.com/blog/?p=45");
 
-            m.write(System.out);
+           //m.write(System.out);
+            assertEquals("Unexpected size", 14, m.size());
 
         } catch (AnnotationDaoException e) {
             e.printStackTrace();
