@@ -59,45 +59,31 @@ public class AboutResource {
 
     @GET
     @ProduceMime({"application/rdf+xml", "text/rdf+n3"})
-    public Response findAnnotations(@QueryParam("id")String about) {
+    public Response findAnnotations(@QueryParam("id")String about) throws AnnotationDaoException {
 
-        try {
-            Model results = annotationDao.findAnnotations(about);
+        Model results = annotationDao.findAnnotations(about);
 
-            if (results.isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            return Response.status(Response.Status.OK).entity(results).build();
-
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        if (results.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
+        return Response.status(Response.Status.OK).entity(results).build();
     }
 
     @GET
     @ProduceMime(MediaType.APPLICATION_JSON)
-    public Response findAnnotationsAsJson(@QueryParam("id")String about) throws JSONException {
+    public Response findAnnotationsAsJson(@QueryParam("id")String about) throws JSONException,
+            AnnotationDaoException {
 
-        try {
-            Model results = annotationDao.findAnnotations(about);
+        Model results = annotationDao.findAnnotations(about);
 
-
-            if (results.isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            JSONArray jsonArray = jsonSupport.generateJsonArray(results);
-
-            return Response.status(Response.Status.OK).entity(jsonArray).build();
-
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        if (results.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
+        JSONArray jsonArray = jsonSupport.generateJsonArray(results);
+
+        return Response.status(Response.Status.OK).entity(jsonArray).build();
     }
 
     @Inject
