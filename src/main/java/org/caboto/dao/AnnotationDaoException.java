@@ -32,6 +32,7 @@
 package org.caboto.dao;
 
 /**
+ * <p>Exception for when DAOs go bad!</p>
  *
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id$
@@ -39,7 +40,7 @@ package org.caboto.dao;
  **/
 public class AnnotationDaoException extends Exception {
 
-    public AnnotationDaoException(String message) {
+    public AnnotationDaoException(final String message) {
         super(message);
     }
 

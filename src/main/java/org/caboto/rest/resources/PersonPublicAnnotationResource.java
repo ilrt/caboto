@@ -72,12 +72,12 @@ import java.net.URISyntaxException;
  **/
 @PerRequest
 @Path("/person/{uid}/public/")
-public class PersonPublicAnnotationResource {
+public final class PersonPublicAnnotationResource {
 
     @POST
     @ConsumeMime(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response addAnnotation(@PathParam("uid")String uid,
-                                  MultivaluedMap<String, String> params)
+    public Response addAnnotation(@PathParam("uid") final String uid,
+                                  final MultivaluedMap<String, String> params)
             throws AnnotationDaoException, ProfileRepositoryException, URISyntaxException {
 
         // the uid in the URI *must* match the principal name
@@ -146,7 +146,8 @@ public class PersonPublicAnnotationResource {
 
     @Path("{id}")
     @DELETE
-    public Response deleteAnnotation(@PathParam("uid")String uid) throws AnnotationDaoException {
+    public Response deleteAnnotation(@PathParam("uid") final String uid)
+            throws AnnotationDaoException {
 
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
 

@@ -40,13 +40,13 @@ import java.util.List;
  * @version: $Id$
  *
  **/
-public class Profile {
+public final class Profile {
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -58,7 +58,7 @@ public class Profile {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 

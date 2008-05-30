@@ -36,6 +36,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import org.caboto.domain.Annotation;
 
 /**
+ * <p>A Data Access Object to add, find and delete annotations.</p>
  *
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id$
