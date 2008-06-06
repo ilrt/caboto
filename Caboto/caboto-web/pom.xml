@@ -28,7 +28,7 @@
                     <userRealms>
                         <userRealm implementation="org.mortbay.jetty.security.HashUserRealm">
                             <name>Caboto Realm</name>
-                            <config>src/test/resources/realm.properties</config>
+                            <config>src/main/resources/realm.properties</config>
                         </userRealm>
                     </userRealms>
                 </configuration>
