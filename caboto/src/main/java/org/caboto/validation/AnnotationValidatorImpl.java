@@ -83,6 +83,12 @@ public final class AnnotationValidatorImpl implements Validator {
 
         } else {
 
+            // prototype appends a _method to the parameter - we can ignore this
+            if (annotation.getBody().get("_method") != null) {
+                annotation.getBody().remove("_method");
+            }
+
+
             // --- Validate values that are provided by the REST interface
 
             // (1) check that we have an author
@@ -107,6 +113,7 @@ public final class AnnotationValidatorImpl implements Validator {
             }
 
             // (2) check that the keys sent in the Map match the ids in the profile entries
+
 
             Set<String> bodyKeys = annotation.getBody().keySet();
 
