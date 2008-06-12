@@ -75,6 +75,7 @@ public class CabotoJsonSupport {
     public JSONObject generateJsonObject(Resource resource) throws JSONException {
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", resource.getURI());
 
         // get the statements that make up the resource
         StmtIterator stmtIter = resource.listProperties();
