@@ -47,6 +47,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.validation.FieldError;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.DELETE;
@@ -81,7 +82,8 @@ public final class PersonPublicAnnotationResource {
             throws AnnotationDaoException, ProfileRepositoryException, URISyntaxException {
 
         // the uid in the URI *must* match the principal name
-        if (!securityContext.getUserPrincipal().getName().equals(uid)) {
+        if (securityContext.getUserPrincipal() == null ||
+                !securityContext.getUserPrincipal().getName().equals(uid)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
@@ -97,6 +99,10 @@ public final class PersonPublicAnnotationResource {
         validator.validate(annotation, errors);
 
         if (errors.hasErrors()) {
+
+            for (Object e : errors.getAllErrors()) {
+                System.out.println("> " + ((FieldError) e).getCode());
+            }
 
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Oops, there are validation errors!\n").build();
@@ -155,13 +161,15 @@ public final class PersonPublicAnnotationResource {
             Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        if (securityContext.getUserPrincipal().getName().equals(uid) ||
-                securityContext.isUserInRole("ADMIN")) {
-            annotationDao.deleteAnnotation(resource);
-            return Response.ok().build();
-        } else {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
+        if (securityContext.getUserPrincipal() != null) {
+            if (securityContext.getUserPrincipal().getName().equals(uid) ||
+                    securityContext.isUserInRole("ADMIN")) {
+                annotationDao.deleteAnnotation(resource);
+                return Response.ok().build();
+            }
         }
+
+        return Response.status(Response.Status.UNAUTHORIZED).build();
 
     }
 
