@@ -88,6 +88,9 @@ public final class AnnotationValidatorImpl implements Validator {
                 annotation.getBody().remove("_method");
             }
 
+            if (annotation.getBody().get("_") != null) {
+                annotation.getBody().remove("_");
+            }
 
             // --- Validate values that are provided by the REST interface
 
@@ -100,7 +103,6 @@ public final class AnnotationValidatorImpl implements Validator {
             if (annotation.getAnnotates() == null || annotation.getAnnotates().length() == 0) {
                 errors.rejectValue("body", "annotation.annotates", "");
             }
-
 
             // --- Validate the values body Map
 
@@ -116,6 +118,12 @@ public final class AnnotationValidatorImpl implements Validator {
 
 
             Set<String> bodyKeys = annotation.getBody().keySet();
+
+            for (String key : bodyKeys) {
+                System.out.println("> " + key);
+            }
+
+            System.out.println("<<>>: " + annotation.getBody().get("_"));
 
             Set<String> bodyKeysCopy = new HashSet<String>(); // make a deep copy of the key set
             for (String key : bodyKeys) {
@@ -142,7 +150,6 @@ public final class AnnotationValidatorImpl implements Validator {
                 errors.rejectValue("body", "annotation.body.unexpectedVals",
                         new String[]{msg.toString()}, "");
             }
-
 
             // (3) check that we have required values where specified in the profile entries
             for (ProfileEntry entry : profiles) {
