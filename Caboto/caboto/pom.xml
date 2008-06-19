@@ -64,7 +64,7 @@
         <!-- holds jena's SDB since its not provided centrally -->
         <repository>
             <id>jena.dev</id>
-            <url>http://jena.hpl.hp.com/repo-dev</url>
+            <url>http://jena.hpl.hp.com/repo</url>
         </repository>
         <repository>
             <id>ilrt.org</id>
