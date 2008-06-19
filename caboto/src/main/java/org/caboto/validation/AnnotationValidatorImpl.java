@@ -119,11 +119,11 @@ public final class AnnotationValidatorImpl implements Validator {
 
             Set<String> bodyKeys = annotation.getBody().keySet();
 
-            for (String key : bodyKeys) {
-                System.out.println("> " + key);
-            }
+            //for (String key : bodyKeys) {
+            //    System.out.println("> " + key);
+            //}
 
-            System.out.println("<<>>: " + annotation.getBody().get("_"));
+            //System.out.println("<<>>: " + annotation.getBody().get("_"));
 
             Set<String> bodyKeysCopy = new HashSet<String>(); // make a deep copy of the key set
             for (String key : bodyKeys) {
