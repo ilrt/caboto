@@ -100,9 +100,9 @@ public final class PersonPublicAnnotationResource {
 
         if (errors.hasErrors()) {
 
-            for (Object e : errors.getAllErrors()) {
-                System.out.println("> " + ((FieldError) e).getCode());
-            }
+            //for (Object e : errors.getAllErrors()) {
+            //    System.out.println("> " + ((FieldError) e).getCode());
+            //}
 
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Oops, there are validation errors!\n").build();
