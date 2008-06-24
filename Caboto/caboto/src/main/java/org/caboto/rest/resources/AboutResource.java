@@ -32,8 +32,8 @@
 package org.caboto.rest.resources;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.sun.jersey.spi.resource.Inject;
 import com.sun.jersey.spi.resource.PerRequest;
+import com.sun.jersey.spi.inject.Inject;
 import org.caboto.CabotoJsonSupport;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoException;
