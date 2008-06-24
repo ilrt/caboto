@@ -1,40 +1,8 @@
-Caboto is currently using a non stable release of Jersey. You need to check out the code
-from the Jersey subversion repository and install it into your local maven repository.
+To build caboto:
 
-1) Obtain the source code:
-
-   svn checkout https://jersey.dev.java.net/svn/jersey/trunk jersey --username username
-
-2) Build Jersey:
-
-   cd jersey/jersey
-   maven -f maven/pom.xml clean install
-
-3) Build the Spring integration:
-
-4) Install the Spring contribution to Jersey
-
-   cd ../../contribs/spring/
    mvn install
 
+To run the test web application:
 
-You will also need to download the current trunk versions of Jena SDB and ARQ
-
-   svn co https://jena.svn.sourceforge.net/svnroot/jena/SDB/trunk SDB
-
-   ant jar
-
-   mvn -e install:install-file -Dfile=./sdb.jar -DgroupId=com.hp.hpl.jena \
-     -DartifactId=sdb -Dversion=1.0-SNAPSHOT -Dpackaging=jar
-
-   svn co https://jena.svn.sourceforge.net/svnroot/jena/ARQ/trunk ARQ
-
-   ant jar
-
-   mvn -e install:install-file -Dfile=./arq.jar -DgroupId=com.hp.hpl.jena -DartifactId=arq \
-      -Dversion=2.2-SNAPSHOT -Dpackaging=jar
-
-   mvn -e install:install-file -Dfile=./arq-extra.jar -DgroupId=com.hp.hpl.jena \
-      -DartifactId=arq-extra -Dversion=2.2-SNAPSHOT -Dpackaging=jar
-
-~ Mike (27/05/2008)
+   cd crew-web
+   mvn jetty:run
