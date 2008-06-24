@@ -56,25 +56,35 @@
                 </dependencies>
             </plugin>
 
+            <plugin>
+                <inherited>false</inherited>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>.</directory>
+                            <includes>
+                                <include>derby.log</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
 
         </plugins>
 
     </build>
     <repositories>
-        <!-- holds jena's SDB since its not provided centrally -->
+        <!-- HP Labs jena repo -->
         <repository>
             <id>jena.dev</id>
             <url>http://jena.hpl.hp.com/repo</url>
         </repository>
-        <repository>
-            <id>ilrt.org</id>
-            <url>http://maven.ilrt.bris.ac.uk</url>
-        </repository>
         <!-- java.net repo -->
         <repository>
             <id>java.net</id>
-            <url>http://download.java.net/maven/1</url>
-            <layout>legacy</layout>
+            <url>http://download.java.net/maven/2</url>
         </repository>
     </repositories>
     <reporting>
@@ -92,7 +102,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.4</version>
+            <version>${project.junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -105,34 +115,22 @@
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>jena</artifactId>
-            <version>2.5.6</version>
+            <version>${project.jena.version}</version>
         </dependency>
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>sdb</artifactId>
-            <version>1.1</version>
+            <version>${project.sdb.version}</version>
         </dependency>
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>arq</artifactId>
-            <version>2.3</version>
+            <version>${project.arq.version}</version>
         </dependency>
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>arq-extra</artifactId>
-            <version>2.3</version>
-        </dependency>
-
-        <!-- spring dependencies -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>2.5.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>2.5.4</version>
+            <version>${project.arq.version}</version>
         </dependency>
 
         <!-- jersey dependencies -->
@@ -140,19 +138,33 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey</artifactId>
-            <version>0.8-ea-SNAPSHOT</version>
+            <version>${project.jersey.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-spring</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.jersey.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-webmvc</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
-            <version>0.8-SNAPSHOT</version>
+            <version>0.8</version>
         </dependency>
 
         <dependency>
@@ -185,6 +197,22 @@
             <version>1.0-RC2</version>
         </dependency>
 
+        <!-- spring dependencies -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${project.spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${project.spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${project.spring.version}</version>
+        </dependency>
 
     </dependencies>
 
