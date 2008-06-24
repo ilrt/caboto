@@ -32,7 +32,7 @@
 package org.caboto.rest.resources;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.sun.jersey.spi.resource.Inject;
+import com.sun.jersey.spi.inject.Inject;
 import com.sun.jersey.spi.resource.PerRequest;
 import org.caboto.CabotoJsonSupport;
 import org.caboto.dao.AnnotationDao;
@@ -47,7 +47,6 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.validation.FieldError;
 
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.DELETE;
