@@ -6,7 +6,7 @@
     <groupId>org.caboto</groupId>
     <artifactId>caboto-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <name>Caboto Maven Webapp</name>
     <url>http://maven.apache.org</url>
     <modules>
