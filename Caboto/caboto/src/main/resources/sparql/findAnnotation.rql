@@ -20,4 +20,3 @@ WHERE {
         ?body ?p ?o
     } .
 }
-ORDER BY (xsd:dateTime(?created))
