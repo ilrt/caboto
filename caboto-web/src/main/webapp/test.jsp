@@ -42,7 +42,7 @@
         <%
             if (request.getUserPrincipal() != null && request.getUserPrincipal().getName() != null) {
         %>
-
+		<!-- java.net.URLEncoder.encode(request.getUserPrincipal().getName(), "UTF-8") -->
         <form id="annotation-comment-form"
               action="javascript:processForm('./annotation/person/<%=request.getUserPrincipal().getName()%>/public/')"
               method="post">
@@ -53,7 +53,7 @@
                 <textarea id="annotation-body" rows="5" cols="50"
                           name="description"></textarea><br/>
                 <input type="hidden" name="type" value="SimpleComment"/>
-                <input type="hidden" name="annotates" value="${event.id}"/>
+                <input type="hidden" name="annotates" value="http://www.google.com/"/>
                 <input id="annotation-submit" type="submit" name="submit" value="Submit"
                        disabled="disabled"/>
             </p>
