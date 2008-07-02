@@ -41,7 +41,7 @@
 
     <servlet-mapping>
         <servlet-name>Jersey Spring Integration</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/person</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -62,7 +62,7 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <security-constraint>
+    <!-- <security-constraint>
         <display-name>pp</display-name>
         <web-resource-collection>
             <web-resource-name>DropBox</web-resource-name>
@@ -83,7 +83,7 @@
     <security-role>
         <description>The standard role for users</description>
         <role-name>USERS</role-name>
-    </security-role>
+    </security-role> -->
 
 
 </web-app>
