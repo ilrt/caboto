@@ -24,9 +24,13 @@
 	</sec:http>
  
 	<sec:authentication-manager alias="authenticationManager" />
-
-	<sec:user-service id="userService">
+	
+	<sec:authentication-provider user-service-ref='myUserDetailsService'/>
+	
+	<bean id="myUserDetailsService" class="org.caboto.openid.UserDetailsService"/>
+	
+	<!-- <sec:user-service id="userService">
 		<sec:user name="http://www.jkg.in/openid/me" password="notused"
 			authorities="ROLE_SUPERVISOR,ROLE_USER" />
-	</sec:user-service>
+	</sec:user-service> -->
 </beans>
