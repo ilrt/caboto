@@ -38,12 +38,12 @@
             <param-value>org.caboto.rest</param-value>
         </init-param>
     </servlet>
-
+	
     <servlet-mapping>
         <servlet-name>Jersey Spring Integration</servlet-name>
-        <url-pattern>/person</url-pattern>
+        <url-pattern>/annotation/*</url-pattern>
     </servlet-mapping>
-
+	
     <servlet>
         <servlet-name>Caboto Startup Servlet</servlet-name>
         <servlet-class>org.caboto.servlet.CabotoStartupServlet</servlet-class>
