@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Test</title>
+    <script type="text/javascript" src="js/prototype.js"></script>
+    <script type="text/javascript" src="js/annotations.js"></script>
+    <meta name="caboto-annotation" content="http://chillyinside.com/blog/?p=48"/>
+    <link href="./styles/main.css" rel="stylesheet" type="text/css"/>
+</head>
+<body onload="initializeAnnotations()">
+
+<div id="container">
+
+    <div class="article">
+
+        <h2>Lorem ipsum dolor sit amet.</h2>
+
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Suspendisse vel mi vehicula
+            eros cursus consequat. Vestibulum non est. Curabitur interdum suscipit ligula. Quisque
+            imperdiet dui ac metus. Vestibulum laoreet gravida eros. Aliquam vitae lectus. Aenean
+            lacus tellus, accumsan pretium, varius at, fringilla vitae, sapien. Duis vitae sapien.
+            Vestibulum adipiscing magna. In nulla pede, interdum at, lacinia eget, adipiscing
+            hendrerit, turpis. Duis convallis ligula nec dui. Proin quis arcu in dui laoreet
+            vulputate. Suspendisse tristique varius dui. Donec ac felis at lorem feugiat
+            condimentum. Fusce vehicula eros. Cras erat. Vestibulum commodo ornare sem. In justo.
+            Praesent ac lacus ac felis sollicitudin commodo. Cum sociis natoque penatibus et magnis
+            dis parturient montes, nascetur ridiculus mus.</p>
+
+        <p>Nam adipiscing orci a tellus cursus convallis. Etiam quis felis. Sed et ante. Curabitur
+            consectetuer augue ac augue. Vivamus justo. Quisque semper. Donec lacus. Cum sociis
+            natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed enim.
+            Maecenas id augue. Nullam fermentum tellus a metus. Pellentesque habitant morbi
+            tristique senectus et netus et malesuada fames ac turpis egestas. Etiam lectus.</p>
+
+    </div>
+
+    <div class="annotations">
+
+        <fieldset>
+            <legend>Annotations</legend>
+            <div id="annotations-results"><p>Sorry, you need a JavaScript enabled browser.</p></div>
+        </fieldset>
+
+        <p>Add your own annotation...</p>
+
+        <form id="annotation-comment-form"
+              action="javascript:processForm('./annotation/person/MikeJ/public/')"
+              method="post">
+            <p>
+                <label><strong>Title:</strong></label><br/>
+                <input type="text" name="title" size="50"/><br/>
+                <label><strong>Body:</strong></label><br/>
+                <textarea rows="5" cols="50" name="description"></textarea><br/>
+                <input type="hidden" name="type" value="SimpleComment"/>
+                <input type="hidden" name="annotates" value="http://chillyinside.com/blog/?p=48"/>
+                <input id="annotation-submit" type="submit" name="submit" value="Submit"
+                       disabled="disabled"/>
+            </p>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>
