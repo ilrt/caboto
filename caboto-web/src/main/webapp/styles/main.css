@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 76%;
+    padding: 0px;
+    margin: 0px;
+}
+
+h1 {
+    font-size: 1.5em;
+}
+
+h2 {
+    font-size: 1.4em;
+}
+
+h3 {
+    font-size: 1.3em;
+}
+
+h4 {
+    font-size: 1.2em;
+}
+
+h5 {
+    font-size: 1.1em;
+}
+
+h6 {
+    font-size: 1em;
+}
+
+.container {
+    width: 60em;
+}
+
+.article, .annotations {
+    margin: 0.3em;
+    padding: 0.3em;
+    width: 60em;
+}
+
+.annotation-entry {
+    padding-top: 0.4em;
+    padding-bottom: 1.5em;
+    clear: both;
+}
+
+.annotation-entry-title {
+    padding: 0.4em;
+    background-color: bisque;
+    font-weight: bold;
+    border-top: darkgray solid 1px;
+    border-bottom: darkgray solid 1px;
+}
+
+.annotation-entry-description {
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+}
+
+.annotation-entry-created {
+    font-style: italic;
+    color: darkcyan;
+    float: left;
+}
+
+.fieldSet {
+    margin-top: 1em;
+}
+
+.fieldSet legend {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+#annotation-messages {
+    font-style: italic;
+    font-wight: bold;
+    color: red;
+}
+
+.annotation-body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1em;
+}
+
+
