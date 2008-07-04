@@ -1,8 +1,11 @@
 var META_TAG_CABOTO = "caboto-annotation";
 var APPLICATION_JSON = "application/json"
+var ANNO_BASE;
 
 function initializeAnnotations() {
-
+	
+	ANNO_BASE = findBase();
+	
      // hides the js support message..
      displayMessage("<p>Loading annotations..</p>");
 
@@ -13,6 +16,21 @@ function initializeAnnotations() {
      findAnnotations();
 }
 
+/*
+ * Find where this script came from
+ */
+
+function findBase() {
+	var scripts = document.getElementsByTagName("SCRIPT");
+	for (var i = 0; i < scripts.length; i++) {
+		var aSrc = scripts[i].getAttribute("src");
+		if (aSrc != null && 
+				aSrc.search(/js\/annotations.js$/) != -1) {
+			return aSrc.replace(/js\/annotations.js$/, "");
+		}
+	}
+	return "";
+}
 
 /*
      Ajax call - find annotations that are about the "uri".
@@ -33,7 +51,7 @@ function findAnnotations() {
      }
 
      if (annoUri.length > 0) {
-         new Ajax.Request('./annotation/about/', {
+         new Ajax.Request(ANNO_BASE + './annotation/about/', {
              method:'get',
              parameters: createParams(annoUri),
              requestHeaders: {Accept: APPLICATION_JSON},
@@ -194,6 +212,8 @@ function parseAuthor(author) {
 function processForm(uri) {
 
      var message = "";
+     
+     uri = ANNO_BASE + uri;
 
      if (!Form.Element.present("annotation-title")) {
          message += "You need to provide a title. ";
