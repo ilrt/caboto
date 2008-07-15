@@ -259,13 +259,15 @@ function processForm(uri) {
 }
 
 function clearForm() {
-
      if (document.getElementById('annotation-comment-form')) {
-         Form.Element.enable('annotation-submit');
-         Form.Element.clear('annotation-title');
-         Form.Element.clear('annotation-body');
+         if (getCookie("uid")) {
+        	 Form.enable('annotation-comment-form');
+        	 Form.Element.clear('annotation-title');
+        	 Form.Element.clear('annotation-body');
+        	 Form.disable('openid-form');
+        	 $('openid-form').setStyle('display: none;');
+         }
      }
-
 }
 
 function deleteAnnotation(uri) {
