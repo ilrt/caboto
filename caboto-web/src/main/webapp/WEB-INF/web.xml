@@ -16,7 +16,7 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-
+	
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/spring/caboto-jaxrs-resources.xml</param-value>
@@ -84,6 +84,5 @@
         <description>The standard role for users</description>
         <role-name>USERS</role-name>
     </security-role> -->
-
 
 </web-app>

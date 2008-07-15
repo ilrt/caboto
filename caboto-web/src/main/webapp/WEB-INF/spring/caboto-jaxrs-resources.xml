@@ -19,8 +19,9 @@
     <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport" />
 	
 	<sec:http>
-		<sec:intercept-url pattern="/**" access="ROLE_USER" />
+		<sec:intercept-url pattern="/annotation/*" access="ROLE_USER" />
 		<sec:openid-login />
+		<sec:logout/>
 	</sec:http>
  
 	<sec:authentication-manager alias="authenticationManager" />
@@ -28,9 +29,4 @@
 	<sec:authentication-provider user-service-ref='myUserDetailsService'/>
 	
 	<bean id="myUserDetailsService" class="org.caboto.openid.UserDetailsService"/>
-	
-	<!-- <sec:user-service id="userService">
-		<sec:user name="http://www.jkg.in/openid/me" password="notused"
-			authorities="ROLE_SUPERVISOR,ROLE_USER" />
-	</sec:user-service> -->
 </beans>
