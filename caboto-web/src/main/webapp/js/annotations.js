@@ -265,7 +265,6 @@ function clearForm() {
         	 Form.Element.clear('annotation-title');
         	 Form.Element.clear('annotation-body');
         	 Form.disable('openid-form');
-        	 $('openid-form').setStyle('display: none;');
          }
      }
 }

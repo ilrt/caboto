@@ -23,11 +23,17 @@
     <title>Testing annotations</title>
     <script type="text/javascript" src="./js/prototype.js"></script>
     <script type="text/javascript" src="./js/annotations.js"></script>
+
 	<style type="text/css" media="screen">
-		@import "./style.css";
+<% 
+    String extStyle = request.getParameter("style");
+	if ((extStyle != null) && !extStyle.contains("\"")) // simple check for naughtiness
+	{
+		out.print("		@import \""); out.print(extStyle); out.println("\";");
+	}
+%>		
 		input.oid {
    			background: url(http://p-stat.livejournal.com/img/openid-inputicon.gif) no-repeat;
-   			background-color: #fff;
    			background-position: 0 50%;
    			padding-left: 18px;
  		}
