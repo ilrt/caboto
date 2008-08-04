@@ -36,11 +36,11 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
+ * <p>A generic utility class with static methods that are used across a number of classes.</p>
  *
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id: CabotoUtility.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ */
 public final class CabotoUtility {
 
 
@@ -48,6 +48,12 @@ public final class CabotoUtility {
     }
 
 
+    /**
+     * <p>Generates a unique URI based on a UUID. The base of the URI needs to be provided.</p>
+     *
+     * @param graphId the base of the URI.
+     * @return a unique URI based on a UUID.
+     */
     public static String generateId(final String graphId) {
 
         String id = UUID.randomUUID().toString();
@@ -59,7 +65,12 @@ public final class CabotoUtility {
         return graphId + id;
     }
 
-
+    /**
+     * <p>Parses a date to a format that is a valid XSD:dateTime.</p>
+     *
+     * @param date the date object to be parsed.
+     * @return the date represented as a valid XSD:dateTime.
+     */
     public static String parseDate(final Date date) {
 
         String temp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
