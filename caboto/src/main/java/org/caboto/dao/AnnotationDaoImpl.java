@@ -46,6 +46,7 @@ import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.caboto.CabotoUtility;
+import org.caboto.dataset.DatasetFactory;
 import org.caboto.domain.Annotation;
 import org.caboto.profile.Profile;
 import org.caboto.profile.ProfileEntry;
@@ -67,12 +68,11 @@ import java.util.Date;
  **/
 public final class AnnotationDaoImpl implements AnnotationDao {
 
-    public AnnotationDaoImpl(final String sdbConfigFile,
-                             final ProfileRepository profileRepository) {
-        this.sdbConfigFile = sdbConfigFile;
+    public AnnotationDaoImpl(final ProfileRepository profileRepository,
+                             final DatasetFactory datasetFactory) {
         this.profileRepository = profileRepository;
         findAnnotationSparql = loadSparqlFromFile(findAnnotation);
-        initStore();
+        this.datasetFactory = datasetFactory;
     }
 
     public void addAnnotation(final Annotation annotation) throws AnnotationDaoException {
@@ -88,7 +88,8 @@ public final class AnnotationDaoImpl implements AnnotationDao {
             }
 
             // obtain the named graph (model)
-            Model model = SDBFactory.connectNamedModel(store, annotation.getGraphId());
+            //Model model = SDBFactory.connectNamedModel(store, annotation.getGraphId());
+            Model model = datasetFactory.create().getNamedModel(annotation.getGraphId());
 
             model.setNsPrefix("caboto", "http://caboto.org/schema/annotations#");
             model.setNsPrefix("annotea", "http://www.w3.org/2000/10/annotation-ns#");
@@ -165,7 +166,8 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         String graph = id.substring(0, (id.lastIndexOf('/') + 1));
 
         // obtain the dataset
-        Dataset dataset = SDBFactory.connectDataset(store);
+        //Dataset dataset = SDBFactory.connectDataset(store);
+        Dataset dataset = datasetFactory.create();
 
         // create bindings
         QuerySolutionMap initialBindings = new QuerySolutionMap();
@@ -185,7 +187,7 @@ public final class AnnotationDaoImpl implements AnnotationDao {
     public Model findAnnotations(final String about) throws AnnotationDaoException {
 
         // obtain the dataset
-        Dataset dataset = SDBFactory.connectDataset(store);
+        Dataset dataset = datasetFactory.create();
 
         // create bindings
         QuerySolutionMap initialBindings = new QuerySolutionMap();
@@ -207,7 +209,8 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         // extract the graph from the id
         String graph = id.substring(0, (id.lastIndexOf('/') + 1));
 
-        Dataset dataset = SDBFactory.connectDataset(store);
+        //Dataset dataset = SDBFactory.connectDataset(store);
+        Dataset dataset = datasetFactory.create();
 
         Model model = dataset.getNamedModel(graph);
 
@@ -239,16 +242,8 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         return buffer.toString();
     }
 
-
-    private void initStore() {
-        String storePath = this.getClass().getResource(sdbConfigFile).getPath();
-        store = SDBFactory.connectStore(storePath);
-    }
-
-
-    private Store store;
     private ProfileRepository profileRepository;
     private String findAnnotationSparql;
     private String findAnnotation = "/sparql/findAnnotation.rql";
-    private String sdbConfigFile;
+    private DatasetFactory datasetFactory;
 }
