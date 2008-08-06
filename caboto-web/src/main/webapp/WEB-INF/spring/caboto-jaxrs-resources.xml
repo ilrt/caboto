@@ -20,6 +20,7 @@
 	
 	<sec:http>
 		<sec:intercept-url pattern="/annotation/*" access="ROLE_USER" />
+		<sec:intercept-url pattern="/login/**" access="ROLE_USER" />
 		<sec:openid-login />
 		<sec:logout/>
 	</sec:http>
