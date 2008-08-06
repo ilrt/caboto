@@ -51,6 +51,9 @@ function findAnnotations() {
      }
 
      if (annoUri.length > 0) {
+         
+		document.getElementById("annotation-target").value = annoUri ;
+		
          new Ajax.Request(ANNO_BASE + './annotation/about/', {
              method:'get',
              parameters: createParams(annoUri),

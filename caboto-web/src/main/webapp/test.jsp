@@ -19,7 +19,15 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="caboto-annotation" content="http://www.google.com/"/>
+<%
+	String target = request.getParameter("target");
+	if ((target != null) && !target.contains("\"")) // simple check for naughtiness
+	{
+    	out.print("	<meta name=\"caboto-annotation\" content=\"");
+		out.print(target);
+		out.print("\"/>\n");
+	}
+%>
     <title>Testing annotations</title>
     <script type="text/javascript" src="./js/prototype.js"></script>
     <script type="text/javascript" src="./js/annotations.js"></script>
@@ -75,7 +83,7 @@
                 <textarea id="annotation-body" rows="5" cols="50"
                           name="description" disabled="disabled"></textarea><br/>
                 <input type="hidden" name="type" value="SimpleComment"/>
-                <input type="hidden" name="annotates" value="http://www.google.com/"/>
+                <input id="annotation-target" type="hidden" name="annotates" value=""/>
                 <input id="annotation-submit" type="submit" name="submit" value="Submit"
                        disabled="disabled"/>
             </p>
