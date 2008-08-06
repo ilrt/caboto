@@ -33,34 +33,61 @@ package org.caboto.dao;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sdb.SDBFactory;
-import com.hp.hpl.jena.sdb.Store;
-import com.hp.hpl.jena.sdb.store.StoreFormatter;
 import junit.framework.TestCase;
+import org.apache.commons.configuration.ConfigurationException;
+import org.caboto.store.StoreInitializer;
+import org.caboto.dataset.DatasetFactory;
+import org.caboto.dataset.DatasetFactoryDefaultImpl;
 import org.caboto.domain.Annotation;
 import org.caboto.profile.MockProfileRepositoryImpl;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
- *
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id: AnnotationDaoImplTest.java 183 2008-05-30 14:24:23Z mike.a.jones $
- *
- **/
+ */
 public class AnnotationDaoImplTest extends TestCase {
 
+    @Before
+    public void setUp() throws ConfigurationException {
 
-    public void setUp() {
-        String storePath = this.getClass().getResource(sdbConfigFile).getPath();
-        store = SDBFactory.connectStore(storePath);
-        StoreFormatter storeFormatter = store.getTableFormatter();
-        storeFormatter.format();
-        annotationDao = new AnnotationDaoImpl(sdbConfigFile, new MockProfileRepositoryImpl());
+        // initialize the store
+        StoreInitializer storeInitializer = new StoreInitializer(formatConfigFile,
+                formatPropertyKey, sdbConfigFile);
+        storeInitializer.initializeStore();
+
+        datasetFactory = new DatasetFactoryDefaultImpl(sdbConfigFile);
+
+        annotationDao = new AnnotationDaoImpl(new MockProfileRepositoryImpl(), datasetFactory);
     }
 
+    @After
+    public void tearDown() throws IOException {
+
+        // ensure that the formatter configuration is reset after each test, i.e "true" is
+        // replaced with "false" ... this ensures that the store is reformatted at the start
+        // of each test and thus deletes data that was left after the previous test.
+
+        String fullPath = getClass().getResource(formatConfigFile).getPath();
+        Properties props = new Properties();
+        props.load(new FileInputStream(new File(fullPath)));
+        props.setProperty(formatPropertyKey, "false");
+        props.store(new FileOutputStream(new File(fullPath)), null);
+
+    }
+
+    @Test
     public void testAddAnnotation() {
 
         Annotation annotation = new Annotation();
@@ -81,7 +108,7 @@ public class AnnotationDaoImplTest extends TestCase {
             assertTrue("There should be an id", annotation.getId() != null);
             assertTrue("There should be a creation data", annotation.getCreated() != null);
 
-            Model model = SDBFactory.connectNamedModel(store, annotation.getGraphId());
+            Model model = datasetFactory.create().getNamedModel(annotation.getGraphId());
 
             assertTrue("There should be statements in the model", !model.isEmpty());
 
@@ -91,14 +118,15 @@ public class AnnotationDaoImplTest extends TestCase {
 
     }
 
+    @Test
     public void testFindAnnotation() {
 
         try {
 
             // add some test data to the model
             InputStream is = this.getClass().getResourceAsStream("/test-graph1.rdf");
-            Model model = SDBFactory.connectNamedModel(store,
-                    "http://caboto.org/person/mikej/public/");
+            Model model = datasetFactory.create()
+                    .getNamedModel("http://caboto.org/person/mikej/public/");
             model.read(is, null);
 
             Resource r = annotationDao.findAnnotation("http://caboto.org/person/mikej/public/" +
@@ -113,18 +141,18 @@ public class AnnotationDaoImplTest extends TestCase {
         }
     }
 
+    @Test
     public void testFindAnnotations() {
         try {
 
-            SDBFactory.connectNamedModel(store, "http://caboto.org/person/mikej/public/")
+            datasetFactory.create().getNamedModel("http://caboto.org/person/mikej/public/")
                     .read(this.getClass().getResourceAsStream("/test-graph1.rdf"), null);
 
-            SDBFactory.connectNamedModel(store, "http://caboto.org/person/mikel/public/")
+            datasetFactory.create().getNamedModel("http://caboto.org/person/mikel/public/")
                     .read(this.getClass().getResourceAsStream("/test-graph2.rdf"), null);
 
             Model m = annotationDao.findAnnotations("http://chillyinside.com/blog/?p=45");
 
-           //m.write(System.out);
             assertEquals("Unexpected size", 14, m.size());
 
         } catch (AnnotationDaoException e) {
@@ -134,11 +162,13 @@ public class AnnotationDaoImplTest extends TestCase {
 
     }
 
+    @Test
     public void testDeleteAnnotation() {
 
         try {
 
-            Model m = SDBFactory.connectNamedModel(store, "http://caboto.org/person/mikej/public/")
+            Model m = datasetFactory.create()
+                    .getNamedModel("http://caboto.org/person/mikej/public/")
                     .read(this.getClass().getResourceAsStream("/test-graph1.rdf"), null);
 
             assertEquals("The start size is incorrect", 14, m.size());
@@ -157,8 +187,9 @@ public class AnnotationDaoImplTest extends TestCase {
         }
     }
 
-
-    private Store store;
     private AnnotationDao annotationDao;
     private String sdbConfigFile = "/sdb.ttl";
+    private String formatConfigFile = "/startup.properties";
+    private String formatPropertyKey = "sdb.store.formatted";
+    DatasetFactory datasetFactory;
 }
