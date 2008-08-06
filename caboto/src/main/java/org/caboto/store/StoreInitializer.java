@@ -1,10 +1,9 @@
 package org.caboto.store;
 
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
-import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.SDBFactory;
+import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.store.StoreFormatter;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
 /**
  * This class ensures that the Caboto store is correctly initiated.
@@ -26,10 +25,9 @@ public class StoreInitializer {
      * @param formatPropertyKey the property name used to hold a "true" or "false" value for
      *                          indicating if the database has been formatted.
      * @param sdbConfigFile     a configuration file that holds the database details.
-     * @throws ConfigurationException
      */
     public StoreInitializer(String formatConfigFile, String formatPropertyKey,
-                            String sdbConfigFile) throws ConfigurationException {
+                            String sdbConfigFile) {
         this.formatConfigFile = formatConfigFile;
         this.formatPropertyKey = formatPropertyKey;
         this.sdbConfigFile = sdbConfigFile;
@@ -65,7 +63,7 @@ public class StoreInitializer {
 
     }
 
-    private String formatConfigFile;
-    private String formatPropertyKey;
-    private String sdbConfigFile;
+    private final String formatConfigFile;
+    private final String formatPropertyKey;
+    private final String sdbConfigFile;
 }

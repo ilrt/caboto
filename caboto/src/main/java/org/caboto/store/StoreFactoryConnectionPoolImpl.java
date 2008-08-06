@@ -5,7 +5,6 @@ import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
 import com.hp.hpl.jena.sdb.sql.SDBConnection;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
@@ -15,8 +14,7 @@ import java.sql.SQLException;
  */
 public class StoreFactoryConnectionPoolImpl extends AbstractStoreFactory implements StoreFactory {
 
-    StoreFactoryConnectionPoolImpl(String sdbConfigFile, DataSource dataSource)
-            throws NamingException {
+    StoreFactoryConnectionPoolImpl(String sdbConfigFile, DataSource dataSource) {
 
         this.dataSource = dataSource;
 
@@ -33,6 +31,6 @@ public class StoreFactoryConnectionPoolImpl extends AbstractStoreFactory impleme
         return SDBFactory.connectStore(conn, storeDesc);
     }
 
-    private DataSource dataSource;
-    private StoreDesc storeDesc;
+    private final DataSource dataSource;
+    private final StoreDesc storeDesc;
 }
