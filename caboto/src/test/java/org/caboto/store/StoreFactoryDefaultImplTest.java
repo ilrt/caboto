@@ -1,31 +1,29 @@
 package org.caboto.store;
 
-import junit.framework.TestCase;
+import com.hp.hpl.jena.sdb.Store;
 import org.junit.Before;
 import org.junit.Test;
-import org.apache.commons.configuration.ConfigurationException;
-import com.hp.hpl.jena.sdb.Store;
 
 /**
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id$
  */
-public class StoreFactoryDefaultImplTest extends TestCase {
+public class StoreFactoryDefaultImplTest extends AbstractStoreFactoryTest {
 
     @Before
-    public void setUp() throws ConfigurationException {
+    public void setUp() throws Exception {
 
-        // format the store
-        StoreInitializer storeInitializer = new StoreInitializer(formatConfigFile,
-                formatPropertyKey, sdbConfigFile);
-        storeInitializer.initializeStore();
+        // clean up the database
+        super.setUp();
+
+       storeFactory = new StoreFactoryDefaultImpl(sdbConfigFile);
+       store = storeFactory.create();
+
     }
+
 
     @Test
     public void testCreateStore() throws Exception {
-
-        StoreFactory storeFactory = new StoreFactoryDefaultImpl(sdbConfigFile);
-        Store store = storeFactory.create();
 
         assertEquals("The database should be derby", "derby", store.getDatabaseType().getName());
         assertNotNull("The connection to the database should not be null", store.getConnection());
@@ -33,9 +31,6 @@ public class StoreFactoryDefaultImplTest extends TestCase {
 
     @Test
     public void testDestroyStore() throws Exception {
-
-        StoreFactory storeFactory = new StoreFactoryDefaultImpl(sdbConfigFile);
-        Store store = storeFactory.create();
 
         assertNotNull("The store should not be null", store);
 
@@ -48,7 +43,7 @@ public class StoreFactoryDefaultImplTest extends TestCase {
 
     }
 
-    private String sdbConfigFile = "/sdb.ttl";
-    private String formatConfigFile = "/startup.properties";
-    private String formatPropertyKey = "sdb.store.formatted";
+    private StoreFactory storeFactory;
+    private Store store;
+
 }

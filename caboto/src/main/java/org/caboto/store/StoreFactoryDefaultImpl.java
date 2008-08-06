@@ -18,5 +18,5 @@ public class StoreFactoryDefaultImpl extends AbstractStoreFactory implements Sto
         return SDBFactory.connectStore(assemblerFilePath);
     }
 
-    String assemblerFilePath;
+    private final String assemblerFilePath;
 }
