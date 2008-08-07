@@ -25,10 +25,15 @@ public class StoreFactoryConnectionPoolImpl extends AbstractStoreFactory impleme
         storeDesc = StoreDesc.read(assemblerFilePath);
     }
 
-    public Store create() throws SQLException {
+    public Store create() {
 
-        SDBConnection conn = SDBFactory.createConnection(dataSource.getConnection());
-        return SDBFactory.connectStore(conn, storeDesc);
+        try {
+            SDBConnection conn = SDBFactory.createConnection(dataSource.getConnection());
+            return SDBFactory.connectStore(conn, storeDesc);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private final DataSource dataSource;

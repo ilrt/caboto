@@ -33,13 +33,15 @@ package org.caboto.dao;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.sdb.Store;
+import com.hp.hpl.jena.sdb.SDBFactory;
 import junit.framework.TestCase;
 import org.apache.commons.configuration.ConfigurationException;
-import org.caboto.store.StoreInitializer;
-import org.caboto.dataset.DatasetFactory;
-import org.caboto.dataset.DatasetFactoryDefaultImpl;
 import org.caboto.domain.Annotation;
 import org.caboto.profile.MockProfileRepositoryImpl;
+import org.caboto.store.StoreFactory;
+import org.caboto.store.StoreFactoryDefaultImpl;
+import org.caboto.store.StoreInitializer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,9 +69,10 @@ public class AnnotationDaoImplTest extends TestCase {
                 formatPropertyKey, sdbConfigFile);
         storeInitializer.initializeStore();
 
-        datasetFactory = new DatasetFactoryDefaultImpl(sdbConfigFile);
+        storeFactory = new StoreFactoryDefaultImpl(sdbConfigFile);
+        store = storeFactory.create();
 
-        annotationDao = new AnnotationDaoImpl(new MockProfileRepositoryImpl(), datasetFactory);
+        annotationDao = new AnnotationDaoImpl(new MockProfileRepositoryImpl(), storeFactory);
     }
 
     @After
@@ -84,6 +87,8 @@ public class AnnotationDaoImplTest extends TestCase {
         props.load(new FileInputStream(new File(fullPath)));
         props.setProperty(formatPropertyKey, "false");
         props.store(new FileOutputStream(new File(fullPath)), null);
+
+        storeFactory.destroy(store);
 
     }
 
@@ -102,62 +107,47 @@ public class AnnotationDaoImplTest extends TestCase {
 
         annotation.setBody(map);
 
-        try {
-            annotationDao.addAnnotation(annotation);
 
-            assertTrue("There should be an id", annotation.getId() != null);
-            assertTrue("There should be a creation data", annotation.getCreated() != null);
+        annotationDao.addAnnotation(annotation);
 
-            Model model = datasetFactory.create().getNamedModel(annotation.getGraphId());
+        assertTrue("There should be an id", annotation.getId() != null);
+        assertTrue("There should be a creation data", annotation.getCreated() != null);
 
-            assertTrue("There should be statements in the model", !model.isEmpty());
+        Model model = SDBFactory.connectDataset(store).getNamedModel(annotation.getGraphId());
 
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-        }
+        assertTrue("There should be statements in the model", !model.isEmpty());
 
     }
 
     @Test
     public void testFindAnnotation() {
 
-        try {
+        // add some test data to the model
+        InputStream is = this.getClass().getResourceAsStream("/test-graph1.rdf");
+        Model model = SDBFactory.connectDataset(store)
+                .getNamedModel("http://caboto.org/person/mikej/public/");
+        model.read(is, null);
 
-            // add some test data to the model
-            InputStream is = this.getClass().getResourceAsStream("/test-graph1.rdf");
-            Model model = datasetFactory.create()
-                    .getNamedModel("http://caboto.org/person/mikej/public/");
-            model.read(is, null);
+        Resource r = annotationDao.findAnnotation("http://caboto.org/person/mikej/public/" +
+                "e609962d-47ee-4248-9fcc-2c9f6256c330");
 
-            Resource r = annotationDao.findAnnotation("http://caboto.org/person/mikej/public/" +
-                    "e609962d-47ee-4248-9fcc-2c9f6256c330");
-
-            assertNotNull("The resource from the construct is null", r);
-            assertEquals("Unexpected model size returned from the construct", 7,
-                    r.getModel().size());
-
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-        }
+        assertNotNull("The resource from the construct is null", r);
+        assertEquals("Unexpected model size returned from the construct", 7,
+                r.getModel().size());
     }
 
     @Test
     public void testFindAnnotations() {
-        try {
 
-            datasetFactory.create().getNamedModel("http://caboto.org/person/mikej/public/")
-                    .read(this.getClass().getResourceAsStream("/test-graph1.rdf"), null);
+        SDBFactory.connectDataset(store).getNamedModel("http://caboto.org/person/mikej/public/")
+                .read(this.getClass().getResourceAsStream("/test-graph1.rdf"), null);
 
-            datasetFactory.create().getNamedModel("http://caboto.org/person/mikel/public/")
-                    .read(this.getClass().getResourceAsStream("/test-graph2.rdf"), null);
+        SDBFactory.connectDataset(store).getNamedModel("http://caboto.org/person/mikel/public/")
+                .read(this.getClass().getResourceAsStream("/test-graph2.rdf"), null);
 
-            Model m = annotationDao.findAnnotations("http://chillyinside.com/blog/?p=45");
+        Model m = annotationDao.findAnnotations("http://chillyinside.com/blog/?p=45");
 
-            assertEquals("Unexpected size", 14, m.size());
-
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-        }
+        assertEquals("Unexpected size", 14, m.size());
 
 
     }
@@ -165,31 +155,29 @@ public class AnnotationDaoImplTest extends TestCase {
     @Test
     public void testDeleteAnnotation() {
 
-        try {
 
-            Model m = datasetFactory.create()
-                    .getNamedModel("http://caboto.org/person/mikej/public/")
-                    .read(this.getClass().getResourceAsStream("/test-graph1.rdf"), null);
+        Model m = SDBFactory.connectDataset(store)
+                .getNamedModel("http://caboto.org/person/mikej/public/")
+                .read(this.getClass().getResourceAsStream("/test-graph1.rdf"), null);
 
-            assertEquals("The start size is incorrect", 14, m.size());
+        assertEquals("The start size is incorrect", 14, m.size());
 
-            Resource resource = annotationDao.findAnnotation("http://caboto.org/person/mikej/" +
-                    "public/e609962d-47ee-4248-9fcc-2c9f6256c330");
+        Resource resource = annotationDao.findAnnotation("http://caboto.org/person/mikej/" +
+                "public/e609962d-47ee-4248-9fcc-2c9f6256c330");
 
-            assertTrue("Unable to find resorce to delete", !resource.getModel().isEmpty());
+        assertTrue("Unable to find resorce to delete", !resource.getModel().isEmpty());
 
-            annotationDao.deleteAnnotation(resource);
+        annotationDao.deleteAnnotation(resource);
 
-            assertEquals("The resource was not deleted", 7, m.size());
+        assertEquals("The resource was not deleted", 7, m.size());
 
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-        }
+
     }
 
     private AnnotationDao annotationDao;
-    private String sdbConfigFile = "/sdb.ttl";
-    private String formatConfigFile = "/startup.properties";
-    private String formatPropertyKey = "sdb.store.formatted";
-    DatasetFactory datasetFactory;
+    private final String sdbConfigFile = "/sdb.ttl";
+    private final String formatConfigFile = "/startup.properties";
+    private final String formatPropertyKey = "sdb.store.formatted";
+    private StoreFactory storeFactory;
+    private Store store;
 }

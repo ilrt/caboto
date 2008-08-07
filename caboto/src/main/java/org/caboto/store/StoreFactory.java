@@ -9,8 +9,8 @@ import com.hp.hpl.jena.sdb.Store;
  */
 public interface StoreFactory {
 
-    Store create() throws Exception;
+    Store create();
 
-    void destroy(Store store) throws Exception;
+    void destroy(Store store);
 
 }

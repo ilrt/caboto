@@ -14,7 +14,7 @@ public class StoreFactoryDefaultImpl extends AbstractStoreFactory implements Sto
         assemblerFilePath = this.getClass().getResource(sdbConfigFile).getPath();
     }
 
-    public Store create() throws Exception {
+    public Store create() {
         return SDBFactory.connectStore(assemblerFilePath);
     }
 

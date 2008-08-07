@@ -9,7 +9,7 @@ import com.hp.hpl.jena.sdb.Store;
  */
 public abstract class AbstractStoreFactory implements StoreFactory {
 
-    public abstract Store create() throws Exception;
+    public abstract Store create();
 
     public void destroy(Store store) {
 
