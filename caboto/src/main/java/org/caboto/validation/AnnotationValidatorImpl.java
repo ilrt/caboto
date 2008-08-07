@@ -44,11 +44,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id: AnnotationValidatorImpl.java 181 2008-05-30 13:54:34Z mike.a.jones $
- *
- **/
+ */
 public final class AnnotationValidatorImpl implements Validator {
 
     public AnnotationValidatorImpl(final ProfileRepository profileRepository) {
@@ -61,110 +59,127 @@ public final class AnnotationValidatorImpl implements Validator {
 
     public void validate(final Object o, final Errors errors) {
 
-        // get the object we need to validate
-        Annotation annotation = (Annotation) o;
-
-        // find the profile for the type
-        String type = annotation.getType();
-
-        Profile profile = null;
-
         try {
-            profile = profileRepository.findProfile(type);
 
-        } catch (ProfileRepositoryException e) {
-            e.printStackTrace();
-        }
+            // get the object we need to validate
+            Annotation annotation = (Annotation) o;
 
-        // have we found the profile
-        if (profile == null) {
+            // only proceed if we have a chance of determining the type
+            if (determinableType(annotation, errors)) {
 
-            errors.reject("annotation.type.unkown", new String[]{type}, "");
+                Profile profile = profileRepository.findProfile(annotation.getType());
 
-        } else {
+                // have we found the profile
+                if (profile == null) {
 
-            // prototype appends a _method to the parameter - we can ignore this
-            if (annotation.getBody().get("_method") != null) {
-                annotation.getBody().remove("_method");
-            }
+                    errors.reject("annotation.type.unkown", new String[]{annotation.getType()}, "");
 
-            if (annotation.getBody().get("_") != null) {
-                annotation.getBody().remove("_");
-            }
+                } else {
 
-            // --- Validate values that are provided by the REST interface
+                    // prototype appends a _method to the parameter - we can ignore this
+                    if (annotation.getBody().get("_method") != null) {
+                        annotation.getBody().remove("_method");
+                    }
 
-            // (1) check that we have an author
+                    if (annotation.getBody().get("_") != null) {
+                        annotation.getBody().remove("_");
+                    }
 
-            if (annotation.getAuthor() == null || annotation.getAuthor().length() == 0) {
-                errors.rejectValue("body", "annotation.author", "");
-            }
+                    // --- Validate values that are provided by the REST interface
 
-            if (annotation.getAnnotates() == null || annotation.getAnnotates().length() == 0) {
-                errors.rejectValue("body", "annotation.annotates", "");
-            }
+                    // (1) check that we have an author
 
-            // --- Validate the values body Map
+                    if (annotation.getAuthor() == null || annotation.getAuthor().length() == 0) {
+                        errors.rejectValue("body", "annotation.author", "");
+                    }
 
-            // (1) check that we have the expected number of entries in the Map
+                    if (annotation.getAnnotates() == null || annotation.getAnnotates().length() == 0) {
+                        errors.rejectValue("body", "annotation.annotates", "");
+                    }
 
-            if (annotation.getBody().size() != profile.getProfileEntries().size()) {
-                errors.rejectValue("body", "annotation.body.missmatch",
-                        new Integer[]{profile.getProfileEntries().size(),
-                                annotation.getBody().size()}, "");
-            }
+                    // --- Validate the values body Map
 
-            // (2) check that the keys sent in the Map match the ids in the profile entries
+                    // (1) check that we have the expected number of entries in the Map
+
+                    if (annotation.getBody().size() != profile.getProfileEntries().size()) {
+                        errors.rejectValue("body", "annotation.body.missmatch",
+                                new Integer[]{profile.getProfileEntries().size(),
+                                        annotation.getBody().size()}, "");
+                    }
+
+                    // (2) check that the keys sent in the Map match the ids in the profile entries
 
 
-            Set<String> bodyKeys = annotation.getBody().keySet();
+                    Set<String> bodyKeys = annotation.getBody().keySet();
 
-            //for (String key : bodyKeys) {
-            //    System.out.println("> " + key);
-            //}
+                    //for (String key : bodyKeys) {
+                    //    System.out.println("> " + key);
+                    //}
 
-            //System.out.println("<<>>: " + annotation.getBody().get("_"));
+                    //System.out.println("<<>>: " + annotation.getBody().get("_"));
 
-            Set<String> bodyKeysCopy = new HashSet<String>(); // make a deep copy of the key set
-            for (String key : bodyKeys) {
-                bodyKeysCopy.add(key);
-            }
+                    Set<String> bodyKeysCopy = new HashSet<String>(); // make a deep copy of the key set
+                    for (String key : bodyKeys) {
+                        bodyKeysCopy.add(key);
+                    }
 
-            Set<String> profileKeys = new HashSet<String>(); // create a set of profile entry Ids
+                    Set<String> profileKeys = new HashSet<String>(); // create a set of profile entry Ids
 
-            List<ProfileEntry> profiles = profile.getProfileEntries();
+                    List<ProfileEntry> profiles = profile.getProfileEntries();
 
-            for (ProfileEntry profileEntry : profiles) {
-                profileKeys.add(profileEntry.getId());
-            }
+                    for (ProfileEntry profileEntry : profiles) {
+                        profileKeys.add(profileEntry.getId());
+                    }
 
-            bodyKeysCopy.removeAll(profileKeys); // remainder keys are unexpected
+                    bodyKeysCopy.removeAll(profileKeys); // remainder keys are unexpected
 
-            if (bodyKeysCopy.size() > 0) { // generate error messages
+                    if (bodyKeysCopy.size() > 0) { // generate error messages
 
-                StringBuilder msg = new StringBuilder();
-                for (String val : bodyKeysCopy) {
-                    msg.append(val).append("; ");
-                }
+                        StringBuilder msg = new StringBuilder();
+                        for (String val : bodyKeysCopy) {
+                            msg.append(val).append("; ");
+                        }
 
-                errors.rejectValue("body", "annotation.body.unexpectedVals",
-                        new String[]{msg.toString()}, "");
-            }
+                        errors.rejectValue("body", "annotation.body.unexpectedVals",
+                                new String[]{msg.toString()}, "");
+                    }
 
-            // (3) check that we have required values where specified in the profile entries
-            for (ProfileEntry entry : profiles) {
+                    // (3) check that we have required values where specified in the profile entries
+                    for (ProfileEntry entry : profiles) {
 
-                String bodyValue = annotation.getBody().get(entry.getId());
+                        String bodyValue = annotation.getBody().get(entry.getId());
 
-                if (entry.isRequired()) {
+                        if (entry.isRequired()) {
 
-                    if (bodyValue == null || bodyValue.length() == 0) {
-                        errors.rejectValue("body", "annotation.body.missingRequiredVal",
-                                new String[]{entry.getId()}, "");
+                            if (bodyValue == null || bodyValue.length() == 0) {
+                                errors.rejectValue("body", "annotation.body.missingRequiredVal",
+                                        new String[]{entry.getId()}, "");
+                            }
+                        }
                     }
                 }
             }
+
+        } catch (ProfileRepositoryException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Checks whether or not the type is null or empty - usually caused by garbage being sent.
+     * If we don't have a type we can look for a profile to validate against.
+     *
+     * @param annotation annotation object representing the request
+     * @param errors     the error object to add errors
+     * @return whether or not there is a type we can search on
+     */
+    private boolean determinableType(Annotation annotation, Errors errors) {
+
+        if (annotation.getType() == null || annotation.getType().equals("")) {
+            errors.reject("annotation.type.indeterminable");
+            return false;
+        }
+        return true;
     }
 
     private ProfileRepository profileRepository;
