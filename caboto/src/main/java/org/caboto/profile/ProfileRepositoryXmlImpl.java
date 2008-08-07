@@ -85,6 +85,11 @@ public final class ProfileRepositoryXmlImpl implements ProfileRepository {
 
         Profile profile = null;
 
+        if (profileId == null) {
+
+            // ????????????????????????
+        }
+
         try {
 
             // find the profile matching the id
