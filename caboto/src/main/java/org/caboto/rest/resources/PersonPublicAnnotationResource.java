@@ -77,25 +77,37 @@ public final class PersonPublicAnnotationResource {
     @POST
     @ConsumeMime(MediaType.APPLICATION_FORM_URLENCODED)
     public Response addAnnotation(@PathParam("uid") final String uid,
-                                  final MultivaluedMap<String, String> params)
-            throws AnnotationDaoException, ProfileRepositoryException, URISyntaxException {
+                                  final MultivaluedMap<String, String> params) throws URISyntaxException {
 
         // the uid in the URI *must* match the principal name
-        if (securityContext.getUserPrincipal() == null ||
-                !securityContext.getUserPrincipal().getName().equals(uid)) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
+        //if (securityContext.getUserPrincipal() == null ||
+        //        !securityContext.getUserPrincipal().getName().equals(uid)) {
+        //    return Response.status(Response.Status.UNAUTHORIZED).build();
+        //}
 
         // encapsulate the post parameters into a useful object
         Annotation annotation = AnnotationFactory.createAnnotation(uriInfo.getRequestUri(), params);
 
-        Validator validator = new AnnotationValidatorImpl(
-                new ProfileRepositoryXmlImpl("profiles.xml"));
+        
+
+
+        Validator validator = null;
+        try {
+            validator = new AnnotationValidatorImpl(
+                    new ProfileRepositoryXmlImpl("profiles.xml"));
+        } catch (ProfileRepositoryException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unable to configure the validator").build();
+        }
 
         //validate what is sent
         Errors errors = new BeanPropertyBindingResult(annotation, "Annotation");
 
+
+
+
         validator.validate(annotation, errors);
+
 
         if (errors.hasErrors()) {
 
