@@ -3,7 +3,10 @@ package org.caboto.store;
 import junit.framework.TestCase;
 import org.junit.Before;
 
-
+/**
+ * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version: $Id$
+ */
 public abstract class AbstractStoreFactoryTest extends TestCase {
 
     @Before
