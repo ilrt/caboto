@@ -5,6 +5,10 @@ import org.junit.Before;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 
+/**
+ * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version: $Id$
+ */
 public class StoreFactoryConnectionPoolImplTest extends AbstractStoreFactoryTest {
 
     @Before
