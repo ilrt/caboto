@@ -44,12 +44,12 @@ import org.caboto.domain.Annotation;
  **/
 public interface AnnotationDao {
 
-    void addAnnotation(Annotation annotation) throws AnnotationDaoException;
+    void addAnnotation(Annotation annotation);
 
-    Resource findAnnotation(String id) throws AnnotationDaoException;
+    Resource findAnnotation(String id);
 
-    Model findAnnotations(String about) throws AnnotationDaoException;
+    Model findAnnotations(String about);
 
-    void deleteAnnotation(Resource resource) throws AnnotationDaoException;
+    void deleteAnnotation(Resource resource);
 
 }
