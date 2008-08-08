@@ -1,8 +1,11 @@
 package org.caboto.rest.resources;
 
+import com.hp.hpl.jena.sdb.Store;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import junit.framework.TestCase;
+import org.caboto.store.StoreFactory;
+import org.caboto.store.StoreFactoryDefaultImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.mortbay.jetty.Server;
@@ -17,11 +20,11 @@ import java.util.Map;
  * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version: $Id$
  */
-public class AbstractResourceTest extends TestCase {
+public abstract class AbstractResourceTest extends TestCase {
 
 
     protected String springConfig;
-    protected String _resourcePackages = "org.caboto.rest.resources";
+    protected String _resourcePackages = "org.caboto.rest";
     private final int port = 9090;
     private final String servletPath = "/caboto";
 
@@ -30,7 +33,7 @@ public class AbstractResourceTest extends TestCase {
 
     @Before
     public void setUp() {
-
+        formatDataStore();
         startJetty(port, servletPath);
     }
 
@@ -41,6 +44,8 @@ public class AbstractResourceTest extends TestCase {
 
 
     private void startJetty(int port, String servletPath) {
+
+        System.out.println(">>>>>>>>> Starting jetty!");
 
         try {
             server = new Server(port);
@@ -66,7 +71,6 @@ public class AbstractResourceTest extends TestCase {
             context.addServlet(servletHolder, servletPath + "/*");
 
 
-           
             server.start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,6 +80,9 @@ public class AbstractResourceTest extends TestCase {
     }
 
     private void stopJetty() {
+
+         System.out.println(">>>>>>>>> Stopping jetty!");
+
         try {
             server.stop();
         } catch (Exception e) {
@@ -83,5 +90,13 @@ public class AbstractResourceTest extends TestCase {
         }
     }
 
+    void formatDataStore() {
+
+         System.out.println(">>>>>>>>> Formatting Datastore!");
+
+        StoreFactory storeFactory = new StoreFactoryDefaultImpl("/sdb.ttl");
+        Store store = storeFactory.create();
+        store.getTableFormatter().format();
+    }
 
 }
