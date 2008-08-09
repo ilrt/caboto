@@ -32,14 +32,19 @@
 package org.caboto.rest.providers;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.caboto.RdfMediaType;
 
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -51,8 +56,10 @@ import java.lang.reflect.Type;
  *
  **/
 @Provider
-@ProduceMime({"application/rdf+xml", "text/rdf+n3"})
-public final class JenaModelRdfProvider implements MessageBodyWriter<Object> {
+@ProduceMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+@ConsumeMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+public final class JenaModelRdfProvider implements MessageBodyWriter<Object>,
+        MessageBodyReader<Object> {
 
     public boolean isWriteable(final Class<?> aClass, final Type type,
                                final Annotation[] annotations) {
@@ -80,4 +87,26 @@ public final class JenaModelRdfProvider implements MessageBodyWriter<Object> {
 
     }
 
+    // ---- Reader implememtation
+
+    public boolean isReadable(Class<?> aClass, Type type, Annotation[] annotations) {
+        return aClass == Model.class;
+    }
+
+    public Object readFrom(Class<Object> objectClass, Type type, Annotation[] annotations,
+                           MediaType mediaType,
+                           MultivaluedMap<String, String> stringStringMultivaluedMap,
+                           InputStream inputStream) throws IOException, WebApplicationException {
+
+        Model model = ModelFactory.createDefaultModel();
+
+        // defaults to RDF/XML
+        if (mediaType.getType().equals("text") && mediaType.getSubtype().equals("rdf+n3")) {
+            model.read(inputStream, null, "N3");
+        } else {
+            model.read(inputStream, null, "RDF/XML-ABBREV");
+        }
+
+        return model;
+    }
 }
