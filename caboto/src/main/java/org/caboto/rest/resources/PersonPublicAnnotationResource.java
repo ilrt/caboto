@@ -35,6 +35,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.spi.inject.Inject;
 import com.sun.jersey.spi.resource.PerRequest;
 import org.caboto.CabotoJsonSupport;
+import org.caboto.RdfMediaType;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoException;
 import org.caboto.domain.Annotation;
@@ -129,7 +130,7 @@ public final class PersonPublicAnnotationResource {
 
     @Path("{id}")
     @GET
-    @ProduceMime({"application/rdf+xml", "text/rdf+n3"})
+    @ProduceMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
     public Response getAnnotation() throws AnnotationDaoException {
 
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
