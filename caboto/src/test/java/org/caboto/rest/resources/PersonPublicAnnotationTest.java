@@ -1,20 +1,24 @@
 package org.caboto.rest.resources;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.hp.hpl.jena.rdf.model.Resource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import org.caboto.RdfMediaType;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoImpl;
 import org.caboto.domain.Annotation;
 import org.caboto.profile.ProfileRepository;
 import org.caboto.profile.ProfileRepositoryException;
 import org.caboto.profile.ProfileRepositoryXmlImpl;
+import org.caboto.rest.providers.JenaModelRdfProvider;
+import org.caboto.rest.providers.JenaResourceRdfProvider;
 import org.caboto.store.StoreFactory;
 import org.caboto.store.StoreFactoryDefaultImpl;
-import org.caboto.RdfMediaTypes;
-import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,9 +43,8 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPublicAnnotationWithGarbage() {
 
-        WebResource webResource = createWebResource(baseUri + userPublicUri);
-
-        ClientResponse clientResponse = createPostClientResponse(webResource, garbagePostData);
+        ClientResponse clientResponse = createPostClientResponse(baseUri + userPublicUri,
+                MediaType.APPLICATION_FORM_URLENCODED, garbagePostData);
 
         assertEquals("A 400 response should be returned", 400, clientResponse.getStatus());
 
@@ -50,9 +53,8 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPublicAnnotation() {
 
-        WebResource webResource = createWebResource(baseUri + userPublicUri);
-
-        ClientResponse clientResponse = createPostClientResponse(webResource, validPostData);
+        ClientResponse clientResponse = createPostClientResponse(baseUri + userPublicUri,
+                MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 201 response should be returned", 201, clientResponse.getStatus());
         assertTrue("The created location should start with " + baseUri + userPublicUri,
@@ -67,10 +69,9 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
         // the url of the resource
         String url = createAndSaveAnnotation();
 
-        // request the resource
-        WebResource webResource = createWebResource(url);
-        ClientResponse clientResponse = createGetClientResponse(webResource,
-                MediaType.APPLICATION_JSON);
+        ClientResponse clientResponse =
+                createGetClientResponse(url, MediaType.APPLICATION_JSON);
+
         JSONObject object = clientResponse.getEntity(JSONObject.class);
 
         assertEquals("A 200 response should be returned", 200, clientResponse.getStatus());
@@ -88,44 +89,62 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
         // the url of the resource
         String url = createAndSaveAnnotation();
 
-        // request the resource
-        //WebResource webResource = createWebResource(url);
-        //ClientResponse clientResponse = createGetClientResponse(webResource,
-        //        RdfMediaTypes.APPLICATION_RDF_XML);
-        //Resource resource = clientResponse.getEntity(Resource.class);
-
         ClientResponse clientResponse =
-                createClientResponse(url, RdfMediaTypes.APPLICATION_RDF_XML);
+                createGetClientResponse(url, RdfMediaType.APPLICATION_RDF_XML);
+
+        Model model = clientResponse.getEntity(Model.class);
 
         assertEquals("A 200 response should be returned", 200, clientResponse.getStatus());
 
-//        assertEquals("The wrong media type", RdfMediaTypes.APPLICATION_RDF_XML,
-//                clientResponse.getType().getType());
+        assertTrue("The URI is not in the model",
+                model.containsResource(ResourceFactory.createResource(url)));
 
-//        assertEquals("The IDs do not match", url, object.getString("id"));
+        assertEquals("The wrong media type", RdfMediaType.APPLICATION_RDF_XML_TYPE,
+                clientResponse.getType());
+
+    }
+
+    @Test
+    public void testGetPublicAnnotationAsRdfN3() throws ProfileRepositoryException, JSONException {
+
+        // the url of the resource
+        String url = createAndSaveAnnotation();
+
+        ClientResponse clientResponse =
+                createGetClientResponse(url, RdfMediaType.TEXT_RDF_N3);
+
+        Model model = clientResponse.getEntity(Model.class);
+
+        assertEquals("A 200 response should be returned", 200, clientResponse.getStatus());
+
+        assertTrue("The URI is not in the model",
+                model.containsResource(ResourceFactory.createResource(url)));
+
+        assertEquals("The wrong media type", RdfMediaType.TEXT_RDF_N3_TYPE,
+                clientResponse.getType());
+
+    }
+
+    private ClientResponse createPostClientResponse(String uri, String type, String postData) {
+
+        Client c = Client.create();
+        return c.resource(uri).type(type).post(ClientResponse.class, postData);
     }
 
 
-    private WebResource createWebResource(String uri) {
-        Client c = Client.create();
-        return c.resource(uri);
-    }
+    private ClientResponse createGetClientResponse(String uri, String type) {
 
-    private ClientResponse createClientResponse(String uri, String type) {
-        Client c = Client.create();
+        Client c = Client.create(createClientConfig());
         return c.resource(uri).accept(type).get(ClientResponse.class);
     }
 
-    private ClientResponse createPostClientResponse(WebResource webResource, String postData) {
+    private ClientConfig createClientConfig() {
 
-        return webResource.type(MediaType.APPLICATION_FORM_URLENCODED)
-                .post(ClientResponse.class, postData);
-    }
+        ClientConfig config = new DefaultClientConfig();
+        config.getProviderClasses().add(JenaResourceRdfProvider.class);
+        config.getProviderClasses().add(JenaModelRdfProvider.class);
 
-    private ClientResponse createGetClientResponse(WebResource webResource, String type) {
-
-        return webResource.accept(type).get(ClientResponse.class);
-//        return webResource.get(ClientResponse.class);
+        return config;
     }
 
     private String createAndSaveAnnotation() throws ProfileRepositoryException {
