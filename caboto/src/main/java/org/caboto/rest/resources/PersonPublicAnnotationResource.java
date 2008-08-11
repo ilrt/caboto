@@ -67,8 +67,8 @@ import java.net.URISyntaxException;
 
 /**
  *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: PersonPublicAnnotationResource.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: PersonPublicAnnotationResource.java 177 2008-05-30 13:50:59Z mike.a.jones $
  *
  **/
 @PerRequest
@@ -173,15 +173,15 @@ public final class PersonPublicAnnotationResource {
             Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        if (securityContext.getUserPrincipal() != null) {
-            if (securityContext.getUserPrincipal().getName().equals(uid) ||
-                    securityContext.isUserInRole("ADMIN")) {
+//        if (securityContext.getUserPrincipal() != null) {
+//            if (securityContext.getUserPrincipal().getName().equals(uid) ||
+//                    securityContext.isUserInRole("ADMIN")) {
                 annotationDao.deleteAnnotation(resource);
                 return Response.ok().build();
-            }
-        }
+//            }
+//        }
 
-        return Response.status(Response.Status.UNAUTHORIZED).build();
+//        return Response.status(Response.Status.UNAUTHORIZED).build();
 
     }
 
