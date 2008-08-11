@@ -2,10 +2,22 @@ package org.caboto.rest.resources;
 
 import com.hp.hpl.jena.sdb.Store;
 import com.sun.jersey.api.core.PackagesResourceConfig;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import junit.framework.TestCase;
 import org.caboto.store.StoreFactory;
 import org.caboto.store.StoreFactoryDefaultImpl;
+import org.caboto.rest.providers.JenaResourceRdfProvider;
+import org.caboto.rest.providers.JenaModelRdfProvider;
+import org.caboto.profile.ProfileRepositoryException;
+import org.caboto.profile.ProfileRepository;
+import org.caboto.profile.ProfileRepositoryXmlImpl;
+import org.caboto.domain.Annotation;
+import org.caboto.dao.AnnotationDao;
+import org.caboto.dao.AnnotationDaoImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.mortbay.jetty.Server;
@@ -17,8 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id$
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id$
  */
 public abstract class AbstractResourceTest extends TestCase {
 
@@ -44,8 +56,6 @@ public abstract class AbstractResourceTest extends TestCase {
 
 
     private void startJetty(int port, String servletPath) {
-
-        System.out.println(">>>>>>>>> Starting jetty!");
 
         try {
             server = new Server(port);
@@ -80,9 +90,6 @@ public abstract class AbstractResourceTest extends TestCase {
     }
 
     private void stopJetty() {
-
-         System.out.println(">>>>>>>>> Stopping jetty!");
-
         try {
             server.stop();
         } catch (Exception e) {
@@ -91,12 +98,70 @@ public abstract class AbstractResourceTest extends TestCase {
     }
 
     void formatDataStore() {
-
-         System.out.println(">>>>>>>>> Formatting Datastore!");
-
         StoreFactory storeFactory = new StoreFactoryDefaultImpl("/sdb.ttl");
         Store store = storeFactory.create();
         store.getTableFormatter().format();
     }
 
+    ClientResponse createPostClientResponse(String uri, String type, String postData) {
+
+        Client c = Client.create();
+        return c.resource(uri).type(type).post(ClientResponse.class, postData);
+    }
+
+
+    ClientResponse createGetClientResponse(String uri, String type) {
+
+        Client c = Client.create(createClientConfig());
+        return c.resource(uri).accept(type).get(ClientResponse.class);
+    }
+
+    ClientConfig createClientConfig() {
+
+        ClientConfig config = new DefaultClientConfig();
+        config.getProviderClasses().add(JenaResourceRdfProvider.class);
+        config.getProviderClasses().add(JenaModelRdfProvider.class);
+
+        return config;
+    }
+
+    String createAndSaveAnnotation() throws ProfileRepositoryException {
+        Annotation annotation = createTestAnnotation();
+        saveAnnotation(annotation);
+        return annotation.getId();
+    }
+
+    Annotation createTestAnnotation() {
+
+        // body of the annotation
+        Map<String, String> body = new HashMap<String, String>();
+        body.put("title", "A title");
+        body.put("description", "A description");
+
+        // main bits of the annotation
+        Annotation annotation = new Annotation();
+        annotation.setAnnotates(annotated);
+        annotation.setType("SimpleComment");
+        annotation.setGraphId(baseUri + userPublicUri);
+        annotation.setBody(body);
+
+        return annotation;
+    }
+
+    void saveAnnotation(Annotation annotation) throws ProfileRepositoryException {
+
+        StoreFactory storeFactory = new StoreFactoryDefaultImpl("/sdb.ttl");
+
+        ProfileRepository profileRepository = new ProfileRepositoryXmlImpl("test-profiles.xml");
+        AnnotationDao annotationDao = new AnnotationDaoImpl(profileRepository, storeFactory);
+
+        annotationDao.addAnnotation(annotation);
+
+    }
+
+    String baseUri = "http://localhost:9090/caboto/";
+
+    String userPublicUri = "person/mike/public/";
+
+    String annotated = "http://caboto.org/somethinginteresting";
 }
