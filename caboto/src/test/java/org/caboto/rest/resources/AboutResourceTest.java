@@ -99,6 +99,17 @@ public class AboutResourceTest extends AbstractResourceTest {
 
     }
 
+    @Test
+    public void testGetMissingResource() {
+
+        ClientResponse clientResponse =
+                createGetClientResponse(requestUri + "aresourcethatdoesntexist",
+                        MediaType.APPLICATION_JSON);
+
+        assertEquals("A 404 response should be returned", Response.Status.NOT_FOUND
+                .getStatusCode(), clientResponse.getStatus());
+
+    }
     private String annotationUrlOne;
     private String annotationUrlTwo;
     private String requestUri;
