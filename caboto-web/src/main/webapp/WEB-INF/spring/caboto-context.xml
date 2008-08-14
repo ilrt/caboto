@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/security
+                           http://www.springframework.org/schema/security/spring-security-2.0.xsd">
+
+    <!-- check to see if the SDB Store needs initialization on startup. -->
+    <bean id="initializeStore" class="org.caboto.store.StoreInitializer"
+          init-method="initializeStore">
+        <constructor-arg index="0" value="/startup.properties"/>
+        <constructor-arg index="1" value="sdb.store.formatted"/>
+        <constructor-arg index="2" value="/sdb.ttl"/>
+    </bean>
+
+    <!-- repository gives access to the profile of allowed annotations -->
+    <bean id="profileRepository" class="org.caboto.profile.ProfileRepositoryXmlImpl">
+        <constructor-arg index="0" value="profiles.xml"/>
+    </bean>
+
+    <!-- factory creates SDB stores: provides access to the RDF store -->
+    <bean id="storeFactory" class="org.caboto.store.StoreFactoryDefaultImpl">
+        <constructor-arg index="0" value="/sdb.ttl"/>
+    </bean>
+
+    <!-- DAO class for creating and retrieving annotations -->
+    <bean id="annotationDao" class="org.caboto.dao.AnnotationDaoImpl" scope="prototype">
+        <constructor-arg index="0" ref="profileRepository"/>
+        <constructor-arg index="1" ref="storeFactory"/>
+    </bean>
+
+    <!-- utility class for converting RDF annotations to JSON -->
+    <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport"/>
+
+    <!-- SECURITY -->
+
+    <!-- HTTP restrictions -->
+    <security:http access-decision-manager-ref="decisionManager">
+        <security:http-basic/>
+        <security:anonymous username="mrnobody" granted-authority="ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/**" method="POST" access="ROLE_USER,ROLE_ADMIN"/>
+        <security:intercept-url pattern="/**" method="DELETE" access="ROLE_USER,ROLE_ADMIN"/>
+        <security:intercept-url pattern="/**" method="GET" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_ADMIN"/>
+    </security:http>
+
+    <!-- default authentication provider -->
+    <security:authentication-provider>
+        <security:user-service>
+            <security:user name="mike" password="cheese" authorities="ROLE_USER"/>
+        </security:user-service>
+    </security:authentication-provider>
+
+    <!-- voter for resources -->
+    <bean id="resourceVoter" class="org.caboto.security.ResourceAccessDecisionVoter"/>
+
+    <!-- custom decision manager -->
+    <bean id="decisionManager" class="org.springframework.security.vote.UnanimousBased">
+        <property name="decisionVoters">
+            <list>
+                <ref local="resourceVoter"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
