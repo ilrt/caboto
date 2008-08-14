@@ -34,6 +34,7 @@ package org.caboto;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * <p>A generic utility class with static methods that are used across a number of classes.</p>
@@ -79,5 +80,21 @@ public final class CabotoUtility {
                 + temp.substring(temp.length() - 2, temp.length());
     }
 
+    public static boolean isPublicResource(String path) {
+        return publicResourcePattern.matcher(path).find();
+    }
+
+    public static boolean isPrivateResource(String path) {
+        return privateResourcePattern.matcher(path).find();
+    }
+
+    public static String extractUsername(String path) {
+        String temp = path.substring(8, path.length());
+        return temp.substring(0, temp.indexOf("/"));
+    }
+
+
+    private static Pattern publicResourcePattern = Pattern.compile("/public/");
+    private static Pattern privateResourcePattern = Pattern.compile("/private/");
 
 }
