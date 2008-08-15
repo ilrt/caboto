@@ -13,6 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 
 public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
 
+    public ResourceAccessDecisionVoter(String ADMIN_ROLE) {
+        this.ADMIN_ROLE = ADMIN_ROLE;
+    }
+
     public boolean supports(ConfigAttribute configAttribute) {
         return true;
     }
@@ -28,7 +32,7 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
                 ((FilterInvocation) o).getHttpRequest();
 
         // the admin role can do what it likes...
-        if (inRole("ROLE_ADMIN", authentication.getAuthorities())) {
+        if (inRole(ADMIN_ROLE, authentication.getAuthorities())) {
             return ACCESS_GRANTED;
         }
 
@@ -62,9 +66,17 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
 
         }
 
+        // if we are here ... we have no opinion
         return ACCESS_ABSTAIN;
     }
 
+    /**
+     * A utility class to check if a user belongs to a specific role.
+     *
+     * @param role the role that we are interested in.
+     * @param authorities the list of authorities that the user owns.
+     * @return does the user belong to the role?
+     */
     private boolean inRole(final String role, final GrantedAuthority[] authorities) {
         for (GrantedAuthority authority : authorities) {
             if (authority.getAuthority().equals(role)) {
@@ -74,5 +86,9 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
         return false;
     }
 
+    /**
+     * Holds the value of an administrative role.
+     */
+    private final String ADMIN_ROLE;
 
 }
