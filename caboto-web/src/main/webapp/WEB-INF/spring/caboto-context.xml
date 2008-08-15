@@ -45,10 +45,10 @@
 
     <security:http access-decision-manager-ref="decisionManager">
         <security:http-basic/>
-        <security:anonymous username="mrnobody" granted-authority="ROLE_ANONYMOUS"/>
-        <security:intercept-url pattern="/**" method="POST" access="ROLE_USER,ROLE_ADMIN"/>
-        <security:intercept-url pattern="/**" method="DELETE" access="ROLE_USER,ROLE_ADMIN"/>
-        <security:intercept-url pattern="/**" method="GET" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_ADMIN"/>
+        <security:anonymous username="mrnobody" granted-authority="ANONYMOUS"/>
+        <security:intercept-url pattern="/**" method="POST" access="USER,ADMIN"/>
+        <security:intercept-url pattern="/**" method="DELETE" access="USER,ADMIN"/>
+        <security:intercept-url pattern="/**" method="GET" access="ANONYMOUS,USER,ADMIN"/>
     </security:http>
 
     <!-- default authentication provider -->
@@ -56,12 +56,15 @@
     <security:authentication-provider>
         <security:user-service>
             <security:user name="mike" password="cheese" authorities="ROLE_USER"/>
+            <security:user name="damian" password="mice" authorities="ROLE_USER"/>
         </security:user-service>
     </security:authentication-provider>
 
     <!-- voter for resources -->
 
-    <bean id="resourceVoter" class="org.caboto.security.spring.ResourceAccessDecisionVoter"/>
+    <bean id="resourceVoter" class="org.caboto.security.spring.ResourceAccessDecisionVoter">
+        <constructor-arg index="0" value="ADMIN"/>
+    </bean>
 
     <!-- custom decision manager -->
 
