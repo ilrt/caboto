@@ -8,6 +8,7 @@
                            http://www.springframework.org/schema/security/spring-security-2.0.xsd">
 
     <!-- check to see if the SDB Store needs initialization on startup. -->
+
     <bean id="initializeStore" class="org.caboto.store.StoreInitializer"
           init-method="initializeStore">
         <constructor-arg index="0" value="/startup.properties"/>
@@ -16,27 +17,32 @@
     </bean>
 
     <!-- repository gives access to the profile of allowed annotations -->
+
     <bean id="profileRepository" class="org.caboto.profile.ProfileRepositoryXmlImpl">
         <constructor-arg index="0" value="profiles.xml"/>
     </bean>
 
     <!-- factory creates SDB stores: provides access to the RDF store -->
+
     <bean id="storeFactory" class="org.caboto.store.StoreFactoryDefaultImpl">
         <constructor-arg index="0" value="/sdb.ttl"/>
     </bean>
 
     <!-- DAO class for creating and retrieving annotations -->
+
     <bean id="annotationDao" class="org.caboto.dao.AnnotationDaoImpl" scope="prototype">
         <constructor-arg index="0" ref="profileRepository"/>
         <constructor-arg index="1" ref="storeFactory"/>
     </bean>
 
     <!-- utility class for converting RDF annotations to JSON -->
+
     <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport"/>
 
     <!-- SECURITY -->
 
     <!-- HTTP restrictions -->
+
     <security:http access-decision-manager-ref="decisionManager">
         <security:http-basic/>
         <security:anonymous username="mrnobody" granted-authority="ROLE_ANONYMOUS"/>
@@ -46,6 +52,7 @@
     </security:http>
 
     <!-- default authentication provider -->
+
     <security:authentication-provider>
         <security:user-service>
             <security:user name="mike" password="cheese" authorities="ROLE_USER"/>
@@ -53,9 +60,11 @@
     </security:authentication-provider>
 
     <!-- voter for resources -->
-    <bean id="resourceVoter" class="org.caboto.security.ResourceAccessDecisionVoter"/>
+
+    <bean id="resourceVoter" class="org.caboto.security.spring.ResourceAccessDecisionVoter"/>
 
     <!-- custom decision manager -->
+
     <bean id="decisionManager" class="org.springframework.security.vote.UnanimousBased">
         <property name="decisionVoters">
             <list>
