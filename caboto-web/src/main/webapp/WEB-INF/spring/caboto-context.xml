@@ -55,8 +55,8 @@
 
     <security:authentication-provider>
         <security:user-service>
-            <security:user name="mike" password="cheese" authorities="ROLE_USER"/>
-            <security:user name="damian" password="mice" authorities="ROLE_USER"/>
+            <security:user name="mike" password="cheese" authorities="USER"/>
+            <security:user name="damian" password="mice" authorities="USER"/>
         </security:user-service>
     </security:authentication-provider>
 
