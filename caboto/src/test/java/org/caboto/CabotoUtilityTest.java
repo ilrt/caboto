@@ -3,11 +3,35 @@ package org.caboto;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Pattern;
+
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id$
  */
 public class CabotoUtilityTest extends TestCase {
+
+    @Test
+    public void testGenerateUuid() {
+
+        String url = CabotoUtility.generateId(PUBLIC_URI_ONE);
+        String testString = url.subSequence(PUBLIC_URI_ONE.length(), url.length()).toString();
+        Pattern p = Pattern.compile(UUID_PATTERN);
+
+        assertTrue("Unexpected UUID pattern", p.matcher(testString).find());
+    }
+
+    @Test
+    public void testParseDate() throws ParseException {
+
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        Date date = sdf.parse(ORIGINAL_DATE);
+
+        assertEquals("Incorrect date.", PARSED_DATE, CabotoUtility.parseDate(date));
+    }
 
     @Test
     public void testPublicResource() {
@@ -56,7 +80,6 @@ public class CabotoUtilityTest extends TestCase {
     }
 
     @Test
-
     public void testExtractUsername() {
 
         assertEquals("Incorrect name", USER_ONE, CabotoUtility.extractUsername(PUBLIC_URI_ONE));
@@ -85,4 +108,11 @@ public class CabotoUtilityTest extends TestCase {
             "/person/damian/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String USER_ONE = "mike";
     private final String USER_TWO = "damian";
+
+    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+    private final String ORIGINAL_DATE = "2008-08-15T12:12:00+0100";
+    private final String PARSED_DATE = "2008-08-15T12:12:00+01:00";
+
+    private final String UUID_PATTERN = "^\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}$";
+
 }
