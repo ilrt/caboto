@@ -154,7 +154,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testDeleteResourceThatDoesNotExist() {
 
         Client c = Client.create();
-        ClientResponse deleteResponse = c.resource(baseUri + "doesnotexist")
+        ClientResponse deleteResponse = c.resource(baseUri + userPublicUri + "doesnotexist")
                 .delete(ClientResponse.class);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 deleteResponse.getStatus());
