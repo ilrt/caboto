@@ -56,8 +56,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: AnnotationDaoImplTest.java 183 2008-05-30 14:24:23Z mike.a.jones $
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: AnnotationDaoImplTest.java 183 2008-05-30 14:24:23Z mike.a.jones $
  */
 public class AnnotationDaoImplTest extends TestCase {
 

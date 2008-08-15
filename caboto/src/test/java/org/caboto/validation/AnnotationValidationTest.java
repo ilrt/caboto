@@ -45,8 +45,8 @@ import java.util.Map;
 
 /**
  *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: AnnotationValidationTest.java 122 2008-05-19 14:32:05Z mike.a.jones $
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: AnnotationValidationTest.java 122 2008-05-19 14:32:05Z mike.a.jones $
  *
  **/
 public class AnnotationValidationTest extends TestCase {
