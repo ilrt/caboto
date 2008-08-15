@@ -170,7 +170,7 @@ public final class PersonPublicAnnotationResource {
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
 
         if (resource.getModel().isEmpty()) {
-            Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
 //        if (securityContext.getUserPrincipal() != null) {
