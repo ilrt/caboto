@@ -11,6 +11,10 @@ import org.springframework.security.vote.AccessDecisionVoter;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id$
+ */
 public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
 
     public ResourceAccessDecisionVoter(String ADMIN_ROLE) {
@@ -31,13 +35,6 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
         HttpServletRequest request =
                 ((FilterInvocation) o).getHttpRequest();
 
-        // the admin role can do what it likes...
-        if (inRole(ADMIN_ROLE, authentication.getAuthorities())) {
-            return ACCESS_GRANTED;
-        }
-
-        // get the username
-
         String username;
         Object obj = authentication.getPrincipal();
         if (obj instanceof UserDetails) {
@@ -46,25 +43,39 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
             username = obj.toString();
         }
 
-        // is it a public resource?
+
+        // -------- "public" resources
+
         if (CabotoUtility.isPublicResource(request.getPathInfo())) {
 
-            // restrictions on POST and DELETE
+            // POST and DELETE are a special case
             if (request.getMethod().equalsIgnoreCase("POST") ||
                     request.getMethod().equalsIgnoreCase("DELETE")) {
 
-                // check the username matches the path
-                if (username.equals(CabotoUtility.extractUsername(request.getPathInfo()))) {
-                    return ACCESS_GRANTED;
-                } else {
+                // if the uid isn't in the path or an ADMIN user then deny access
+                if (!(username.equals(CabotoUtility.extractUsername(request.getPathInfo())) ||
+                        inRole(ADMIN_ROLE, authentication.getAuthorities()))) {
+
                     return ACCESS_DENIED;
                 }
+            }
 
-            } else {
+            return ACCESS_GRANTED;
+        }
+
+
+        // -------- "private" resources
+
+        if (CabotoUtility.isPrivateResource(request.getPathInfo())) {
+
+            if (username.equals(CabotoUtility.extractUsername(request.getPathInfo())) ||
+                    inRole(ADMIN_ROLE, authentication.getAuthorities())) {
                 return ACCESS_GRANTED;
             }
 
+            return ACCESS_DENIED;
         }
+
 
         // if we are here ... we have no opinion
         return ACCESS_ABSTAIN;
@@ -73,10 +84,11 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
     /**
      * A utility class to check if a user belongs to a specific role.
      *
-     * @param role the role that we are interested in.
+     * @param role        the role that we are interested in.
      * @param authorities the list of authorities that the user owns.
      * @return does the user belong to the role?
      */
+
     private boolean inRole(final String role, final GrantedAuthority[] authorities) {
         for (GrantedAuthority authority : authorities) {
             if (authority.getAuthority().equals(role)) {
