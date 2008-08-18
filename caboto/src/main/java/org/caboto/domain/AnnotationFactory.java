@@ -38,10 +38,9 @@ import java.util.Date;
 /**
  * <p>A simple factory for creating Annotation objects.</p>
  *
- * @author: Mike Jones (mike.a.jones@gmail.com)
- * @version: $Id: AnnotationFactory.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@gmail.com)
+ * @version $Id: AnnotationFactory.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public final class AnnotationFactory {
 
     /**
@@ -54,9 +53,9 @@ public final class AnnotationFactory {
      * <p>Creates an annotation object based on values received from a map - the map values
      * would have been derived from a HTTP POST.</p>
      *
-     * @param uri       the URI of the named graph that will hold the annotation.
-     * @param params    the parameters from an HTTP POST.
-     * @return          an annotation object based on the HTTP POST values.
+     * @param uri    the URI of the named graph that will hold the annotation.
+     * @param params the parameters from an HTTP POST.
+     * @return an annotation object based on the HTTP POST values.
      */
     public static Annotation createAnnotation(final URI uri,
                                               final MultivaluedMap<String, String> params) {
