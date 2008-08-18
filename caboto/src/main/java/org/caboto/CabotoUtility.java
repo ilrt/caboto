@@ -102,12 +102,17 @@ public final class CabotoUtility {
      * @return the username that is part of the path.
      */
     public static String extractUsername(String path) {
-        String temp = path.substring(8, path.length());
+
+        int loc = path.indexOf(personPath);
+        loc += personPath.length();
+        String temp = path.substring(loc, path.length());
         return temp.substring(0, temp.indexOf("/"));
     }
 
 
-    private static Pattern publicResourcePattern = Pattern.compile("/public/");
-    private static Pattern privateResourcePattern = Pattern.compile("/private/");
+    private static Pattern publicResourcePattern = Pattern.compile("^.*/public/.*$");
+    private static Pattern privateResourcePattern = Pattern.compile("^.*/private/.*$");
+
+    private static String personPath = "/person/";
 
 }
