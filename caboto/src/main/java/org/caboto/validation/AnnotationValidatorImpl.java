@@ -44,8 +44,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: AnnotationValidatorImpl.java 181 2008-05-30 13:54:34Z mike.a.jones $
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: AnnotationValidatorImpl.java 181 2008-05-30 13:54:34Z mike.a.jones $
  */
 public final class AnnotationValidatorImpl implements Validator {
 
