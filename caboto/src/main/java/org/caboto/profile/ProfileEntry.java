@@ -35,10 +35,9 @@ package org.caboto.profile;
  * <p>A description or profile of an annotation is made up of a number of
  * profile entries.</p>
  *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: ProfileEntry.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: ProfileEntry.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public final class ProfileEntry {
 
     public String getId() {
