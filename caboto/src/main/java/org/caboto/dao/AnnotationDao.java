@@ -38,10 +38,9 @@ import org.caboto.domain.Annotation;
 /**
  * <p>A Data Access Object to add, find and delete annotations.</p>
  *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: AnnotationDao.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: AnnotationDao.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public interface AnnotationDao {
 
     void addAnnotation(Annotation annotation);

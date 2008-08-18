@@ -61,16 +61,15 @@ import java.io.InputStreamReader;
 import java.util.Date;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: AnnotationDaoImpl.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: AnnotationDaoImpl.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public final class AnnotationDaoImpl implements AnnotationDao {
 
     public AnnotationDaoImpl(final ProfileRepository profileRepository,
                              final StoreFactory storeFactory) {
         this.profileRepository = profileRepository;
+        String findAnnotation = "/sparql/findAnnotation.rql";
         findAnnotationSparql = loadSparqlFromFile(findAnnotation);
         this.storeFactory = storeFactory;
     }
@@ -269,6 +268,5 @@ public final class AnnotationDaoImpl implements AnnotationDao {
 
     private final ProfileRepository profileRepository;
     private final String findAnnotationSparql;
-    private final String findAnnotation = "/sparql/findAnnotation.rql";
     private final StoreFactory storeFactory;
 }
