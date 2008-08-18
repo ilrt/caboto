@@ -4,8 +4,8 @@ import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 
 /**
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id$
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id$
  */
 public class StoreFactoryDefaultImpl extends AbstractStoreFactory implements StoreFactory {
 
