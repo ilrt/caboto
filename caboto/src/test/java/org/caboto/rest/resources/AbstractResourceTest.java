@@ -59,7 +59,7 @@ public abstract class AbstractResourceTest extends TestCase {
 
         try {
             server = new Server(port);
-            
+
             final Context context = new Context(server, "/", Context.SESSIONS);
 
             final Map<String, String> contextParams = new HashMap<String, String>();

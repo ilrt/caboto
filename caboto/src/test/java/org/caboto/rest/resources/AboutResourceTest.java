@@ -56,7 +56,7 @@ public class AboutResourceTest extends AbstractResourceTest {
 
         ClientResponse clientResponse = createGetClientResponse(requestUri,
                 RdfMediaType.TEXT_RDF_N3);
-        
+
         assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
                 clientResponse.getStatus());
 
@@ -110,6 +110,7 @@ public class AboutResourceTest extends AbstractResourceTest {
                 .getStatusCode(), clientResponse.getStatus());
 
     }
+
     private String annotationUrlOne;
     private String annotationUrlTwo;
     private String requestUri;

@@ -44,6 +44,19 @@ public class CabotoUtilityTest extends TestCase {
                 CabotoUtility.isPublicResource(PUBLIC_URI_THREE));
         assertTrue("Should be a public resource",
                 CabotoUtility.isPublicResource(PUBLIC_URI_FOUR));
+        assertTrue("Should be a public resource",
+                CabotoUtility.isPublicResource(PUBLIC_URI_FIVE));
+        assertTrue("Should be a public resource",
+                CabotoUtility.isPublicResource(PUBLIC_URI_SIX));
+        assertTrue("Should be a public resource",
+                CabotoUtility.isPublicResource(PUBLIC_URI_SEVEN));
+        assertTrue("Should be a public resource",
+                CabotoUtility.isPublicResource(PUBLIC_URI_EIGHT));
+        assertTrue("Should be a public resource",
+                CabotoUtility.isPublicResource(PUBLIC_URI_NINE));
+        assertTrue("Should be a public resource",
+                CabotoUtility.isPublicResource(PUBLIC_URI_TEN));
+
 
         assertFalse("Should be a private resource",
                 CabotoUtility.isPublicResource(PRIVATE_URI_ONE));
@@ -53,6 +66,18 @@ public class CabotoUtilityTest extends TestCase {
                 CabotoUtility.isPublicResource(PRIVATE_URI_THREE));
         assertFalse("Should be a private resource",
                 CabotoUtility.isPublicResource(PRIVATE_URI_FOUR));
+        assertFalse("Should be a private resource",
+                CabotoUtility.isPublicResource(PRIVATE_URI_FIVE));
+        assertFalse("Should be a private resource",
+                CabotoUtility.isPublicResource(PRIVATE_URI_SIX));
+        assertFalse("Should be a private resource",
+                CabotoUtility.isPublicResource(PRIVATE_URI_SEVEN));
+        assertFalse("Should be a private resource",
+                CabotoUtility.isPublicResource(PRIVATE_URI_EIGHT));
+        assertFalse("Should be a private resource",
+                CabotoUtility.isPublicResource(PRIVATE_URI_NINE));
+        assertFalse("Should be a private resource",
+                CabotoUtility.isPublicResource(PRIVATE_URI_TEN));
 
     }
 
@@ -67,6 +92,18 @@ public class CabotoUtilityTest extends TestCase {
                 CabotoUtility.isPrivateResource(PRIVATE_URI_THREE));
         assertTrue("Should be a private resource",
                 CabotoUtility.isPrivateResource(PRIVATE_URI_FOUR));
+        assertTrue("Should be a private resource",
+                CabotoUtility.isPrivateResource(PRIVATE_URI_FIVE));
+        assertTrue("Should be a private resource",
+                CabotoUtility.isPrivateResource(PRIVATE_URI_SIX));
+        assertTrue("Should be a private resource",
+                CabotoUtility.isPrivateResource(PRIVATE_URI_SEVEN));
+        assertTrue("Should be a private resource",
+                CabotoUtility.isPrivateResource(PRIVATE_URI_EIGHT));
+        assertTrue("Should be a private resource",
+                CabotoUtility.isPrivateResource(PRIVATE_URI_NINE));
+        assertTrue("Should be a private resource",
+                CabotoUtility.isPrivateResource(PRIVATE_URI_TEN));
 
         assertFalse("Should be a public resource",
                 CabotoUtility.isPrivateResource(PUBLIC_URI_ONE));
@@ -76,7 +113,18 @@ public class CabotoUtilityTest extends TestCase {
                 CabotoUtility.isPrivateResource(PUBLIC_URI_THREE));
         assertFalse("Should be a public resource",
                 CabotoUtility.isPrivateResource(PUBLIC_URI_FOUR));
-
+        assertFalse("Should be a public resource",
+                CabotoUtility.isPrivateResource(PUBLIC_URI_FIVE));
+        assertFalse("Should be a public resource",
+                CabotoUtility.isPrivateResource(PUBLIC_URI_SIX));
+        assertFalse("Should be a public resource",
+                CabotoUtility.isPrivateResource(PUBLIC_URI_SEVEN));
+        assertFalse("Should be a public resource",
+                CabotoUtility.isPrivateResource(PUBLIC_URI_EIGHT));
+        assertFalse("Should be a public resource",
+                CabotoUtility.isPrivateResource(PUBLIC_URI_NINE));
+        assertFalse("Should be a public resource",
+                CabotoUtility.isPrivateResource(PUBLIC_URI_TEN));
     }
 
     @Test
@@ -91,28 +139,77 @@ public class CabotoUtilityTest extends TestCase {
         assertEquals("Incorrect name", USER_TWO, CabotoUtility.extractUsername(PUBLIC_URI_FOUR));
         assertEquals("Incorrect name", USER_TWO, CabotoUtility.extractUsername(PRIVATE_URI_THREE));
         assertEquals("Incorrect name", USER_TWO, CabotoUtility.extractUsername(PRIVATE_URI_FOUR));
+
+        assertEquals("Incorrect name", USER_THREE, CabotoUtility.extractUsername(PUBLIC_URI_FIVE));
+        assertEquals("Incorrect name", USER_THREE, CabotoUtility.extractUsername(PUBLIC_URI_SIX));
+        assertEquals("Incorrect name", USER_THREE, CabotoUtility.extractUsername(PRIVATE_URI_FIVE));
+        assertEquals("Incorrect name", USER_THREE, CabotoUtility.extractUsername(PRIVATE_URI_SIX));
+
+        assertEquals("Incorrect name", USER_FOUR, CabotoUtility.extractUsername(PUBLIC_URI_SEVEN));
+        assertEquals("Incorrect name", USER_FOUR, CabotoUtility.extractUsername(PUBLIC_URI_EIGHT));
+        assertEquals("Incorrect name", USER_FOUR, CabotoUtility.extractUsername(PRIVATE_URI_SEVEN));
+        assertEquals("Incorrect name", USER_FOUR, CabotoUtility.extractUsername(PRIVATE_URI_EIGHT));
+
+        assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PUBLIC_URI_NINE));
+        assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PUBLIC_URI_TEN));
+        assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_NINE));
+        assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_TEN));
     }
 
-    
+
+    // public URIs
     private final String PUBLIC_URI_ONE = "/person/mike/public/";
     private final String PUBLIC_URI_TWO =
             "/person/mike/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PUBLIC_URI_THREE = "/person/damian/public/";
     private final String PUBLIC_URI_FOUR =
             "/person/damian/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PUBLIC_URI_FIVE =
+            "/annotations/person/jasper/public/";
+    private final String PUBLIC_URI_SIX =
+            "/annotations/person/jasper/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PUBLIC_URI_SEVEN =
+            "/annotations/person/gérard/public/";
+    private final String PUBLIC_URI_EIGHT =
+            "/annotations/person/gérard/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PUBLIC_URI_NINE =
+            "/annotations/person/???/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PUBLIC_URI_TEN =
+            "/annotations/person/???/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+
+    // private URIs
     private final String PRIVATE_URI_ONE = "/person/mike/private/";
     private final String PRIVATE_URI_TWO =
             "/person/mike/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_THREE = "/person/damian/private/";
     private final String PRIVATE_URI_FOUR =
             "/person/damian/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PRIVATE_URI_FIVE =
+            "/annotations/person/jasper/private/";
+    private final String PRIVATE_URI_SIX =
+            "/annotations/person/jasper/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PRIVATE_URI_SEVEN =
+            "/annotations/person/gérard/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PRIVATE_URI_EIGHT =
+            "/annotations/person/gérard/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PRIVATE_URI_NINE =
+            "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PRIVATE_URI_TEN =
+            "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+
+    // users
     private final String USER_ONE = "mike";
     private final String USER_TWO = "damian";
+    private final String USER_THREE = "jasper";
+    private final String USER_FOUR = "gérard";
+    private final String USER_FIVE = "???";
 
+    // date formats and dates
     private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
     private final String ORIGINAL_DATE = "2008-08-15T12:12:00+0100";
     private final String PARSED_DATE = "2008-08-15T12:12:00+01:00";
 
+    // expected regex pattern for a UUID
     private final String UUID_PATTERN = "^\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}$";
 
 }
