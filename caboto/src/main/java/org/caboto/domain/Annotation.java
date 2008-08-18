@@ -36,11 +36,9 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: Annotation.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: Annotation.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public final class Annotation {
 
 
