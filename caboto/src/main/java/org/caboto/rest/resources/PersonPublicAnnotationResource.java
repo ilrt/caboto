@@ -66,11 +66,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- *
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id: PersonPublicAnnotationResource.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ */
 @PerRequest
 @Path("/person/{uid}/public/")
 public final class PersonPublicAnnotationResource {
@@ -89,8 +87,6 @@ public final class PersonPublicAnnotationResource {
         // encapsulate the post parameters into a useful object
         Annotation annotation = AnnotationFactory.createAnnotation(uriInfo.getRequestUri(), params);
 
-        
-
 
         Validator validator = null;
         try {
@@ -103,8 +99,6 @@ public final class PersonPublicAnnotationResource {
 
         //validate what is sent
         Errors errors = new BeanPropertyBindingResult(annotation, "Annotation");
-
-
 
 
         validator.validate(annotation, errors);
@@ -176,8 +170,8 @@ public final class PersonPublicAnnotationResource {
 //        if (securityContext.getUserPrincipal() != null) {
 //            if (securityContext.getUserPrincipal().getName().equals(uid) ||
 //                    securityContext.isUserInRole("ADMIN")) {
-                annotationDao.deleteAnnotation(resource);
-                return Response.ok().build();
+        annotationDao.deleteAnnotation(resource);
+        return Response.ok().build();
 //            }
 //        }
 

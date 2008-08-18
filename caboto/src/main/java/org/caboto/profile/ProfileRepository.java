@@ -32,11 +32,9 @@
 package org.caboto.profile;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: ProfileRepository.java 142 2008-05-24 20:40:58Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: ProfileRepository.java 142 2008-05-24 20:40:58Z mike.a.jones $
+ */
 public interface ProfileRepository {
 
     Profile findProfile(String profileId) throws ProfileRepositoryException;

@@ -50,11 +50,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: ProfileRepositoryXmlImpl.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: ProfileRepositoryXmlImpl.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public final class ProfileRepositoryXmlImpl implements ProfileRepository {
 
     public ProfileRepositoryXmlImpl(final String xmlFileName) throws ProfileRepositoryException {

@@ -50,11 +50,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: JenaModelRdfProvider.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: JenaModelRdfProvider.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 @Provider
 @ProduceMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
 @ConsumeMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
