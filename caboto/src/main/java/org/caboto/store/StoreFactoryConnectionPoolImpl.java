@@ -9,8 +9,8 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id$
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id$
  */
 public class StoreFactoryConnectionPoolImpl extends AbstractStoreFactory implements StoreFactory {
 

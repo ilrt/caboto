@@ -7,13 +7,13 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 
 /**
  * This class ensures that the Caboto store is correctly initiated.
- *
+ * <p/>
  * The Caboto project uses an RDF store that is backed by a relational database. The
  * unerlying implementation uses Jena SDB which means we need to ensure that the database
  * is correctly formated before it is used.
  *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id$
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id$
  */
 public class StoreInitializer {
 
