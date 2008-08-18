@@ -5,8 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id$
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id$
  */
 public class StoreFactoryDefaultImplTest extends AbstractStoreFactoryTest {
 
@@ -16,8 +16,8 @@ public class StoreFactoryDefaultImplTest extends AbstractStoreFactoryTest {
         // clean up the database
         super.setUp();
 
-       storeFactory = new StoreFactoryDefaultImpl(sdbConfigFile);
-       store = storeFactory.create();
+        storeFactory = new StoreFactoryDefaultImpl(sdbConfigFile);
+        store = storeFactory.create();
 
     }
 
