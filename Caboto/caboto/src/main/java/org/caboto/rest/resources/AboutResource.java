@@ -48,11 +48,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: AboutResource.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: AboutResource.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 @PerRequest
 @Path("/about/")
 public final class AboutResource {

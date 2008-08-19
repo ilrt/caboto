@@ -34,20 +34,28 @@ package org.caboto;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
+ * <p>A generic utility class with static methods that are used across a number of classes.</p>
  *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: CabotoUtility.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: CabotoUtility.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public final class CabotoUtility {
 
-
+    /**
+     * Private constructor.
+     */
     private CabotoUtility() {
     }
 
-
+    /**
+     * <p>Generates a unique URI based on a UUID. The base of the URI needs to be provided.</p>
+     *
+     * @param graphId the base of the URI.
+     * @return a unique URI based on a UUID.
+     */
     public static String generateId(final String graphId) {
 
         String id = UUID.randomUUID().toString();
@@ -59,7 +67,12 @@ public final class CabotoUtility {
         return graphId + id;
     }
 
-
+    /**
+     * <p>Parses a date to a format that is a valid XSD:dateTime.</p>
+     *
+     * @param date the date object to be parsed.
+     * @return the date represented as a valid XSD:dateTime.
+     */
     public static String parseDate(final Date date) {
 
         String temp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
@@ -68,5 +81,38 @@ public final class CabotoUtility {
                 + temp.substring(temp.length() - 2, temp.length());
     }
 
+    /**
+     * @param path the path details of a request.
+     * @return whether or not its a public resource.
+     */
+    public static boolean isPublicResource(String path) {
+        return publicResourcePattern.matcher(path).find();
+    }
+
+    /**
+     * @param path the path details of a request.
+     * @return whether or not its a private resource.
+     */
+    public static boolean isPrivateResource(String path) {
+        return privateResourcePattern.matcher(path).find();
+    }
+
+    /**
+     * @param path the path details of a request.
+     * @return the username that is part of the path.
+     */
+    public static String extractUsername(String path) {
+
+        int loc = path.indexOf(personPath);
+        loc += personPath.length();
+        String temp = path.substring(loc, path.length());
+        return temp.substring(0, temp.indexOf("/"));
+    }
+
+
+    private static Pattern publicResourcePattern = Pattern.compile("^.*/public/.*$");
+    private static Pattern privateResourcePattern = Pattern.compile("^.*/private/.*$");
+
+    private static String personPath = "/person/";
 
 }

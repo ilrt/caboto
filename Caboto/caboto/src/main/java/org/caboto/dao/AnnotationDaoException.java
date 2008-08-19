@@ -34,10 +34,9 @@ package org.caboto.dao;
 /**
  * <p>Exception for when DAOs go bad!</p>
  *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: AnnotationDaoException.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: AnnotationDaoException.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public class AnnotationDaoException extends Exception {
 
     public AnnotationDaoException(final String message) {

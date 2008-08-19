@@ -35,6 +35,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.spi.inject.Inject;
 import com.sun.jersey.spi.resource.PerRequest;
 import org.caboto.CabotoJsonSupport;
+import org.caboto.RdfMediaType;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoException;
 import org.caboto.domain.Annotation;
@@ -65,11 +66,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: PersonPublicAnnotationResource.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: PersonPublicAnnotationResource.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 @PerRequest
 @Path("/person/{uid}/public/")
 public final class PersonPublicAnnotationResource {
@@ -77,25 +76,33 @@ public final class PersonPublicAnnotationResource {
     @POST
     @ConsumeMime(MediaType.APPLICATION_FORM_URLENCODED)
     public Response addAnnotation(@PathParam("uid") final String uid,
-                                  final MultivaluedMap<String, String> params)
-            throws AnnotationDaoException, ProfileRepositoryException, URISyntaxException {
+                                  final MultivaluedMap<String, String> params) throws URISyntaxException {
 
         // the uid in the URI *must* match the principal name
-        if (securityContext.getUserPrincipal() == null ||
-                !securityContext.getUserPrincipal().getName().equals(uid)) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
+        //if (securityContext.getUserPrincipal() == null ||
+        //        !securityContext.getUserPrincipal().getName().equals(uid)) {
+        //    return Response.status(Response.Status.UNAUTHORIZED).build();
+        //}
 
         // encapsulate the post parameters into a useful object
         Annotation annotation = AnnotationFactory.createAnnotation(uriInfo.getRequestUri(), params);
 
-        Validator validator = new AnnotationValidatorImpl(
-                new ProfileRepositoryXmlImpl("profiles.xml"));
+
+        Validator validator = null;
+        try {
+            validator = new AnnotationValidatorImpl(
+                    new ProfileRepositoryXmlImpl("profiles.xml"));
+        } catch (ProfileRepositoryException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unable to configure the validator").build();
+        }
 
         //validate what is sent
         Errors errors = new BeanPropertyBindingResult(annotation, "Annotation");
 
+
         validator.validate(annotation, errors);
+
 
         if (errors.hasErrors()) {
 
@@ -117,7 +124,7 @@ public final class PersonPublicAnnotationResource {
 
     @Path("{id}")
     @GET
-    @ProduceMime({"application/rdf+xml", "text/rdf+n3"})
+    @ProduceMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
     public Response getAnnotation() throws AnnotationDaoException {
 
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
@@ -157,18 +164,18 @@ public final class PersonPublicAnnotationResource {
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
 
         if (resource.getModel().isEmpty()) {
-            Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        if (securityContext.getUserPrincipal() != null) {
-            if (securityContext.getUserPrincipal().getName().equals(uid) ||
-                    securityContext.isUserInRole("ADMIN")) {
-                annotationDao.deleteAnnotation(resource);
-                return Response.ok().build();
-            }
-        }
+//        if (securityContext.getUserPrincipal() != null) {
+//            if (securityContext.getUserPrincipal().getName().equals(uid) ||
+//                    securityContext.isUserInRole("ADMIN")) {
+        annotationDao.deleteAnnotation(resource);
+        return Response.ok().build();
+//            }
+//        }
 
-        return Response.status(Response.Status.UNAUTHORIZED).build();
+//        return Response.status(Response.Status.UNAUTHORIZED).build();
 
     }
 
