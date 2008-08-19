@@ -4,6 +4,7 @@ import com.hp.hpl.jena.sdb.Store;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
@@ -18,11 +19,10 @@ import org.caboto.profile.ProfileRepositoryXmlImpl;
 import org.caboto.domain.Annotation;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoImpl;
-import org.junit.After;
-import org.junit.Before;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
+import org.mortbay.jetty.servlet.FilterHolder;
 import org.springframework.web.context.ContextLoaderServlet;
 
 import java.util.HashMap;
@@ -35,62 +35,31 @@ import java.util.Map;
 public abstract class AbstractResourceTest extends TestCase {
 
 
-    protected String springConfig;
-    protected String _resourcePackages = "org.caboto.rest";
-    private final int port = 9090;
-    private final String servletPath = "/caboto";
+    // ---------- Helper methods for starting and stopping jetty
 
-    private Server server;
-
-
-    @Before
-    public void setUp() {
-        formatDataStore();
-        startJetty(port, servletPath);
-    }
-
-    @After
-    public void tearDown() {
-        stopJetty();
-    }
-
-
-    private void startJetty(int port, String servletPath) {
+    void startJetty() {
 
         try {
-            server = new Server(port);
-
-            final Context context = new Context(server, "/", Context.SESSIONS);
-
-            final Map<String, String> contextParams = new HashMap<String, String>();
-            contextParams.put("contextConfigLocation", "classpath:caboto-jaxrs-test-resources.xml");
-            context.setInitParams(contextParams);
-
-
-            final ServletHolder springServletHolder = new ServletHolder(ContextLoaderServlet.class);
-
-            springServletHolder.setInitOrder(1);
-            context.addServlet(springServletHolder, "/*");
-
-
-            final ServletHolder servletHolder = new ServletHolder(SpringServlet.class);
-            servletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass",
-                    PackagesResourceConfig.class.getName());
-            servletHolder.setInitParameter(PackagesResourceConfig.PROPERTY_PACKAGES,
-                    _resourcePackages);
-            servletHolder.setInitOrder(2);
-            context.addServlet(servletHolder, servletPath + "/*");
-
-
+            server = configureJetty();
             server.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    void startJettyWithSecurity() {
+
+        try {
+            server = configureJettyWithSecurity();
+            server.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
-    private void stopJetty() {
+    void stopJetty() {
         try {
             server.stop();
         } catch (Exception e) {
@@ -98,18 +67,81 @@ public abstract class AbstractResourceTest extends TestCase {
         }
     }
 
-    void formatDataStore() {
-        StoreFactory storeFactory = new StoreFactoryDefaultImpl("/sdb.ttl");
-        Store store = storeFactory.create();
-        store.getTableFormatter().format();
+
+    // ---------- Helper methods for configuring jersey
+
+    Server configureJetty() {
+
+        Server server = new Server(PORT_NUMBER);
+        final Context context = new Context(server, "/", Context.SESSIONS);
+        configureSpringContext(context);
+        configureJersey(context);
+
+        return server;
     }
+
+    Server configureJettyWithSecurity() {
+
+        Server server = configureJetty();
+        Context context = (Context) server.getHandler();
+        configureSpringSecurity(context);
+        return server;
+    }
+
+
+    // ---------- Jetty configuration methods
+
+    private void configureSpringContext(final Context context) {
+
+        // set context patameters
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("contextConfigLocation", SPRING_CONTEXT);
+        context.setInitParams(params);
+
+        // establish the Context loader servlet
+        ServletHolder contextServletHolder = new ServletHolder(ContextLoaderServlet.class);
+        contextServletHolder.setInitOrder(1);
+        context.addServlet(contextServletHolder, "/*");
+
+    }
+
+    private void configureJersey(final Context context) {
+
+        // establish servlet
+        ServletHolder springServletHolder = new ServletHolder(SpringServlet.class);
+
+        // set the initialization parameters
+        springServletHolder.setInitParameter(JERSEY_RESOURCE_CONFIG_CLASS,
+                PackagesResourceConfig.class.getName());
+        springServletHolder.setInitParameter(PackagesResourceConfig.PROPERTY_PACKAGES,
+                CABOTO_PACKAGE_RESOURCES);
+        springServletHolder.setInitOrder(2);
+        context.addServlet(springServletHolder, SERVLET_PATH + "/*");
+    }
+
+
+    private void configureSpringSecurity(final Context context) {
+
+        // set context patameters
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("contextConfigLocation", SPRING_CONTEXT + "," + SPRING_SECURITY_CONTEXT);
+        context.setInitParams(params);
+
+        // establish the security filter
+        FilterHolder filterHolder =
+                new FilterHolder(org.springframework.web.filter.DelegatingFilterProxy.class);
+        filterHolder.setName("springSecurityFilterChain"); // spring will moan without this
+        context.addFilter(filterHolder, "/*", org.mortbay.jetty.Handler.DEFAULT);
+    }
+
+
+    // ---------- Helper methods for the RESTful clients
 
     ClientResponse createPostClientResponse(String uri, String type, String postData) {
 
         Client c = Client.create();
         return c.resource(uri).type(type).post(ClientResponse.class, postData);
     }
-
 
     ClientResponse createGetClientResponse(String uri, String type) {
 
@@ -122,8 +154,17 @@ public abstract class AbstractResourceTest extends TestCase {
         ClientConfig config = new DefaultClientConfig();
         config.getProviderClasses().add(JenaResourceRdfProvider.class);
         config.getProviderClasses().add(JenaModelRdfProvider.class);
-
         return config;
+    }
+
+
+    // ---------- Helper methods for handling the store and creating test data
+
+    void formatDataStore() {
+
+        StoreFactory storeFactory = new StoreFactoryDefaultImpl("/sdb.ttl");
+        Store store = storeFactory.create();
+        store.getTableFormatter().format();
     }
 
     String createAndSaveAnnotation() throws ProfileRepositoryException {
@@ -143,7 +184,7 @@ public abstract class AbstractResourceTest extends TestCase {
         Annotation annotation = new Annotation();
         annotation.setAnnotates(annotated);
         annotation.setType("SimpleComment");
-        annotation.setGraphId(baseUri + userPublicUri);
+        annotation.setGraphId(userPublicUriUnauthenticated);
         annotation.setBody(body);
 
         return annotation;
@@ -160,9 +201,46 @@ public abstract class AbstractResourceTest extends TestCase {
 
     }
 
-    String baseUri = "http://localhost:9090/caboto/";
+
+    // ---------- Jetty server configuration
+
+    private Server server;
+
+    final private int PORT_NUMBER = 9090;
+
+
+    // ---------- Jersey configuration
+
+    final private String JERSEY_RESOURCE_CONFIG_CLASS =
+            "com.sun.jersey.config.property.resourceConfigClass";
+
+    final private String CABOTO_PACKAGE_RESOURCES = "org.caboto.rest";
+
+    private final String SERVLET_PATH = "/caboto";
+
+
+    // ---------- Spring configuration files
+
+    final private String SPRING_CONTEXT = "classpath:caboto-context.xml";
+
+    final private String SPRING_SECURITY_CONTEXT = "classpath:caboto-security.xml";
+
+
+    // ---------- URIs and Data used accross tests
+
+    String protocol = "http://";
+
+    String baseUri = "localhost:9090/caboto/";
 
     String userPublicUri = "person/mike/public/";
 
+    String userPublicUriUnauthenticated = protocol + baseUri + userPublicUri;
+
+    String userPublicUriAuthenticated = protocol + "mike:cheese@" + baseUri + userPublicUri;
+
     String annotated = "http://caboto.org/somethinginteresting";
+
+    String validPostData = "title=A%20Title&description=A%20description&type=" +
+            "SimpleComment&annotates=http%3A%2F%2Fexample.org%2Fthing";
+
 }
