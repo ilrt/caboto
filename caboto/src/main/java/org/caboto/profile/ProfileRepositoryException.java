@@ -32,11 +32,9 @@
 package org.caboto.profile;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: ProfileRepositoryException.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: ProfileRepositoryException.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public class ProfileRepositoryException extends Exception {
 
     public ProfileRepositoryException(final String message) {
