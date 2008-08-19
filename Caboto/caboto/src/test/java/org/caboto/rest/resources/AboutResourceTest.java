@@ -6,6 +6,7 @@ import org.caboto.RdfMediaType;
 import org.caboto.profile.ProfileRepositoryException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.After;
 import org.codehaus.jettison.json.JSONArray;
 
 import javax.ws.rs.core.Response;
@@ -19,9 +20,10 @@ public class AboutResourceTest extends AbstractResourceTest {
 
     @Before
     public void setUp() {
-        super.setUp();
+        formatDataStore();
+        startJetty();
 
-        requestUri = baseUri + "about/?id=" + annotated;
+        requestUri =  protocol + baseUri + "about/?id=" + annotated;
 
         try {
             annotationUrlOne = createAndSaveAnnotation();
@@ -29,6 +31,11 @@ public class AboutResourceTest extends AbstractResourceTest {
         } catch (ProfileRepositoryException e) {
             e.printStackTrace();
         }
+    }
+
+    @After
+    public void tearDown() {
+        stopJetty();
     }
 
     @Test
