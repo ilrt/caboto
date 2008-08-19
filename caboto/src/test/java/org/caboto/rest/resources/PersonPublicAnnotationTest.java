@@ -10,6 +10,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.After;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -22,13 +23,19 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
 
     @Before
     public void setUp() {
-        super.setUp();
+        formatDataStore();
+        startJetty();
+    }
+
+    @After
+    public void tearDown() {
+        stopJetty();
     }
 
     @Test
     public void testAddPublicAnnotationWithGarbage() {
 
-        ClientResponse clientResponse = createPostClientResponse(baseUri + userPublicUri,
+        ClientResponse clientResponse = createPostClientResponse(userPublicUriUnauthenticated,
                 MediaType.APPLICATION_FORM_URLENCODED, garbagePostData);
 
         assertEquals("A 400 response should be returned",
@@ -38,13 +45,13 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPublicAnnotation() {
 
-        ClientResponse clientResponse = createPostClientResponse(baseUri + userPublicUri,
+        ClientResponse clientResponse = createPostClientResponse(userPublicUriUnauthenticated,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 201 response should be returned", Response.Status.CREATED.getStatusCode(),
                 clientResponse.getStatus());
         assertTrue("The created location should start with " + baseUri + userPublicUri,
-                clientResponse.getLocation().toString().startsWith(baseUri + userPublicUri));
+                clientResponse.getLocation().toString().startsWith(userPublicUriUnauthenticated));
 
     }
 
@@ -118,7 +125,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testGetMissingResource() {
 
         ClientResponse clientResponse =
-                createGetClientResponse(baseUri + "aresourcethatdoesntexist",
+                createGetClientResponse(userPublicUriUnauthenticated + "aresourcethatdoesntexist",
                         MediaType.APPLICATION_JSON);
 
         assertEquals("A 404 response should be returned", Response.Status.NOT_FOUND
@@ -154,14 +161,11 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testDeleteResourceThatDoesNotExist() {
 
         Client c = Client.create();
-        ClientResponse deleteResponse = c.resource(baseUri + userPublicUri + "doesnotexist")
+        ClientResponse deleteResponse = c.resource(userPublicUriUnauthenticated + "doesnotexist")
                 .delete(ClientResponse.class);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 deleteResponse.getStatus());
     }
-
-    private String validPostData = "title=A%20Title&description=A%20description&type=" +
-            "SimpleComment&annotates=http%3A%2F%2Fexample.org%2Fthing";
 
     private String garbagePostData = "aaabbbcccdddeeefffggghhhiii";
 
