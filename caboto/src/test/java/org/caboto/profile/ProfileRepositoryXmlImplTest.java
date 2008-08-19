@@ -34,11 +34,9 @@ package org.caboto.profile;
 import junit.framework.TestCase;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: ProfileRepositoryXmlImplTest.java 123 2008-05-19 14:32:58Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: ProfileRepositoryXmlImplTest.java 123 2008-05-19 14:32:58Z mike.a.jones $
+ */
 public class ProfileRepositoryXmlImplTest extends TestCase {
 
     public void setUp() {

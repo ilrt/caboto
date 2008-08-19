@@ -42,12 +42,11 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
- * <p>A utility class used to convert RDF (Jena Model and Resource classes) to JSON.</p>
+ * A utility class used to convert RDF (Jena Model and Resource classes) to JSON.
  *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: CabotoJsonSupport.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: CabotoJsonSupport.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public class CabotoJsonSupport {
 
     public CabotoJsonSupport() {

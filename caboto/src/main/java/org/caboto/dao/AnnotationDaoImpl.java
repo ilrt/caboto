@@ -51,6 +51,7 @@ import org.caboto.profile.Profile;
 import org.caboto.profile.ProfileEntry;
 import org.caboto.profile.ProfileRepository;
 import org.caboto.profile.ProfileRepositoryException;
+import org.caboto.store.StoreFactory;
 import org.caboto.vocabulary.Annotea;
 
 import java.io.BufferedReader;
@@ -60,35 +61,38 @@ import java.io.InputStreamReader;
 import java.util.Date;
 
 /**
- *
- * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version: $Id: AnnotationDaoImpl.java 177 2008-05-30 13:50:59Z mike.a.jones $
- *
- **/
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id: AnnotationDaoImpl.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ */
 public final class AnnotationDaoImpl implements AnnotationDao {
 
-    public AnnotationDaoImpl(final String sdbConfigFile,
-                             final ProfileRepository profileRepository) {
-        this.sdbConfigFile = sdbConfigFile;
+    public AnnotationDaoImpl(final ProfileRepository profileRepository,
+                             final StoreFactory storeFactory) {
         this.profileRepository = profileRepository;
+        String findAnnotation = "/sparql/findAnnotation.rql";
         findAnnotationSparql = loadSparqlFromFile(findAnnotation);
-        initStore();
+        this.storeFactory = storeFactory;
     }
 
-    public void addAnnotation(final Annotation annotation) throws AnnotationDaoException {
+    public void addAnnotation(final Annotation annotation) {
+
+        Store store = null;
 
         try {
+
+            // get the store
+            store = storeFactory.create();
 
             // find the profile for the annotation type
             Profile profile = profileRepository.findProfile(annotation.getType());
 
             if (profile == null) {
-                throw new AnnotationDaoException("Unable to find a profile for "
+                throw new RuntimeException("Unable to find a profile for "
                         + "the annotation type: " + annotation.getType());
             }
 
             // obtain the named graph (model)
-            Model model = SDBFactory.connectNamedModel(store, annotation.getGraphId());
+            Model model = SDBFactory.connectDataset(store).getNamedModel(annotation.getGraphId());
 
             model.setNsPrefix("caboto", "http://caboto.org/schema/annotations#");
             model.setNsPrefix("annotea", "http://www.w3.org/2000/10/annotation-ns#");
@@ -151,15 +155,21 @@ public final class AnnotationDaoImpl implements AnnotationDao {
             model.add(model.createStatement(annotationResource, RDF.type,
                     model.createResource(profile.getType())));
 
-
         } catch (ProfileRepositoryException e) {
-            throw new AnnotationDaoException(e.getMessage());
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            storeFactory.destroy(store);
         }
 
 
     }
 
-    public Resource findAnnotation(final String id) throws AnnotationDaoException {
+    public Resource findAnnotation(final String id) {
+
+        // get the store
+        Store store = storeFactory.create();
 
         // extract the graph from the id
         String graph = id.substring(0, (id.lastIndexOf('/') + 1));
@@ -179,10 +189,16 @@ public final class AnnotationDaoImpl implements AnnotationDao {
 
         Model m = qe.execConstruct();
 
+        // clean up
+        storeFactory.destroy(store);
+
         return m.createResource(id);
     }
 
-    public Model findAnnotations(final String about) throws AnnotationDaoException {
+    public Model findAnnotations(final String about) {
+
+        // get the store
+        Store store = storeFactory.create();
 
         // obtain the dataset
         Dataset dataset = SDBFactory.connectDataset(store);
@@ -196,11 +212,19 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         // execute query
         QueryExecution qe = QueryExecutionFactory.create(query, dataset, initialBindings);
 
-        return qe.execConstruct();
+        Model m = qe.execConstruct();
+
+        // clean up
+        storeFactory.destroy(store);
+
+        return m;
 
     }
 
-    public void deleteAnnotation(final Resource resource) throws AnnotationDaoException {
+    public void deleteAnnotation(final Resource resource) {
+
+        // get the store
+        Store store = storeFactory.create();
 
         String id = resource.getURI();
 
@@ -212,6 +236,9 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         Model model = dataset.getNamedModel(graph);
 
         model.remove(resource.getModel());
+
+        // clean up
+        storeFactory.destroy(store);
 
     }
 
@@ -233,22 +260,13 @@ public final class AnnotationDaoImpl implements AnnotationDao {
             }
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
 
         return buffer.toString();
     }
 
-
-    private void initStore() {
-        String storePath = this.getClass().getResource(sdbConfigFile).getPath();
-        store = SDBFactory.connectStore(storePath);
-    }
-
-
-    private Store store;
-    private ProfileRepository profileRepository;
-    private String findAnnotationSparql;
-    private String findAnnotation = "/sparql/findAnnotation.rql";
-    private String sdbConfigFile;
+    private final ProfileRepository profileRepository;
+    private final String findAnnotationSparql;
+    private final StoreFactory storeFactory;
 }
