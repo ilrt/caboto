@@ -4,13 +4,13 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.client.ClientResponse;
 import org.caboto.RdfMediaType;
 import org.caboto.profile.ProfileRepositoryException;
+import org.codehaus.jettison.json.JSONArray;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.After;
-import org.codehaus.jettison.json.JSONArray;
 
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -23,7 +23,7 @@ public class AboutResourceTest extends AbstractResourceTest {
         formatDataStore();
         startJetty();
 
-        requestUri =  protocol + baseUri + "about/?id=" + annotated;
+        requestUri = baseUri + "about/?id=" + annotated;
 
         try {
             annotationUrlOne = createAndSaveAnnotation();
