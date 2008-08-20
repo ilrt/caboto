@@ -1,32 +1,33 @@
 package org.caboto.rest.resources;
 
 import com.hp.hpl.jena.sdb.Store;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import junit.framework.TestCase;
-import org.caboto.store.StoreFactory;
-import org.caboto.store.StoreFactoryDefaultImpl;
-import org.caboto.rest.providers.JenaResourceRdfProvider;
-import org.caboto.rest.providers.JenaModelRdfProvider;
-import org.caboto.profile.ProfileRepositoryException;
-import org.caboto.profile.ProfileRepository;
-import org.caboto.profile.ProfileRepositoryXmlImpl;
-import org.caboto.domain.Annotation;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoImpl;
+import org.caboto.domain.Annotation;
+import org.caboto.profile.ProfileRepository;
+import org.caboto.profile.ProfileRepositoryException;
+import org.caboto.profile.ProfileRepositoryXmlImpl;
+import org.caboto.rest.providers.JenaModelRdfProvider;
+import org.caboto.rest.providers.JenaResourceRdfProvider;
+import org.caboto.store.StoreFactory;
+import org.caboto.store.StoreFactoryDefaultImpl;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.FilterHolder;
+import org.mortbay.jetty.servlet.ServletHolder;
 import org.springframework.web.context.ContextLoaderServlet;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -184,7 +185,7 @@ public abstract class AbstractResourceTest extends TestCase {
         Annotation annotation = new Annotation();
         annotation.setAnnotates(annotated);
         annotation.setType("SimpleComment");
-        annotation.setGraphId(userPublicUriUnauthenticated);
+        annotation.setGraphId(userUriOne);
         annotation.setBody(body);
 
         return annotation;
@@ -199,6 +200,21 @@ public abstract class AbstractResourceTest extends TestCase {
 
         annotationDao.addAnnotation(annotation);
 
+    }
+
+
+    // ---------- Handling credentials in the client
+
+    void setCredentials(final String username, final String password) {
+        Authenticator.setDefault(new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password.toCharArray());
+            }
+        });
+    }
+
+    void clearCredentials() {
+        Authenticator.setDefault(null);
     }
 
 
@@ -228,19 +244,26 @@ public abstract class AbstractResourceTest extends TestCase {
 
     // ---------- URIs and Data used accross tests
 
-    String protocol = "http://";
 
-    String baseUri = "localhost:9090/caboto/";
+    String baseUri = "http://localhost:9090/caboto/";
 
-    String userPublicUri = "person/mike/public/";
+    String userPublicUriOne = "person/mike/public/";
 
-    String userPublicUriUnauthenticated = protocol + baseUri + userPublicUri;
+    String userPublicUriTwo = "person/damian/public/";
 
-    String userPublicUriAuthenticated = protocol + "mike:cheese@" + baseUri + userPublicUri;
+    String userUriOne = baseUri + userPublicUriOne;
+
+    String userUriTwo = baseUri + userPublicUriTwo;
 
     String annotated = "http://caboto.org/somethinginteresting";
 
     String validPostData = "title=A%20Title&description=A%20description&type=" +
             "SimpleComment&annotates=http%3A%2F%2Fexample.org%2Fthing";
+
+
+    // ---------- Some test credentials
+
+    final String usernameOne = "mike";
+    final String passwordOne = "cheese";
 
 }
