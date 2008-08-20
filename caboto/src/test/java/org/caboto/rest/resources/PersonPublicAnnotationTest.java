@@ -35,7 +35,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPublicAnnotationWithGarbage() {
 
-        ClientResponse clientResponse = createPostClientResponse(userPublicUriUnauthenticated,
+        ClientResponse clientResponse = createPostClientResponse(userUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, garbagePostData);
 
         assertEquals("A 400 response should be returned",
@@ -45,13 +45,13 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPublicAnnotation() {
 
-        ClientResponse clientResponse = createPostClientResponse(userPublicUriUnauthenticated,
+        ClientResponse clientResponse = createPostClientResponse(userUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 201 response should be returned", Response.Status.CREATED.getStatusCode(),
                 clientResponse.getStatus());
-        assertTrue("The created location should start with " + baseUri + userPublicUri,
-                clientResponse.getLocation().toString().startsWith(userPublicUriUnauthenticated));
+        assertTrue("The created location should start with " + baseUri + userPublicUriOne,
+                clientResponse.getLocation().toString().startsWith(userUriOne));
 
     }
 
@@ -125,7 +125,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testGetMissingResource() {
 
         ClientResponse clientResponse =
-                createGetClientResponse(userPublicUriUnauthenticated + "aresourcethatdoesntexist",
+                createGetClientResponse(userUriOne + "aresourcethatdoesntexist",
                         MediaType.APPLICATION_JSON);
 
         assertEquals("A 404 response should be returned", Response.Status.NOT_FOUND
@@ -161,7 +161,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testDeleteResourceThatDoesNotExist() {
 
         Client c = Client.create();
-        ClientResponse deleteResponse = c.resource(userPublicUriUnauthenticated + "doesnotexist")
+        ClientResponse deleteResponse = c.resource(userUriOne + "doesnotexist")
                 .delete(ClientResponse.class);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 deleteResponse.getStatus());
