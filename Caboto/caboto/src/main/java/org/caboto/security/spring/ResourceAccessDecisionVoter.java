@@ -32,8 +32,6 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
     public int vote(Authentication authentication, Object o,
                     ConfigAttributeDefinition configAttributeDefinition) {
 
-        System.out.println(">>>>>>>>>>>>>>> YES WE ARE IN HERE!");
-
         HttpServletRequest request =
                 ((FilterInvocation) o).getHttpRequest();
 
@@ -50,29 +48,17 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
 
         if (CabotoUtility.isPublicResource(request.getPathInfo())) {
 
-            System.out.println(">>>>>>>>>>> YES, IT IS PUBLIC!");
-
             // POST and DELETE are a special case
             if (request.getMethod().equalsIgnoreCase("POST") ||
                     request.getMethod().equalsIgnoreCase("DELETE")) {
-
-                System.out.println("YES, IT IS A POST OR DELETE");
 
                 // if the uid isn't in the path or an ADMIN user then deny access
                 if (!(username.equals(CabotoUtility.extractUsername(request.getPathInfo())) ||
                         inRole(ADMIN_ROLE, authentication.getAuthorities()))) {
 
-
-                    System.out.println("> USERNAME: " + username);
-                    System.out.println("> PATH: " + CabotoUtility.extractUsername(request.getPathInfo()));
-
-                    System.out.println("DENIED!");
-
                     return ACCESS_DENIED;
                 }
             }
-
-            System.out.println("GRANTED");
 
             return ACCESS_GRANTED;
         }
