@@ -31,6 +31,8 @@
  */
 package org.caboto.servlet;
 
+import java.net.URLDecoder;
+
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.store.StoreFormatter;
@@ -74,13 +76,16 @@ public class CabotoStartupServlet extends HttpServlet {
         try {
 
             // load the properties file
-            String path = getClass().getResource(configFile).getPath();
+            String path = URLDecoder.decode(
+                    getClass().getResource(configFile).getPath(), "UTF-8");
             PropertiesConfiguration config = new PropertiesConfiguration(path);
 
             // format database tables if necessary
             if (!config.getBoolean(formatProps)) {
 
-                String storePath = this.getClass().getResource(sdbConfigFile).getPath();
+                String storePath = URLDecoder.decode(
+                        this.getClass().getResource(sdbConfigFile).getPath(),
+                        "UTF-8");
                 Store store = SDBFactory.connectStore(storePath);
                 StoreFormatter storeFormatter = store.getTableFormatter();
                 storeFormatter.format();

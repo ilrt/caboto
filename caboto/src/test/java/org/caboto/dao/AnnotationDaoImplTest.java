@@ -41,6 +41,8 @@ import org.caboto.domain.Annotation;
 import org.caboto.profile.MockProfileRepositoryImpl;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +56,14 @@ public class AnnotationDaoImplTest extends TestCase {
 
 
     public void setUp() {
-        String storePath = this.getClass().getResource(sdbConfigFile).getPath();
+        String storePath = null;
+        try {
+            storePath = URLDecoder.decode(
+                this.getClass().getResource(sdbConfigFile).getPath(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // Will never happen!
+            e.printStackTrace();
+        }
         store = SDBFactory.connectStore(storePath);
         StoreFormatter storeFormatter = store.getTableFormatter();
         storeFormatter.format();
