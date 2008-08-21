@@ -1,0 +1,8 @@
+To build caboto:
+
+   mvn install
+
+To run the test web application:
+
+   cd crew-web
+   mvn jetty:run
