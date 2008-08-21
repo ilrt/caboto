@@ -24,10 +24,10 @@ import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.springframework.web.context.ContextLoaderServlet;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
