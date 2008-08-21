@@ -7,6 +7,17 @@
                            http://www.springframework.org/schema/security
                            http://www.springframework.org/schema/security/spring-security-2.0.xsd">
 
+    <!-- load properties files -->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:version.properties"/>
+    </bean>
+
+    <!-- bean to hold version details-->
+    <bean id="versionDetails" class="org.caboto.domain.VersionDetails">
+        <constructor-arg index="0" value="${caboto.version}"/>
+    </bean>
+
     <!-- check to see if the SDB Store needs initialization on startup. -->
 
     <bean id="initializeStore" class="org.caboto.store.StoreInitializer"
@@ -47,7 +58,8 @@
         <security:http-basic/>
         <security:anonymous username="anonymous" granted-authority="ANONYMOUS"/>
         <security:intercept-url pattern="^.*/about/.*$" method="GET" access="ANONYMOUS,USER,ADMIN"/>
-        <security:intercept-url pattern="^.*/public/.*$" method="GET" access="ANONYMOUS,USER,ADMIN"/>
+        <security:intercept-url pattern="^.*/public/.*$" method="GET"
+                                access="ANONYMOUS,USER,ADMIN"/>
         <security:intercept-url pattern="^.*/public/.*$" method="POST" access="USER,ADMIN"/>
         <security:intercept-url pattern="^.*/public/.*$" method="DELETE" access="USER,ADMIN"/>
         <security:intercept-url pattern="^.*/private/.*$" method="GET" access="USER,ADMIN"/>
