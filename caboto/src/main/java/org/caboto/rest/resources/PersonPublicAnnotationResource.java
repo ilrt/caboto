@@ -67,7 +67,7 @@ import java.net.URISyntaxException;
  * @version $Id: PersonPublicAnnotationResource.java 177 2008-05-30 13:50:59Z mike.a.jones $
  */
 @PerRequest
-@Path("/person/{uid}/public/")
+@Path("/person/{uid}/{type}/")
 public final class PersonPublicAnnotationResource {
 
     @POST
