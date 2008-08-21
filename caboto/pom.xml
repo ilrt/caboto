@@ -11,20 +11,9 @@
     <name>caboto</name>
     <version>0.2-PA-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
-    <profiles>
-        <profile>
-            <id>development</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <filter.location>src/main/filters/filter.properties</filter.location>
-            </properties>
-        </profile>
-    </profiles>
     <build>
         <filters>
-            <filter>${filter.location}</filter>
+            <filter>src/main/filters/filter.properties</filter>
         </filters>
         <resources>
             <resource>
@@ -106,7 +95,25 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- clean up plugin -->
+            <plugin>
+                <inherited>false</inherited>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>.</directory>
+                            <includes>
+                                <include>derby.log</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
         </plugins>
+
     </build>
 
     <repositories>
