@@ -3,14 +3,14 @@
     <parent>
         <artifactId>caboto-parent</artifactId>
         <groupId>org.caboto</groupId>
-        <version>0.2-CP-BRANCH-SNAPSHOT</version>
+        <version>0.2-PA-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.caboto</groupId>
     <artifactId>caboto-web</artifactId>
     <packaging>war</packaging>
     <name>caboto-web Maven Webapp</name>
-    <version>0.2-CP-BRANCH-SNAPSHOT</version>
+    <version>0.2-PA-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
     <build>
         <plugins>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.caboto</groupId>
             <artifactId>caboto</artifactId>
-            <version>0.2-CP-BRANCH-SNAPSHOT</version>
+            <version>0.2-PA-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
