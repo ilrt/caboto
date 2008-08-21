@@ -37,7 +37,6 @@ import com.sun.jersey.spi.resource.PerRequest;
 import org.caboto.CabotoJsonSupport;
 import org.caboto.RdfMediaType;
 import org.caboto.dao.AnnotationDao;
-import org.caboto.dao.AnnotationDaoException;
 import org.caboto.domain.Annotation;
 import org.caboto.domain.AnnotationFactory;
 import org.caboto.profile.ProfileRepositoryException;
@@ -54,13 +53,11 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -75,20 +72,14 @@ public final class PersonPublicAnnotationResource {
 
     @POST
     @ConsumeMime(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response addAnnotation(@PathParam("uid") final String uid,
-                                  final MultivaluedMap<String, String> params) throws URISyntaxException {
-
-        // the uid in the URI *must* match the principal name
-        //if (securityContext.getUserPrincipal() == null ||
-        //        !securityContext.getUserPrincipal().getName().equals(uid)) {
-        //    return Response.status(Response.Status.UNAUTHORIZED).build();
-        //}
+    public Response addAnnotation(final MultivaluedMap<String, String> params)
+            throws URISyntaxException {
 
         // encapsulate the post parameters into a useful object
         Annotation annotation = AnnotationFactory.createAnnotation(uriInfo.getRequestUri(), params);
 
 
-        Validator validator = null;
+        Validator validator;
         try {
             validator = new AnnotationValidatorImpl(
                     new ProfileRepositoryXmlImpl("profiles.xml"));
@@ -106,10 +97,6 @@ public final class PersonPublicAnnotationResource {
 
         if (errors.hasErrors()) {
 
-            //for (Object e : errors.getAllErrors()) {
-            //    System.out.println("> " + ((FieldError) e).getCode());
-            //}
-
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Oops, there are validation errors!\n").build();
         }
@@ -125,7 +112,7 @@ public final class PersonPublicAnnotationResource {
     @Path("{id}")
     @GET
     @ProduceMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
-    public Response getAnnotation() throws AnnotationDaoException {
+    public Response getAnnotation() {
 
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
 
@@ -141,7 +128,7 @@ public final class PersonPublicAnnotationResource {
     @Path("{id}")
     @GET
     @ProduceMime(MediaType.APPLICATION_JSON)
-    public Response getAnnotationAsJson() throws AnnotationDaoException, JSONException {
+    public Response getAnnotationAsJson() throws JSONException {
 
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
 
@@ -158,8 +145,7 @@ public final class PersonPublicAnnotationResource {
 
     @Path("{id}")
     @DELETE
-    public Response deleteAnnotation(@PathParam("uid") final String uid)
-            throws AnnotationDaoException {
+    public Response deleteAnnotation() {
 
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
 
@@ -167,23 +153,12 @@ public final class PersonPublicAnnotationResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-//        if (securityContext.getUserPrincipal() != null) {
-//            if (securityContext.getUserPrincipal().getName().equals(uid) ||
-//                    securityContext.isUserInRole("ADMIN")) {
         annotationDao.deleteAnnotation(resource);
         return Response.ok().build();
-//            }
-//        }
-
-//        return Response.status(Response.Status.UNAUTHORIZED).build();
-
     }
 
     @Context
     private UriInfo uriInfo = null;
-
-    @Context
-    private SecurityContext securityContext = null;
 
     @Inject
     private AnnotationDao annotationDao = null;
