@@ -3,7 +3,7 @@
     <parent>
         <artifactId>caboto-parent</artifactId>
         <groupId>org.caboto</groupId>
-        <version>0.2-CP-BRANCH-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.caboto</groupId>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.caboto</groupId>
             <artifactId>caboto</artifactId>
-            <version>0.2-CP-BRANCH-SNAPSHOT</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
