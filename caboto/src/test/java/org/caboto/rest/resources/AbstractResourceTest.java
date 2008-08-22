@@ -168,13 +168,13 @@ public abstract class AbstractResourceTest extends TestCase {
         store.getTableFormatter().format();
     }
 
-    String createAndSaveAnnotation() throws ProfileRepositoryException {
-        Annotation annotation = createTestAnnotation();
+    String createAndSaveAnnotation(String graphUri) throws ProfileRepositoryException {
+        Annotation annotation = createTestAnnotation(graphUri);
         saveAnnotation(annotation);
         return annotation.getId();
     }
 
-    Annotation createTestAnnotation() {
+    Annotation createTestAnnotation(String graphUri) {
 
         // body of the annotation
         Map<String, String> body = new HashMap<String, String>();
@@ -185,7 +185,7 @@ public abstract class AbstractResourceTest extends TestCase {
         Annotation annotation = new Annotation();
         annotation.setAnnotates(annotated);
         annotation.setType("SimpleComment");
-        annotation.setGraphId(userUriOne);
+        annotation.setGraphId(graphUri);
         annotation.setBody(body);
 
         return annotation;
@@ -245,20 +245,30 @@ public abstract class AbstractResourceTest extends TestCase {
     // ---------- URIs and Data used accross tests
 
 
-    String baseUri = "http://localhost:9090/caboto/";
+    final String baseUri = "http://localhost:9090/caboto/";
 
-    String userPublicUriOne = "person/mike/public/";
+    private final String userPublicPathOne = "person/mike/public/";
 
-    String userPublicUriTwo = "person/damian/public/";
+    private final String userPublicPathTwo = "person/damian/public/";
 
-    String userUriOne = baseUri + userPublicUriOne;
+    private final String userPrivatePathOne = "person/mike/private/";
 
-    String userUriTwo = baseUri + userPublicUriTwo;
+    private final String userPrivatePathTwo = "person/damian/private/";
 
-    String annotated = "http://caboto.org/somethinginteresting";
+    String userPublicUriOne = baseUri + userPublicPathOne;
+
+    String userPublicUriTwo = baseUri + userPublicPathTwo;
+
+    String userPrivateUriOne = baseUri + userPrivatePathOne;
+
+    String userPrivateUriTwo = baseUri + userPrivatePathTwo;
+
+    final String annotated = "http://caboto.org/somethinginteresting";
 
     String validPostData = "title=A%20Title&description=A%20description&type=" +
             "SimpleComment&annotates=http%3A%2F%2Fexample.org%2Fthing";
+
+    String garbagePostData = "aaabbbcccdddeeefffggghhhiii";
 
 
     // ---------- Some test credentials
