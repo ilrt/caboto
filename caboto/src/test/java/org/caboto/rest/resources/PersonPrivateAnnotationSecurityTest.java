@@ -18,9 +18,10 @@ public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
 
     @Before
     public void setUp() {
-        clearCredentials(); // in case they had been set in the test
+        
         formatDataStore();
         startJettyWithSecurity();
+        clearCredentials(); // in case they had been set in the test
     }
 
     @After
