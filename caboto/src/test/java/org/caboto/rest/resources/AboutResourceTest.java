@@ -26,8 +26,8 @@ public class AboutResourceTest extends AbstractResourceTest {
         requestUri = baseUri + "about/?id=" + annotated;
 
         try {
-            annotationUrlOne = createAndSaveAnnotation();
-            annotationUrlTwo = createAndSaveAnnotation();
+            annotationUrlOne = createAndSaveAnnotation(userPublicUriOne);
+            annotationUrlTwo = createAndSaveAnnotation(userPublicUriOne);
         } catch (ProfileRepositoryException e) {
             e.printStackTrace();
         }
