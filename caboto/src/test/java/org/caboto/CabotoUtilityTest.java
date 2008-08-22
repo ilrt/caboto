@@ -156,6 +156,33 @@ public class CabotoUtilityTest extends TestCase {
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_TEN));
     }
 
+    @Test
+    public void testPublicGraph() {
+
+        assertTrue("Should be a public annotation", CabotoUtility.isPublicGraph(PUBLIC_GRAPH_ONE));
+        assertFalse("should be an incorrect public graph",
+                CabotoUtility.isPublicGraph(PUBLIC_GRAPH_TWO));
+        assertFalse("Should be an incorrect public graph",
+                CabotoUtility.isPublicGraph(PUBLIC_GRAPH_THREE));
+        assertFalse("Should be an incorrect public graph",
+                CabotoUtility.isPublicGraph(PUBLIC_GRAPH_FOUR));
+
+    }
+
+    @Test
+    public void testPrivateGraph() {
+
+        assertTrue("Should be a private annotation",
+                CabotoUtility.isPrivateGraph(PRIVATE_GRAPH_ONE));
+        assertFalse("should be an incorrect private graph",
+                CabotoUtility.isPrivateGraph(PRIVATE_GRAPH_TWO));
+        assertFalse("Should be an incorrect private graph",
+                CabotoUtility.isPrivateGraph(PRIVATE_GRAPH_THREE));
+        assertFalse("Should be an incorrect private graph",
+                CabotoUtility.isPrivateGraph(PRIVATE_GRAPH_FOUR));
+
+    }
+
 
     // public URIs
     private final String PUBLIC_URI_ONE = "/person/mike/public/";
@@ -196,6 +223,24 @@ public class CabotoUtilityTest extends TestCase {
             "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_TEN =
             "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+
+
+    // public graphs
+    private final String PUBLIC_GRAPH_ONE = "http://caboto.org/caboto/person/mike/public/";
+    private final String PUBLIC_GRAPH_TWO = "http://caboto.org/caboto/person/mike/public/aaaaaaaa";
+    private final String PUBLIC_GRAPH_THREE =
+            "http://caboto.org/caboto/person/mike/private/public/";
+    private final String PUBLIC_GRAPH_FOUR =
+            "http://caboto.org/caboto/person/mike/public/public/public/";
+
+    // private graphs
+    private final String PRIVATE_GRAPH_ONE = "http://caboto.org/caboto/person/mike/private/";
+    private final String PRIVATE_GRAPH_TWO =
+            "http://caboto.org/caboto/person/mike/private/aaaaaaaa";
+    private final String PRIVATE_GRAPH_THREE =
+            "http://caboto.org/caboto/person/mike/public/private/";
+    private final String PRIVATE_GRAPH_FOUR =
+            "http://caboto.org/caboto/person/mike/private/private/private/";
 
     // users
     private final String USER_ONE = "mike";
