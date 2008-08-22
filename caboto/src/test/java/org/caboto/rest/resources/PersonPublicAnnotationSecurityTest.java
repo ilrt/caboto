@@ -20,18 +20,18 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
     public void setUp() {
         formatDataStore();
         startJettyWithSecurity();
+        clearCredentials(); // in case they had been set in the test
     }
 
     @After
     public void tearDown() {
-        clearCredentials(); // in case they had been set in the test
         stopJetty();
     }
 
     @Test
     public void testAddAnnotationUnauthenticated() {
 
-        ClientResponse clientResponse = createPostClientResponse(userUriOne,
+        ClientResponse clientResponse = createPostClientResponse(userPublicUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 401 response should be returned", Response.Status.UNAUTHORIZED
@@ -43,7 +43,7 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
 
         setCredentials(usernameOne, passwordOne);
 
-        ClientResponse clientResponse = createPostClientResponse(userUriOne,
+        ClientResponse clientResponse = createPostClientResponse(userPublicUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 201 response should be returned", Response.Status.CREATED
@@ -55,7 +55,7 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
 
         setCredentials(usernameOne, passwordOne);
 
-        ClientResponse clientResponse = createPostClientResponse(userUriTwo,
+        ClientResponse clientResponse = createPostClientResponse(userPublicUriTwo,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 403 response should be returned", Response.Status.FORBIDDEN
@@ -65,7 +65,7 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
     @Test
     public void testGetAnnotationUnauthenticated() throws ProfileRepositoryException {
 
-        String url = createAndSaveAnnotation();
+        String url = createAndSaveAnnotation(userPublicUriOne);
 
         ClientResponse clientResponse = createGetClientResponse(url, MediaType.APPLICATION_JSON);
 
@@ -76,7 +76,7 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
     @Test
     public void testGetAnnotationAuthenticated() throws ProfileRepositoryException {
 
-        String url = createAndSaveAnnotation();
+        String url = createAndSaveAnnotation(userPublicUriOne);
 
         setCredentials(usernameOne, passwordOne);
 
@@ -90,7 +90,7 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
     public void testDeleteAnnotationUnauthenticated() throws ProfileRepositoryException {
 
         // create an annotation to delete
-        String url = createAndSaveAnnotation();
+        String url = createAndSaveAnnotation(userPublicUriOne);
 
         // check that the thing we want to delete actually exists
         ClientResponse clientResponse1 =
@@ -115,7 +115,7 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
     public void testDeleteAnnotationAuthenticated() throws ProfileRepositoryException {
 
         // create an annotation to delete
-        String url = createAndSaveAnnotation();
+        String url = createAndSaveAnnotation(userPublicUriOne);
 
         // set credentials
         setCredentials(usernameOne, passwordOne);
