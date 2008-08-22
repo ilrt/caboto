@@ -98,6 +98,23 @@ public final class CabotoUtility {
     }
 
     /**
+     * @param graphUri the graph of an annotation.
+     * @return whether or not its a public graph.
+     */
+    public static boolean isPublicGraph(String graphUri) {
+        return publicGraphPattern.matcher(graphUri).find();
+    }
+
+    /**
+     * @param graphUri the graph of an annotation.
+     * @return whether or not its a private graph.
+     */
+    public static boolean isPrivateGraph(String graphUri) {
+        return privateGraphPattern.matcher(graphUri).find();
+    }
+
+
+    /**
      * @param path the path details of a request.
      * @return the username that is part of the path.
      */
@@ -109,9 +126,12 @@ public final class CabotoUtility {
         return temp.substring(0, temp.indexOf("/"));
     }
 
+    private static Pattern publicResourcePattern = Pattern.compile("^.*/person/.*/public/.*$");
+    private static Pattern privateResourcePattern = Pattern.compile("^.*/person/.*/private/.*$");
 
-    private static Pattern publicResourcePattern = Pattern.compile("^.*/public/.*$");
-    private static Pattern privateResourcePattern = Pattern.compile("^.*/private/.*$");
+    private static Pattern publicGraphPattern = Pattern.compile("^.*/person/[^/]*/public/$");
+    private static Pattern privateGraphPattern = Pattern.compile("^.*/person/[^/]*/private/$");
+
 
     private static String personPath = "/person/";
 
