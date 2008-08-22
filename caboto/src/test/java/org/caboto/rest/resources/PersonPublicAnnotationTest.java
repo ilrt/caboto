@@ -35,7 +35,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPublicAnnotationWithGarbage() {
 
-        ClientResponse clientResponse = createPostClientResponse(userUriOne,
+        ClientResponse clientResponse = createPostClientResponse(userPublicUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, garbagePostData);
 
         assertEquals("A 400 response should be returned",
@@ -45,22 +45,21 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPublicAnnotation() {
 
-        ClientResponse clientResponse = createPostClientResponse(userUriOne,
+        ClientResponse clientResponse = createPostClientResponse(userPublicUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 201 response should be returned", Response.Status.CREATED.getStatusCode(),
                 clientResponse.getStatus());
-        assertTrue("The created location should start with " + baseUri + userPublicUriOne,
-                clientResponse.getLocation().toString().startsWith(userUriOne));
+        assertTrue("The created location should start with " + userPublicUriOne,
+                clientResponse.getLocation().toString().startsWith(userPublicUriOne));
 
     }
-
 
     @Test
     public void testGetPublicAnnotationAsJson() throws ProfileRepositoryException, JSONException {
 
         // the url of the resource
-        String url = createAndSaveAnnotation();
+        String url = createAndSaveAnnotation(userPublicUriOne);
 
         ClientResponse clientResponse =
                 createGetClientResponse(url, MediaType.APPLICATION_JSON);
@@ -76,12 +75,11 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
         assertEquals("The IDs do not match", url, object.getString("id"));
     }
 
-
     @Test
     public void testGetPublicAnnotationAsRdfXml() throws ProfileRepositoryException, JSONException {
 
         // the url of the resource
-        String url = createAndSaveAnnotation();
+        String url = createAndSaveAnnotation(userPublicUriOne);
 
         ClientResponse clientResponse =
                 createGetClientResponse(url, RdfMediaType.APPLICATION_RDF_XML);
@@ -103,7 +101,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testGetPublicAnnotationAsRdfN3() throws ProfileRepositoryException, JSONException {
 
         // the url of the resource
-        String url = createAndSaveAnnotation();
+        String url = createAndSaveAnnotation(userPublicUriOne);
 
         ClientResponse clientResponse =
                 createGetClientResponse(url, RdfMediaType.TEXT_RDF_N3);
@@ -125,7 +123,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testGetMissingResource() {
 
         ClientResponse clientResponse =
-                createGetClientResponse(userUriOne + "aresourcethatdoesntexist",
+                createGetClientResponse(userPublicUriOne + "aresourcethatdoesntexist",
                         MediaType.APPLICATION_JSON);
 
         assertEquals("A 404 response should be returned", Response.Status.NOT_FOUND
@@ -137,7 +135,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testDeleteResource() throws ProfileRepositoryException {
 
         // create an annotation to delete
-        String url = createAndSaveAnnotation();
+        String url = createAndSaveAnnotation(userPublicUriOne);
 
         // check that the thing we want to delete actually exists
         ClientResponse clientResponse1 =
@@ -161,12 +159,10 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testDeleteResourceThatDoesNotExist() {
 
         Client c = Client.create();
-        ClientResponse deleteResponse = c.resource(userUriOne + "doesnotexist")
+        ClientResponse deleteResponse = c.resource(userPublicUriOne + "doesnotexist")
                 .delete(ClientResponse.class);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 deleteResponse.getStatus());
     }
-
-    private String garbagePostData = "aaabbbcccdddeeefffggghhhiii";
 
 }
