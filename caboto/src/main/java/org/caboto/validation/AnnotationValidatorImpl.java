@@ -36,6 +36,7 @@ import org.caboto.profile.Profile;
 import org.caboto.profile.ProfileEntry;
 import org.caboto.profile.ProfileRepository;
 import org.caboto.profile.ProfileRepositoryException;
+import org.caboto.CabotoUtility;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -73,6 +74,10 @@ public final class AnnotationValidatorImpl implements Validator {
                 if (profile == null) {
 
                     errors.reject("annotation.type.unkown", new String[]{annotation.getType()}, "");
+
+                } else if (!expectedGraphType(annotation.getGraphId())) { // not public or private?
+
+                    errors.reject("annotation.graph.unexpected");
 
                 } else {
 
@@ -181,6 +186,19 @@ public final class AnnotationValidatorImpl implements Validator {
         }
         return true;
     }
+
+    /**
+     * Checks that we have the correct graph type - it should be public or private.
+     *
+     * @param graphUri the graph that needs to be checked.
+     * @return whether or not we are dealing with an expected graph type.
+     */
+    private boolean expectedGraphType(String graphUri) {
+
+        return CabotoUtility.isPublicResource(graphUri) ||
+                CabotoUtility.isPrivateResource(graphUri);
+    }
+
 
     private ProfileRepository profileRepository;
 }
