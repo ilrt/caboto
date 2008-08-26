@@ -18,10 +18,9 @@ public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
 
     @Before
     public void setUp() {
-        
+
         formatDataStore();
         startJettyWithSecurity();
-        clearCredentials(); // in case they had been set in the test
     }
 
     @After
@@ -32,7 +31,7 @@ public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
     @Test
     public void testAddAnnotationUnauthenticated() {
 
-        ClientResponse clientResponse = createPostClientResponse(userPrivateUriOne,
+        ClientResponse clientResponse = createPostClientResponse(null, null, userPrivateUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 401 response should be returned", Response.Status.UNAUTHORIZED
@@ -42,10 +41,8 @@ public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
     @Test
     public void testAddAnnotationAuthenticated() {
 
-        setCredentials(usernameOne, passwordOne);
-
-        ClientResponse clientResponse = createPostClientResponse(userPrivateUriOne,
-                MediaType.APPLICATION_FORM_URLENCODED, validPostData);
+        ClientResponse clientResponse = createPostClientResponse(usernameOne, passwordOne,
+                userPrivateUriOne, MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 201 response should be returned", Response.Status.CREATED
                 .getStatusCode(), clientResponse.getStatus());
@@ -54,10 +51,8 @@ public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
     @Test
     public void testAddAnnotationAuthenticatedIncorrectUserPath() {
 
-        setCredentials(usernameOne, passwordOne);
-
-        ClientResponse clientResponse = createPostClientResponse(userPrivateUriTwo,
-                MediaType.APPLICATION_FORM_URLENCODED, validPostData);
+        ClientResponse clientResponse = createPostClientResponse(usernameOne, passwordOne,
+                userPrivateUriTwo, MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 403 response should be returned", Response.Status.FORBIDDEN
                 .getStatusCode(), clientResponse.getStatus());
@@ -68,9 +63,8 @@ public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
 
         String url = createAndSaveAnnotation(userPrivateUriOne);
 
-        setCredentials(usernameOne, passwordOne);
-
-        ClientResponse clientResponse = createGetClientResponse(url, MediaType.APPLICATION_JSON);
+        ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
+                url, MediaType.APPLICATION_JSON);
 
         assertEquals("A 200 should be returned", Response.Status.OK.getStatusCode(),
                 clientResponse.getStatus());
@@ -81,9 +75,8 @@ public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
 
         String url = createAndSaveAnnotation(userPrivateUriTwo);
 
-        setCredentials(usernameOne, passwordOne);
-
-        ClientResponse clientResponse = createGetClientResponse(url, MediaType.APPLICATION_JSON);
+        ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
+                url, MediaType.APPLICATION_JSON);
 
         assertEquals("A 403 should be returned", Response.Status.FORBIDDEN.getStatusCode(),
                 clientResponse.getStatus());
@@ -95,25 +88,25 @@ public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
         // create an annotation to delete
         String url = createAndSaveAnnotation(userPrivateUriOne);
 
-        // set credentials
-        setCredentials(usernameOne, passwordOne);
-
         // check that the thing we want to delete actually exists
         ClientResponse clientResponse1 =
-                createGetClientResponse(url, MediaType.APPLICATION_JSON);
+                createGetClientResponse(usernameOne, passwordOne, url, MediaType.APPLICATION_JSON);
         assertEquals("The resource sould return a 200", Response.Status.OK.getStatusCode(),
                 clientResponse1.getStatus());
 
         // delete the resource
         Client c = Client.create();
+        c.addFilter(new BasicAuthenticationClientFilter(usernameOne, passwordOne));
         ClientResponse deleteResponse = c.resource(url).delete(ClientResponse.class);
         assertEquals("A 200 should be returned", Response.Status.OK.getStatusCode(),
                 deleteResponse.getStatus());
 
         // make sure its not found
-        ClientResponse clientResponse2 = createGetClientResponse(url, MediaType.APPLICATION_JSON);
+        ClientResponse clientResponse2 = createGetClientResponse(usernameOne, passwordOne, url,
+                MediaType.APPLICATION_JSON);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 clientResponse2.getStatus());
 
     }
+
 }

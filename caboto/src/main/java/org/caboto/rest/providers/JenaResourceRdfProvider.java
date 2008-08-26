@@ -33,7 +33,7 @@ package org.caboto.rest.providers;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -43,12 +43,14 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import org.caboto.RdfMediaType;
+
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id: JenaResourceRdfProvider.java 177 2008-05-30 13:50:59Z mike.a.jones $
  */
 @Provider
-@ProduceMime({"application/rdf+xml", "text/rdf+n3"})
+@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
 public final class JenaResourceRdfProvider implements MessageBodyWriter<Object> {
 
     // ---- Writer implementation
