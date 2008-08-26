@@ -35,6 +35,6 @@ public class BasicAuthenticationClientFilter extends ClientFilter {
         return getNext().handle(clientRequest);
     }
 
-    private String username = null;
-    private String password = null;
+    private String username;
+    private String password;
 }

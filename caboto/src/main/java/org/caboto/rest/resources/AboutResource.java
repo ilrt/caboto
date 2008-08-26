@@ -35,14 +35,15 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.spi.inject.Inject;
 import com.sun.jersey.spi.resource.PerRequest;
 import org.caboto.CabotoJsonSupport;
+import org.caboto.RdfMediaType;
 import org.caboto.dao.AnnotationDao;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -55,7 +56,7 @@ import javax.ws.rs.core.Response;
 public final class AboutResource {
 
     @GET
-    @ProduceMime({"application/rdf+xml", "text/rdf+n3"})
+    @Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
     public Response findAnnotations(@QueryParam("id") final String about) {
 
         Model results = annotationDao.findAnnotations(about);
@@ -68,7 +69,7 @@ public final class AboutResource {
     }
 
     @GET
-    @ProduceMime(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response findAnnotationsAsJson(@QueryParam("id") final String about)
             throws JSONException {
 

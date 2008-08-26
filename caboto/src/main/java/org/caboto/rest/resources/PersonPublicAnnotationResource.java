@@ -48,12 +48,12 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -71,7 +71,7 @@ import java.net.URISyntaxException;
 public final class PersonPublicAnnotationResource {
 
     @POST
-    @ConsumeMime(MediaType.APPLICATION_FORM_URLENCODED)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response addAnnotation(final MultivaluedMap<String, String> params)
             throws URISyntaxException {
 
@@ -111,7 +111,7 @@ public final class PersonPublicAnnotationResource {
 
     @Path("{id}")
     @GET
-    @ProduceMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+    @Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
     public Response getAnnotation() {
 
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());
@@ -127,7 +127,7 @@ public final class PersonPublicAnnotationResource {
 
     @Path("{id}")
     @GET
-    @ProduceMime(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getAnnotationAsJson() throws JSONException {
 
         Resource resource = annotationDao.findAnnotation(uriInfo.getRequestUri().toString());

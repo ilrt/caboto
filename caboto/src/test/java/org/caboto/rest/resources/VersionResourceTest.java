@@ -29,7 +29,8 @@ public class VersionResourceTest extends AbstractResourceTest {
     public void testVersion() {
 
         String url = baseUri + "version/";
-        ClientResponse clientResponse = createGetClientResponse(url, MediaType.TEXT_PLAIN);
+        ClientResponse clientResponse = createGetClientResponse(null, null, url,
+                MediaType.TEXT_PLAIN);
 
         assertEquals("Should return a 200", Response.Status.OK.getStatusCode(),
                 clientResponse.getStatus());

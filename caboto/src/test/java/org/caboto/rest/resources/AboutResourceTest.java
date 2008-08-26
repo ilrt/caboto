@@ -41,7 +41,7 @@ public class AboutResourceTest extends AbstractResourceTest {
     @Test
     public void testFindAnnotationsAsJson() {
 
-        ClientResponse clientResponse = createGetClientResponse(requestUri,
+        ClientResponse clientResponse = createGetClientResponse(null, null, requestUri,
                 MediaType.APPLICATION_JSON);
 
         assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
@@ -61,7 +61,7 @@ public class AboutResourceTest extends AbstractResourceTest {
     @Test
     public void testFindAnnotationsAsRdfN3() {
 
-        ClientResponse clientResponse = createGetClientResponse(requestUri,
+        ClientResponse clientResponse = createGetClientResponse(null, null, requestUri,
                 RdfMediaType.TEXT_RDF_N3);
 
         assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
@@ -85,7 +85,7 @@ public class AboutResourceTest extends AbstractResourceTest {
     @Test
     public void testFindAnnotationsAsRdfXml() {
 
-        ClientResponse clientResponse = createGetClientResponse(requestUri,
+        ClientResponse clientResponse = createGetClientResponse(null, null, requestUri,
                 RdfMediaType.APPLICATION_RDF_XML);
 
         assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
@@ -110,7 +110,7 @@ public class AboutResourceTest extends AbstractResourceTest {
     public void testGetMissingResource() {
 
         ClientResponse clientResponse =
-                createGetClientResponse(requestUri + "aresourcethatdoesntexist",
+                createGetClientResponse(null, null, requestUri + "aresourcethatdoesntexist",
                         MediaType.APPLICATION_JSON);
 
         assertEquals("A 404 response should be returned", Response.Status.NOT_FOUND

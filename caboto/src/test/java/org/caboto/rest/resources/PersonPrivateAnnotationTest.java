@@ -35,14 +35,11 @@ public class PersonPrivateAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPrivateAnnotation() {
 
-        ClientResponse clientResponse = createPostClientResponse(userPrivateUriOne,
+        ClientResponse clientResponse = createPostClientResponse(null, null, userPrivateUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 201 response should be returned", Response.Status.CREATED.getStatusCode(),
                 clientResponse.getStatus());
-
-        System.out.println(clientResponse.getStatus());
-        System.out.println(clientResponse.getLocation());
 
         assertTrue("The created location should start with " + userPrivateUriOne,
                 clientResponse.getLocation().toString().startsWith(userPrivateUriOne));
@@ -52,7 +49,7 @@ public class PersonPrivateAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPrivateAnnotationWithGarbage() {
 
-        ClientResponse clientResponse = createPostClientResponse(userPrivateUriOne,
+        ClientResponse clientResponse = createPostClientResponse(null, null, userPrivateUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, garbagePostData);
 
         assertEquals("A 400 response should be returned",
@@ -65,7 +62,7 @@ public class PersonPrivateAnnotationTest extends AbstractResourceTest {
         String url = createAndSaveAnnotation(userPrivateUriOne);
 
         ClientResponse clientResponse =
-                createGetClientResponse(url, MediaType.APPLICATION_JSON);
+                createGetClientResponse(null, null, url, MediaType.APPLICATION_JSON);
 
         JSONObject object = clientResponse.getEntity(JSONObject.class);
 
@@ -84,7 +81,7 @@ public class PersonPrivateAnnotationTest extends AbstractResourceTest {
         String url = createAndSaveAnnotation(userPrivateUriOne);
 
         ClientResponse clientResponse =
-                createGetClientResponse(url, RdfMediaType.APPLICATION_RDF_XML);
+                createGetClientResponse(null, null, url, RdfMediaType.APPLICATION_RDF_XML);
 
         Model model = clientResponse.getEntity(Model.class);
 
@@ -105,7 +102,7 @@ public class PersonPrivateAnnotationTest extends AbstractResourceTest {
         String url = createAndSaveAnnotation(userPrivateUriOne);
 
         ClientResponse clientResponse =
-                createGetClientResponse(url, RdfMediaType.TEXT_RDF_N3);
+                createGetClientResponse(null, null, url, RdfMediaType.TEXT_RDF_N3);
 
         Model model = clientResponse.getEntity(Model.class);
 
@@ -124,7 +121,7 @@ public class PersonPrivateAnnotationTest extends AbstractResourceTest {
     public void testGetMissingResource() {
 
         ClientResponse clientResponse =
-                createGetClientResponse(userPrivateUriOne + "aresourcethatdoesntexist",
+                createGetClientResponse(null, null, userPrivateUriOne + "aresourcethatdoesntexist",
                         MediaType.APPLICATION_JSON);
 
         assertEquals("A 404 response should be returned", Response.Status.NOT_FOUND
@@ -140,7 +137,7 @@ public class PersonPrivateAnnotationTest extends AbstractResourceTest {
 
         // check that the thing we want to delete actually exists
         ClientResponse clientResponse1 =
-                createGetClientResponse(url, MediaType.APPLICATION_JSON);
+                createGetClientResponse(null, null, url, MediaType.APPLICATION_JSON);
         assertEquals("The resource sould return a 200", Response.Status.OK.getStatusCode(),
                 clientResponse1.getStatus());
 
@@ -151,7 +148,8 @@ public class PersonPrivateAnnotationTest extends AbstractResourceTest {
                 deleteResponse.getStatus());
 
         // make sure its not found
-        ClientResponse clientResponse2 = createGetClientResponse(url, MediaType.APPLICATION_JSON);
+        ClientResponse clientResponse2 = createGetClientResponse(null, null, url,
+                MediaType.APPLICATION_JSON);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 clientResponse2.getStatus());
     }

@@ -4,9 +4,9 @@ import com.sun.jersey.spi.inject.Inject;
 import com.sun.jersey.spi.resource.PerRequest;
 import org.caboto.domain.VersionDetails;
 
-import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
  */
 @PerRequest
 @Path("/version/")
-@ProduceMime(MediaType.TEXT_PLAIN)
+@Produces(MediaType.TEXT_PLAIN)
 public class VersionResource {
 
     @GET

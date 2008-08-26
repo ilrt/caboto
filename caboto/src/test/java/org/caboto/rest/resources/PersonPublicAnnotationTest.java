@@ -35,7 +35,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPublicAnnotationWithGarbage() {
 
-        ClientResponse clientResponse = createPostClientResponse(userPublicUriOne,
+        ClientResponse clientResponse = createPostClientResponse(null, null, userPublicUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, garbagePostData);
 
         assertEquals("A 400 response should be returned",
@@ -45,7 +45,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testAddPublicAnnotation() {
 
-        ClientResponse clientResponse = createPostClientResponse(userPublicUriOne,
+        ClientResponse clientResponse = createPostClientResponse(null, null, userPublicUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 201 response should be returned", Response.Status.CREATED.getStatusCode(),
@@ -62,7 +62,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
         String url = createAndSaveAnnotation(userPublicUriOne);
 
         ClientResponse clientResponse =
-                createGetClientResponse(url, MediaType.APPLICATION_JSON);
+                createGetClientResponse(null, null, url, MediaType.APPLICATION_JSON);
 
         JSONObject object = clientResponse.getEntity(JSONObject.class);
 
@@ -82,7 +82,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
         String url = createAndSaveAnnotation(userPublicUriOne);
 
         ClientResponse clientResponse =
-                createGetClientResponse(url, RdfMediaType.APPLICATION_RDF_XML);
+                createGetClientResponse(null, null, url, RdfMediaType.APPLICATION_RDF_XML);
 
         Model model = clientResponse.getEntity(Model.class);
 
@@ -104,7 +104,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
         String url = createAndSaveAnnotation(userPublicUriOne);
 
         ClientResponse clientResponse =
-                createGetClientResponse(url, RdfMediaType.TEXT_RDF_N3);
+                createGetClientResponse(null, null, url, RdfMediaType.TEXT_RDF_N3);
 
         Model model = clientResponse.getEntity(Model.class);
 
@@ -123,7 +123,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testGetMissingResource() {
 
         ClientResponse clientResponse =
-                createGetClientResponse(userPublicUriOne + "aresourcethatdoesntexist",
+                createGetClientResponse(null, null, userPublicUriOne + "aresourcethatdoesntexist",
                         MediaType.APPLICATION_JSON);
 
         assertEquals("A 404 response should be returned", Response.Status.NOT_FOUND
@@ -139,7 +139,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
 
         // check that the thing we want to delete actually exists
         ClientResponse clientResponse1 =
-                createGetClientResponse(url, MediaType.APPLICATION_JSON);
+                createGetClientResponse(null, null, url, MediaType.APPLICATION_JSON);
         assertEquals("The resource sould return a 200", Response.Status.OK.getStatusCode(),
                 clientResponse1.getStatus());
 
@@ -150,7 +150,8 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
                 deleteResponse.getStatus());
 
         // make sure its not found
-        ClientResponse clientResponse2 = createGetClientResponse(url, MediaType.APPLICATION_JSON);
+        ClientResponse clientResponse2 = createGetClientResponse(null, null, url,
+                MediaType.APPLICATION_JSON);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 clientResponse2.getStatus());
     }

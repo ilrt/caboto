@@ -35,7 +35,6 @@ import java.util.Map;
  */
 public abstract class AbstractResourceTest extends TestCase {
 
-
     // ---------- Helper methods for starting and stopping jetty
 
     void startJetty() {
@@ -68,7 +67,6 @@ public abstract class AbstractResourceTest extends TestCase {
         }
     }
 
-
     // ---------- Helper methods for configuring jersey
 
     Server configureJetty() {
@@ -88,7 +86,6 @@ public abstract class AbstractResourceTest extends TestCase {
         configureSpringSecurity(context);
         return server;
     }
-
 
     // ---------- Jetty configuration methods
 
@@ -135,18 +132,29 @@ public abstract class AbstractResourceTest extends TestCase {
         context.addFilter(filterHolder, "/*", org.mortbay.jetty.Handler.DEFAULT);
     }
 
-
     // ---------- Helper methods for the RESTful clients
 
-    ClientResponse createPostClientResponse(String uri, String type, String postData) {
+    ClientResponse createPostClientResponse(String username, String password,
+                                            String uri, String type, String postData) {
 
         Client c = Client.create();
+
+        if (username != null && password != null) {
+            c.addFilter(new BasicAuthenticationClientFilter(username, password));
+        }
+
         return c.resource(uri).type(type).post(ClientResponse.class, postData);
     }
 
-    ClientResponse createGetClientResponse(String uri, String type) {
+    ClientResponse createGetClientResponse(String username, String password,
+                                           String uri, String type) {
 
         Client c = Client.create(createClientConfig());
+
+        if (username != null && password != null) {
+            c.addFilter(new BasicAuthenticationClientFilter(username, password));
+        }
+
         return c.resource(uri).accept(type).get(ClientResponse.class);
     }
 
@@ -157,7 +165,6 @@ public abstract class AbstractResourceTest extends TestCase {
         config.getProviderClasses().add(JenaModelRdfProvider.class);
         return config;
     }
-
 
     // ---------- Helper methods for handling the store and creating test data
 
@@ -202,7 +209,6 @@ public abstract class AbstractResourceTest extends TestCase {
 
     }
 
-
     // ---------- Handling credentials in the client
 
     void setCredentials(final String username, final String password) {
@@ -217,13 +223,11 @@ public abstract class AbstractResourceTest extends TestCase {
         Authenticator.setDefault(null);
     }
 
-
     // ---------- Jetty server configuration
 
     private Server server;
 
     final private int PORT_NUMBER = 9090;
-
 
     // ---------- Jersey configuration
 
@@ -234,13 +238,11 @@ public abstract class AbstractResourceTest extends TestCase {
 
     private final String SERVLET_PATH = "/caboto";
 
-
     // ---------- Spring configuration files
 
     final private String SPRING_CONTEXT = "classpath:caboto-context.xml";
 
     final private String SPRING_SECURITY_CONTEXT = "classpath:caboto-security.xml";
-
 
     // ---------- URIs and Data used accross tests
 
@@ -269,7 +271,6 @@ public abstract class AbstractResourceTest extends TestCase {
             "SimpleComment&annotates=http%3A%2F%2Fexample.org%2Fthing";
 
     String garbagePostData = "aaabbbcccdddeeefffggghhhiii";
-
 
     // ---------- Some test credentials
 
