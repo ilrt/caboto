@@ -15,7 +15,8 @@
         <security:http-basic/>
         <security:anonymous username="anonymous" granted-authority="ANONYMOUS"/>
         <security:intercept-url pattern="^.*/about/.*$" method="GET" access="ANONYMOUS,USER,ADMIN"/>
-        <security:intercept-url pattern="^.*/public/.*$" method="GET" access="ANONYMOUS,USER,ADMIN"/>
+        <security:intercept-url pattern="^.*/public/.*$" method="GET"
+                                access="ANONYMOUS,USER,ADMIN"/>
         <security:intercept-url pattern="^.*/public/.*$" method="POST" access="USER,ADMIN"/>
         <security:intercept-url pattern="^.*/public/.*$" method="DELETE" access="USER,ADMIN"/>
         <security:intercept-url pattern="^.*/private/.*$" method="GET" access="USER,ADMIN"/>
@@ -54,6 +55,16 @@
                 <ref local="authenticatedVoter"/>
             </list>
         </property>
+    </bean>
+
+    <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">
+        <constructor-arg index="0" value="ADMIN"/>
+    </bean>
+
+    <bean id="annotationDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces" value="org.caboto.dao.AnnotationDao"/>
+        <property name="interceptorNames" value="exitGuard"/>
+        <property name="target" ref="annotationDao"/>
     </bean>
 
 </beans>
