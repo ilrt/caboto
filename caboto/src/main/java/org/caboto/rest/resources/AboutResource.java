@@ -84,7 +84,7 @@ public final class AboutResource {
         return Response.status(Response.Status.OK).entity(jsonArray).build();
     }
 
-    @Inject
+    @Inject("annotationDaoProxy")
     private AnnotationDao annotationDao = null;
 
     @Inject
