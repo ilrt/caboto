@@ -160,7 +160,7 @@ public final class PersonPublicAnnotationResource {
     @Context
     private UriInfo uriInfo = null;
 
-    @Inject
+    @Inject("annotationDao")
     private AnnotationDao annotationDao = null;
 
     @Inject
