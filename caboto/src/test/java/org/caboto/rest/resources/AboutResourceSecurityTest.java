@@ -39,7 +39,6 @@ public class AboutResourceSecurityTest extends AbstractResourceTest {
 
     @Test
     public void testFindAnnotationsUnauthenticated() {
-        assertTrue(true);
 
         ClientResponse clientResponse = createGetClientResponse(null, null, requestUri,
                 RdfMediaType.APPLICATION_RDF_XML);
@@ -54,14 +53,32 @@ public class AboutResourceSecurityTest extends AbstractResourceTest {
                 results.containsResource(ResourceFactory.createResource(publicAnnotationUrlOne)));
         assertTrue("Graph not found " + userPublicUriOne,
                 results.containsResource(ResourceFactory.createResource(publicAnnotationUrlTwo)));
-        assertFalse("Graph not found " + userPublicUriOne,
+        assertFalse("Graph found " + userPublicUriOne,
                 results.containsResource(ResourceFactory.createResource(privateAnnotationUrlOne)));
 
+    }
 
-        System.out.println(results.size());
+    @Test
+    public void testFindAnnotationsAuthenticated() {
 
+        ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
+                requestUri, RdfMediaType.APPLICATION_RDF_XML);
+
+        assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+
+        Model results = clientResponse.getEntity(Model.class);
+
+        assertEquals("The model size should be 21", 21, results.size());
+        assertTrue("Graph not found " + userPublicUriOne,
+                results.containsResource(ResourceFactory.createResource(publicAnnotationUrlOne)));
+        assertTrue("Graph not found " + userPublicUriOne,
+                results.containsResource(ResourceFactory.createResource(publicAnnotationUrlTwo)));
+        assertTrue("Graph not found " + userPublicUriOne,
+                results.containsResource(ResourceFactory.createResource(privateAnnotationUrlOne)));
 
     }
+
 
     private String requestUri;
     private String publicAnnotationUrlOne;
