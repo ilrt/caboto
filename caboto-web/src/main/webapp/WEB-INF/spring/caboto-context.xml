@@ -100,4 +100,17 @@
         </property>
     </bean>
 
+    <!-- guard for checking results returned -->
+
+    <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">
+        <constructor-arg index="0" value="ADMIN"/>
+    </bean>
+
+    <!-- AOP proxy used to filter results -->
+
+    <bean id="annotationDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces" value="org.caboto.dao.AnnotationDao"/>
+        <property name="interceptorNames" value="exitGuard"/>
+        <property name="target" ref="annotationDao"/>
+    </bean>
 </beans>
