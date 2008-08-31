@@ -28,8 +28,12 @@
 
     <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport"/>
 
-    <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">
+    <bean id="gatekeeper" class="org.caboto.security.spring.GateKeeperImpl">
         <constructor-arg index="0" value="ADMIN"/>
+    </bean>
+
+    <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">
+        <constructor-arg index="0" ref="gatekeeper"/>
     </bean>
 
     <bean id="annotationDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
