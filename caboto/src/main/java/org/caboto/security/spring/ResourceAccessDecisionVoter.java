@@ -1,12 +1,10 @@
 package org.caboto.security.spring;
 
-import org.caboto.CabotoUtility;
+import org.caboto.security.GateKeeper;
 import org.springframework.security.Authentication;
 import org.springframework.security.ConfigAttribute;
 import org.springframework.security.ConfigAttributeDefinition;
-import org.springframework.security.GrantedAuthority;
 import org.springframework.security.intercept.web.FilterInvocation;
-import org.springframework.security.userdetails.UserDetails;
 import org.springframework.security.vote.AccessDecisionVoter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +15,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
 
-    public ResourceAccessDecisionVoter(String ADMIN_ROLE) {
-        this.ADMIN_ROLE = ADMIN_ROLE;
+    public ResourceAccessDecisionVoter(GateKeeper gateKeeper) {
+        this.gateKeeper = gateKeeper;
     }
 
     public boolean supports(ConfigAttribute configAttribute) {
@@ -35,72 +33,33 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
         HttpServletRequest request =
                 ((FilterInvocation) o).getHttpRequest();
 
-        String username;
-        Object obj = authentication.getPrincipal();
-        if (obj instanceof UserDetails) {
-            username = ((UserDetails) obj).getUsername();
-        } else {
-            username = obj.toString();
-        }
+        String method = request.getMethod();
+
+        String path = request.getPathInfo();
 
 
-        // -------- "public" resources
-
-        if (CabotoUtility.isPublicResource(request.getPathInfo())) {
-
-            // POST and DELETE are a special case
-            if (request.getMethod().equalsIgnoreCase("POST") ||
-                    request.getMethod().equalsIgnoreCase("DELETE")) {
-
-                // if the uid isn't in the path or an ADMIN user then deny access
-                if (!(username.equals(CabotoUtility.extractUsername(request.getPathInfo())) ||
-                        inRole(ADMIN_ROLE, authentication.getAuthorities()))) {
-
-                    return ACCESS_DENIED;
-                }
-            }
-
-            return ACCESS_GRANTED;
-        }
-
-
-        // -------- "private" resources
-
-        if (CabotoUtility.isPrivateResource(request.getPathInfo())) {
-
-            if (username.equals(CabotoUtility.extractUsername(request.getPathInfo())) ||
-                    inRole(ADMIN_ROLE, authentication.getAuthorities())) {
+        if (method.equalsIgnoreCase("GET")) {
+            if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.READ, path)) {
                 return ACCESS_GRANTED;
             }
-
-            return ACCESS_DENIED;
         }
 
-
-        // if we are here ... we have no opinion
-        return ACCESS_ABSTAIN;
-    }
-
-    /**
-     * A utility class to check if a user belongs to a specific role.
-     *
-     * @param role        the role that we are interested in.
-     * @param authorities the list of authorities that the user owns.
-     * @return does the user belong to the role?
-     */
-
-    private boolean inRole(final String role, final GrantedAuthority[] authorities) {
-        for (GrantedAuthority authority : authorities) {
-            if (authority.getAuthority().equals(role)) {
-                return true;
+        if (method.equalsIgnoreCase("POST")) {
+            if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.WRITE,
+                    path)) {
+                return ACCESS_GRANTED;
             }
         }
-        return false;
+
+        if (method.equalsIgnoreCase("DELETE")) {
+            if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.DELETE,
+                    path)) {
+                return ACCESS_GRANTED;
+            }
+        }
+
+        return ACCESS_DENIED;
     }
 
-    /**
-     * Holds the value of an administrative role.
-     */
-    private final String ADMIN_ROLE;
-
+    final private GateKeeper gateKeeper;
 }
