@@ -25,6 +25,8 @@ public class GateKeeperImpl implements GateKeeper {
         // get the user name
         String username = getUsername(authentication);
 
+        // ---------- PUBLIC resources
+
         // is it a public graph/uri?
         if (CabotoUtility.isPublicResource(resource)) {
 
@@ -41,17 +43,22 @@ public class GateKeeperImpl implements GateKeeper {
                     return true;
                 }
             }
+
+            return false;
         }
+
+        // ---------- PRIVATE resources
 
         // is it a private resource? only owners and admins have access for any operation.
         if (CabotoUtility.isPrivateResource(resource)) {
-            if (CabotoUtility.extractUsername(resource).equals(username) ||
-                    inRole(ADMIN_ROLE, authentication.getAuthorities())) {
-                return true;
-            }
+            return CabotoUtility.extractUsername(resource).equals(username) ||
+                    inRole(ADMIN_ROLE, authentication.getAuthorities());
         }
 
-        return false;
+
+        // ---------- OTHER resources (no restrictions specified)
+
+        return true;
     }
 
     /**
