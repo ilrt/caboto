@@ -37,7 +37,7 @@
     <!-- voter for resources -->
 
     <bean id="resourceVoter" class="org.caboto.security.spring.ResourceAccessDecisionVoter">
-        <constructor-arg index="0" value="ADMIN"/>
+        <constructor-arg index="0" ref="gatekeeper"/>
     </bean>
 
     <bean id="roleVoter" class="org.springframework.security.vote.RoleVoter"/>
