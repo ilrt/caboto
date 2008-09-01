@@ -83,14 +83,18 @@
         <security:intercept-url pattern="^.*/private/.*$" method="GET" access="USER,ADMIN"/>
         <security:intercept-url pattern="^.*/private/.*$" method="POST" access="USER,ADMIN"/>
         <security:intercept-url pattern="^.*/private/.*$" method="DELETE" access="USER,ADMIN"/>
+        <security:intercept-url pattern="^.*/secured/.*$"  method="GET" access="USER,ADMIN"/>
     </security:http>
 
     <!-- default authentication provider -->
 
     <security:authentication-provider>
         <security:user-service>
-            <security:user name="mike" password="cheese" authorities="USER"/>
-            <security:user name="damian" password="mice" authorities="USER"/>
+            <security:user name="mike" password="potato" authorities="USER"/>
+            <security:user name="damian" password="carrot" authorities="USER"/>
+            <security:user name="jasper" password="turnip" authorities="USER"/>
+            <security:user name="nikki" password="pea" authorities="USER"/>
+            <security:user name="simon" password="radish" authorities="USER"/>
             <security:user name="admin" password="boss" authorities="ADMIN"/>
         </security:user-service>
     </security:authentication-provider>
