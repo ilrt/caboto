@@ -52,6 +52,24 @@
 
     <!-- SECURITY -->
 
+    <!-- gate keeper : authority on who can see what -->
+
+    <bean id="gatekeeper" class="org.caboto.security.spring.GateKeeperImpl">
+        <constructor-arg index="0" value="ADMIN"/>
+    </bean>
+
+    <!-- aop implementation to filter results -->
+
+    <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">
+        <constructor-arg index="0" ref="gatekeeper"/>
+    </bean>
+
+    <bean id="annotationDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces" value="org.caboto.dao.AnnotationDao"/>
+        <property name="interceptorNames" value="exitGuard"/>
+        <property name="target" ref="annotationDao"/>
+    </bean>
+
     <!-- HTTP restrictions -->
 
     <security:http access-decision-manager-ref="decisionManager" path-type="regex">
@@ -80,7 +98,7 @@
     <!-- voter for resources -->
 
     <bean id="resourceVoter" class="org.caboto.security.spring.ResourceAccessDecisionVoter">
-        <constructor-arg index="0" value="ADMIN"/>
+        <constructor-arg index="0" ref="gatekeeper"/>
     </bean>
 
     <bean id="roleVoter" class="org.springframework.security.vote.RoleVoter"/>
@@ -100,17 +118,4 @@
         </property>
     </bean>
 
-    <!-- guard for checking results returned -->
-
-    <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">
-        <constructor-arg index="0" value="ADMIN"/>
-    </bean>
-
-    <!-- AOP proxy used to filter results -->
-
-    <bean id="annotationDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="proxyInterfaces" value="org.caboto.dao.AnnotationDao"/>
-        <property name="interceptorNames" value="exitGuard"/>
-        <property name="target" ref="annotationDao"/>
-    </bean>
 </beans>
