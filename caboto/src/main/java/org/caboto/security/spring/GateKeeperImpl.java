@@ -6,6 +6,8 @@ import org.springframework.security.Authentication;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.userdetails.UserDetails;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id$
@@ -56,6 +58,16 @@ public class GateKeeperImpl implements GateKeeper {
         }
 
 
+        // ---------- Secure Resource -> not sure this should be defined in this class?
+        if (securedPattern.matcher(resource).find()) {
+
+            System.out.println("Matched a secure resource!");
+
+            return inRole(ADMIN_ROLE, authentication.getAuthorities()) ||
+                    inRole("USER", authentication.getAuthorities());
+        }
+
+
         // ---------- OTHER resources (no restrictions specified)
 
         return true;
@@ -98,4 +110,6 @@ public class GateKeeperImpl implements GateKeeper {
     }
 
     private final String ADMIN_ROLE;
+
+    private static Pattern securedPattern = Pattern.compile("^.*/secured/.*$");
 }
