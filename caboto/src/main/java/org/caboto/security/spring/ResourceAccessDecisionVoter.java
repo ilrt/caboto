@@ -35,8 +35,11 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
 
         String method = request.getMethod();
 
-        String path = request.getPathInfo();
+        String path = request.getRequestURI();
 
+        if (path == null) {
+            return ACCESS_ABSTAIN;
+        }
 
         if (method.equalsIgnoreCase("GET")) {
             if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.READ, path)) {
