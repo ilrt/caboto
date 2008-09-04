@@ -38,6 +38,7 @@
 
     <bean id="resourceVoter" class="org.caboto.security.spring.ResourceAccessDecisionVoter">
         <constructor-arg index="0" ref="gatekeeper"/>
+        <constructor-arg index="1" value="annotation"/>
     </bean>
 
     <bean id="roleVoter" class="org.springframework.security.vote.RoleVoter"/>
