@@ -61,8 +61,6 @@ public class GateKeeperImpl implements GateKeeper {
         // ---------- Secure Resource -> not sure this should be defined in this class?
         if (securedPattern.matcher(resource).find()) {
 
-            System.out.println("Matched a secure resource!");
-
             return inRole(ADMIN_ROLE, authentication.getAuthorities()) ||
                     inRole("USER", authentication.getAuthorities());
         }
