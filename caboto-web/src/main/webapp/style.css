@@ -10,6 +10,10 @@ body {
     margin-right: 0.5em;
 }
 
+.logout {
+    text-align: center;
+}
+
 .annotation-entry {
     padding-top: 0.4em;
     padding-bottom: 1.5em;
@@ -20,9 +24,17 @@ body {
     border-bottom: darkgray dashed 1px;
 }
 
-.annotation-entry-title {
+.annotation-entry-title-public {
     padding: 0.4em;
     background-color: bisque;
+    font-weight: bold;
+    border-top: darkgray solid 1px;
+    border-bottom: darkgray solid 1px;
+}
+
+.annotation-entry-title-private {
+    padding: 0.4em;
+    background-color: tan;
     font-weight: bold;
     border-top: darkgray solid 1px;
     border-bottom: darkgray solid 1px;
