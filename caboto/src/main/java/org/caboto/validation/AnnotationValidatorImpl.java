@@ -90,6 +90,11 @@ public final class AnnotationValidatorImpl implements Validator {
                         annotation.getBody().remove("_");
                     }
 
+                    // remove the privacy types
+                    if (annotation.getBody().get("privacy") != null) {
+                        annotation.getBody().remove("privacy");
+                    }
+
                     // --- Validate values that are provided by the REST interface
 
                     // (1) check that we have an author
