@@ -33,8 +33,6 @@ function annotationFailure(fail) {
 }
 
 
-
-
 function getCookie(name) {
 
     var cookie = null;
@@ -57,7 +55,7 @@ function getCookie(name) {
 }
 
 /*
-    Parses date strings that are in xsd:dateTime format.
+ Parses date strings that are in xsd:dateTime format.
  */
 function parseDate(dateString) {
 
@@ -73,10 +71,15 @@ function parseDate(dateString) {
 }
 
 /*
-    Takes the URI that represents the person and returns just the username portion.
+ Takes the URI that represents the person and returns just the username portion.
  */
 function parseAuthor(author) {
     var temp = author.split("/");
+    return temp[temp.length - 2];
+}
+
+function findType(aUri) {
+    var temp = aUri.split("/");
     return temp[temp.length - 2];
 }
 
@@ -85,16 +88,24 @@ function formatAnnotation(annotation, uid, admin) {
     var date = parseDate(annotation.created);
     var author = parseAuthor(annotation.author);
     var body = annotation.body.description.replace(/\n|\r/g, "<br />\n");
+    var type = findType(annotation.id);
 
-    var output = "<div class='annotation-entry'>" +
-            "<div class='annotation-entry-title'>" + annotation.body.title + "</div>" +
-            "<div class='annotation-entry-description'>" + body + "</div>" +
-            "<div><div class='annotation-entry-created'>" +
-            "Created on " + date.toLocaleString() + " by " + author + "</div>";
+    var output = "<div class='annotation-entry'>";
+
+    if (type == "private") {
+        output += "<div class='annotation-entry-title-private'>"
+    } else {
+        output += "<div class='annotation-entry-title-public'>"
+    }
+
+    output += annotation.body.title + "</div>" +
+              "<div class='annotation-entry-description'>" + body + "</div>" +
+              "<div><div class='annotation-entry-created'>" +
+              "Created on " + date.toLocaleString() + " by " + author + "</div>";
 
     if (uid == author || admin == "true") {
         output += "<div style='float: right'>[<a href='#' onclick='deleteAnnotation(\"" +
-                annotation.id + "\")'>Delete</a>]</div>";
+                  annotation.id + "\")'>Delete</a>]</div>";
     }
 
     output += "</div>";
@@ -103,7 +114,6 @@ function formatAnnotation(annotation, uid, admin) {
 
     return output;
 }
-
 
 
 function clearForm() {
@@ -117,7 +127,7 @@ function clearForm() {
 }
 
 /*
-    Display annotations - they are received in JSON format.
+ Display annotations - they are received in JSON format.
  */
 function displayAnnotations(transport) {
 
@@ -147,9 +157,8 @@ function displayAnnotations(transport) {
 }
 
 
-
 /*
-    Ajax call - find annotations that are about the "uri".
+ Ajax call - find annotations that are about the "uri".
  */
 function findAnnotations() {
 
@@ -178,18 +187,33 @@ function findAnnotations() {
 
     } else {
         document.getElementById("annotations-results").innerHTML = "<p>Something has gone wrong! " +
-                "The system is unable to determine the ID of the item that can be " +
-                "annotated.</p>";
+                                                                   "The system is unable to determine the ID of the item that can be " +
+                                                                   "annotated.</p>";
     }
 
 }
 
-function processForm(uri) {
+function processForm(username) {
+
+    var uri = "./annotation/person/" + username + "/";
 
     var message = "";
 
+    // http://rexchung.com/2007/02/22/getting-radio-buttons-value-with-prototypejs/
+    var privacy = Form.getInputs('annotation-comment-form', 'radio', 'privacy').find(function(radio)
+    {
+        return radio.checked;
+    }).value;
+
+    // default to public
+    if (privacy == null) {
+        privacy = "public";
+    }
+
+    uri += privacy + "/";
+
     if (!Form.Element.present("annotation-title")) {
-        message += "You need to provide a title. ";
+        message += "You need to provide a title.";
     }
 
     if (!Form.Element.present("annotation-body")) {
