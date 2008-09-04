@@ -13,6 +13,10 @@
 </head>
 <body onload="initializeAnnotations();">
 
+<security:authorize ifAnyGranted="USER,ADMIN">
+    <h3 class="logout"><a href="./logout.jsp">Logout</a></h3>
+</security:authorize>
+
 <%
     Cookie uid = new Cookie("uid", null);
     Cookie admin = new Cookie("admin", null);
@@ -28,7 +32,6 @@
     response.addCookie(admin);
 %>
 
-
 <div class="annotations">
 
     <fieldset class="fieldSet">
@@ -43,7 +46,7 @@
         <%-- show form if they are logged in --%>
         <security:authorize ifAnyGranted="USER,ADMIN">
             <form id="annotation-comment-form"
-                  action="javascript:processForm('./annotation/person/<%=request.getUserPrincipal().getName()%>/public/')"
+                  action="javascript:processForm('<%=request.getUserPrincipal().getName()%>')"
                   method="post">
                 <p>
                     <label><strong>Title:</strong></label><br/>
@@ -51,8 +54,10 @@
                     <label><strong>Body:</strong></label><br/>
                     <textarea id="annotation-body" rows="5" cols="50"
                               name="description"></textarea><br/>
+                    <input type="radio" name="privacy" value="public" checked="checked"> Public
+                    <input type="radio" name="privacy" value="private"> Private
                     <input type="hidden" name="type" value="SimpleComment"/>
-                    <input type="hidden" name="annotates" value="http://caboto.org"/>
+                    <input type="hidden" name="annotates" value="http://caboto.org"/><br />
                     <input id="annotation-submit" type="submit" name="submit" value="Submit"
                            disabled="disabled"/>
                 </p>
@@ -64,8 +69,8 @@
             <p>You must be <a href="secured/">logged in</a> to add an annotation.</p>
 
             <p>The test accounts are mike/potato, damian/carrot, jasper/turnip, nikki/pea,
-               simon/radish and admin/boss</p>
-            
+                simon/radish and admin/boss</p>
+
         </security:authorize>
 
     </fieldset>
