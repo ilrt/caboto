@@ -74,28 +74,28 @@
 
     <security:http access-decision-manager-ref="decisionManager" path-type="regex">
         <security:http-basic/>
-        <security:anonymous username="anonymous" granted-authority="ANONYMOUS"/>
-        <security:intercept-url pattern="^.*/about/.*$" method="GET" access="ANONYMOUS,USER,ADMIN"/>
+        <security:anonymous username="anonymous" granted-authority="ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="^.*/about/.*$" method="GET" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_ADMIN"/>
         <security:intercept-url pattern="^.*/public/.*$" method="GET"
-                                access="ANONYMOUS,USER,ADMIN"/>
-        <security:intercept-url pattern="^.*/public/.*$" method="POST" access="USER,ADMIN"/>
-        <security:intercept-url pattern="^.*/public/.*$" method="DELETE" access="USER,ADMIN"/>
-        <security:intercept-url pattern="^.*/private/.*$" method="GET" access="USER,ADMIN"/>
-        <security:intercept-url pattern="^.*/private/.*$" method="POST" access="USER,ADMIN"/>
-        <security:intercept-url pattern="^.*/private/.*$" method="DELETE" access="USER,ADMIN"/>
-        <security:intercept-url pattern="^.*/secured/.*$"  method="GET" access="USER,ADMIN"/>
+                                access="ROLE_ANONYMOUS,ROLE_USER,ROLE_ADMIN"/>
+        <security:intercept-url pattern="^.*/public/.*$" method="POST" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_ADMIN"/>
+        <security:intercept-url pattern="^.*/public/.*$" method="DELETE" access="ROLE_USER,ROLE_ADMIN"/>
+        <security:intercept-url pattern="^.*/private/.*$" method="GET" access="ROLE_USER,ROLE_ADMIN"/>
+        <security:intercept-url pattern="^.*/private/.*$" method="POST" access="ROLE_USER,ROLE_ADMIN"/>
+        <security:intercept-url pattern="^.*/private/.*$" method="DELETE" access="ROLE_USER,ROLE_ADMIN"/>
+        <security:intercept-url pattern="^.*/secured/.*$"  method="GET" access="ROLE_USER,ROLE_ADMIN"/>
     </security:http>
 
     <!-- default authentication provider -->
 
     <security:authentication-provider>
         <security:user-service>
-            <security:user name="mike" password="potato" authorities="USER"/>
-            <security:user name="damian" password="carrot" authorities="USER"/>
-            <security:user name="jasper" password="turnip" authorities="USER"/>
-            <security:user name="nikki" password="pea" authorities="USER"/>
-            <security:user name="simon" password="radish" authorities="USER"/>
-            <security:user name="admin" password="boss" authorities="ADMIN"/>
+            <security:user name="mike" password="potato" authorities="ROLE_USER"/>
+            <security:user name="damian" password="carrot" authorities="ROLE_USER"/>
+            <security:user name="jasper" password="turnip" authorities="ROLE_USER"/>
+            <security:user name="nikki" password="pea" authorities="ROLE_USER"/>
+            <security:user name="simon" password="radish" authorities="ROLE_USER"/>
+            <security:user name="admin" password="boss" authorities="ROLE_ADMIN"/>
         </security:user-service>
     </security:authentication-provider>
 
@@ -103,6 +103,7 @@
 
     <bean id="resourceVoter" class="org.caboto.security.spring.ResourceAccessDecisionVoter">
         <constructor-arg index="0" ref="gatekeeper"/>
+        <constructor-arg index="1" value="annotation"/>
     </bean>
 
     <bean id="roleVoter" class="org.springframework.security.vote.RoleVoter"/>
