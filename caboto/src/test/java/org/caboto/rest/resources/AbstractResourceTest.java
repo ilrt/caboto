@@ -114,7 +114,7 @@ public abstract class AbstractResourceTest extends TestCase {
         springServletHolder.setInitParameter(PackagesResourceConfig.PROPERTY_PACKAGES,
                 CABOTO_PACKAGE_RESOURCES);
         springServletHolder.setInitOrder(2);
-        context.addServlet(springServletHolder, SERVLET_PATH + "/*");
+        context.addServlet(springServletHolder, SERVLET_PATH + "/annotation/*");
     }
 
 
@@ -247,7 +247,7 @@ public abstract class AbstractResourceTest extends TestCase {
     // ---------- URIs and Data used accross tests
 
 
-    final String baseUri = "http://localhost:9090/caboto/";
+    final String baseUri = "http://localhost:9090/caboto/annotation/";
 
     private final String userPublicPathOne = "person/mike/public/";
 
