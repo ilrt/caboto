@@ -8,6 +8,7 @@ import org.springframework.security.intercept.web.FilterInvocation;
 import org.springframework.security.vote.AccessDecisionVoter;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.regex.Pattern;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -15,8 +16,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
 
-    public ResourceAccessDecisionVoter(GateKeeper gateKeeper) {
+    public ResourceAccessDecisionVoter(GateKeeper gateKeeper, String context) {
         this.gateKeeper = gateKeeper;
+        annotationContextPattern = Pattern.compile("^.*/" + context + "/.*$");
     }
 
     public boolean supports(ConfigAttribute configAttribute) {
@@ -41,28 +43,38 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
             return ACCESS_ABSTAIN;
         }
 
-        if (method.equalsIgnoreCase("GET")) {
-            if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.READ, path)) {
-                return ACCESS_GRANTED;
+        if(annotationContextPattern.matcher(path).find()) {
+
+            if (method.equalsIgnoreCase("GET")) {
+                if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.READ,
+                        path)) {
+                    return ACCESS_GRANTED;
+                }
             }
+
+            if (method.equalsIgnoreCase("POST")) {
+                if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.WRITE,
+                        path)) {
+                    return ACCESS_GRANTED;
+                }
+            }
+
+            if (method.equalsIgnoreCase("DELETE")) {
+                if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.DELETE,
+                        path)) {
+                    return ACCESS_GRANTED;
+                }
+            }
+
+            return ACCESS_DENIED;
         }
 
-        if (method.equalsIgnoreCase("POST")) {
-            if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.WRITE,
-                    path)) {
-                return ACCESS_GRANTED;
-            }
-        }
+        System.out.println("I HAVE NO IDEA!");
 
-        if (method.equalsIgnoreCase("DELETE")) {
-            if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.DELETE,
-                    path)) {
-                return ACCESS_GRANTED;
-            }
-        }
-
-        return ACCESS_DENIED;
+        return ACCESS_ABSTAIN;
     }
 
     final private GateKeeper gateKeeper;
+
+    private Pattern annotationContextPattern;
 }
