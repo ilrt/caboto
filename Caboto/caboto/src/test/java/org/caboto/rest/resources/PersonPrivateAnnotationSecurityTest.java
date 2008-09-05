@@ -2,10 +2,10 @@ package org.caboto.rest.resources;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.Client;
+import org.caboto.profile.ProfileRepositoryException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.caboto.profile.ProfileRepositoryException;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -14,10 +14,11 @@ import javax.ws.rs.core.Response;
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id$
  */
-public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
+public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
 
     @Before
     public void setUp() {
+
         formatDataStore();
         startJettyWithSecurity();
     }
@@ -30,19 +31,18 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
     @Test
     public void testAddAnnotationUnauthenticated() {
 
-        ClientResponse clientResponse = createPostClientResponse(null, null, userPublicUriOne,
+        ClientResponse clientResponse = createPostClientResponse(null, null, userPrivateUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 401 response should be returned", Response.Status.UNAUTHORIZED
                 .getStatusCode(), clientResponse.getStatus());
     }
 
-
     @Test
     public void testAddAnnotationAuthenticated() {
 
         ClientResponse clientResponse = createPostClientResponse(usernameOne, passwordOne,
-                userPublicUriOne, MediaType.APPLICATION_FORM_URLENCODED, validPostData);
+                userPrivateUriOne, MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 201 response should be returned", Response.Status.CREATED
                 .getStatusCode(), clientResponse.getStatus());
@@ -52,28 +52,16 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
     public void testAddAnnotationAuthenticatedIncorrectUserPath() {
 
         ClientResponse clientResponse = createPostClientResponse(usernameOne, passwordOne,
-                userPublicUriTwo, MediaType.APPLICATION_FORM_URLENCODED, validPostData);
+                userPrivateUriTwo, MediaType.APPLICATION_FORM_URLENCODED, validPostData);
 
         assertEquals("A 403 response should be returned", Response.Status.FORBIDDEN
                 .getStatusCode(), clientResponse.getStatus());
     }
 
     @Test
-    public void testGetAnnotationUnauthenticated() throws ProfileRepositoryException {
-
-        String url = createAndSaveAnnotation(userPublicUriOne);
-
-        ClientResponse clientResponse = createGetClientResponse(null, null, url,
-                MediaType.APPLICATION_JSON);
-
-        assertEquals("A 200 should be returned", Response.Status.OK.getStatusCode(),
-                clientResponse.getStatus());
-    }
-
-    @Test
     public void testGetAnnotationAuthenticated() throws ProfileRepositoryException {
 
-        String url = createAndSaveAnnotation(userPublicUriOne);
+        String url = createAndSaveAnnotation(userPrivateUriOne);
 
         ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
                 url, MediaType.APPLICATION_JSON);
@@ -83,31 +71,22 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
     }
 
     @Test
-    public void testDeleteAnnotationUnauthenticated() throws ProfileRepositoryException {
+    public void testGetAnnotationAuthenticatedButUnauthorized() throws ProfileRepositoryException {
 
-        // create an annotation to delete
-        String url = createAndSaveAnnotation(userPublicUriOne);
+        String url = createAndSaveAnnotation(userPrivateUriTwo);
 
-        // check that the thing we want to delete actually exists
-        ClientResponse clientResponse1 =
-                createGetClientResponse(null, null, url, MediaType.APPLICATION_JSON);
-        assertEquals("The resource sould return a 200", Response.Status.OK.getStatusCode(),
-                clientResponse1.getStatus());
+        ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
+                url, MediaType.APPLICATION_JSON);
 
-        // delete the resource
-        Client c = Client.create();
-        ClientResponse deleteResponse = c.resource(url).delete(ClientResponse.class);
-        assertEquals("A 401 should be returned", Response.Status.UNAUTHORIZED.getStatusCode(),
-                deleteResponse.getStatus());
-
-
+        assertEquals("A 403 should be returned", Response.Status.FORBIDDEN.getStatusCode(),
+                clientResponse.getStatus());
     }
 
     @Test
     public void testDeleteAnnotationAuthenticated() throws ProfileRepositoryException {
 
         // create an annotation to delete
-        String url = createAndSaveAnnotation(userPublicUriOne);
+        String url = createAndSaveAnnotation(userPrivateUriOne);
 
         // check that the thing we want to delete actually exists
         ClientResponse clientResponse1 =
@@ -123,7 +102,7 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
                 deleteResponse.getStatus());
 
         // make sure its not found
-        ClientResponse clientResponse2 = createGetClientResponse(null, null, url,
+        ClientResponse clientResponse2 = createGetClientResponse(usernameOne, passwordOne, url,
                 MediaType.APPLICATION_JSON);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 clientResponse2.getStatus());
@@ -131,5 +110,3 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
     }
 
 }
-
-

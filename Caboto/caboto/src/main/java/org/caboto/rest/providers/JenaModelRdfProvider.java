@@ -35,9 +35,9 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import org.caboto.RdfMediaType;
 
-import javax.ws.rs.ConsumeMime;
-import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -54,8 +54,8 @@ import java.lang.reflect.Type;
  * @version $Id: JenaModelRdfProvider.java 177 2008-05-30 13:50:59Z mike.a.jones $
  */
 @Provider
-@ProduceMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
-@ConsumeMime({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+@Consumes({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
 public final class JenaModelRdfProvider implements MessageBodyWriter<Object>,
         MessageBodyReader<Object> {
 

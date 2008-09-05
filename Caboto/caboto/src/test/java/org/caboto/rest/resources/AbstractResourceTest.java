@@ -35,7 +35,6 @@ import java.util.Map;
  */
 public abstract class AbstractResourceTest extends TestCase {
 
-
     // ---------- Helper methods for starting and stopping jetty
 
     void startJetty() {
@@ -68,7 +67,6 @@ public abstract class AbstractResourceTest extends TestCase {
         }
     }
 
-
     // ---------- Helper methods for configuring jersey
 
     Server configureJetty() {
@@ -88,7 +86,6 @@ public abstract class AbstractResourceTest extends TestCase {
         configureSpringSecurity(context);
         return server;
     }
-
 
     // ---------- Jetty configuration methods
 
@@ -117,7 +114,7 @@ public abstract class AbstractResourceTest extends TestCase {
         springServletHolder.setInitParameter(PackagesResourceConfig.PROPERTY_PACKAGES,
                 CABOTO_PACKAGE_RESOURCES);
         springServletHolder.setInitOrder(2);
-        context.addServlet(springServletHolder, SERVLET_PATH + "/*");
+        context.addServlet(springServletHolder, SERVLET_PATH + "/annotation/*");
     }
 
 
@@ -135,18 +132,29 @@ public abstract class AbstractResourceTest extends TestCase {
         context.addFilter(filterHolder, "/*", org.mortbay.jetty.Handler.DEFAULT);
     }
 
-
     // ---------- Helper methods for the RESTful clients
 
-    ClientResponse createPostClientResponse(String uri, String type, String postData) {
+    ClientResponse createPostClientResponse(String username, String password,
+                                            String uri, String type, String postData) {
 
         Client c = Client.create();
+
+        if (username != null && password != null) {
+            c.addFilter(new BasicAuthenticationClientFilter(username, password));
+        }
+
         return c.resource(uri).type(type).post(ClientResponse.class, postData);
     }
 
-    ClientResponse createGetClientResponse(String uri, String type) {
+    ClientResponse createGetClientResponse(String username, String password,
+                                           String uri, String type) {
 
         Client c = Client.create(createClientConfig());
+
+        if (username != null && password != null) {
+            c.addFilter(new BasicAuthenticationClientFilter(username, password));
+        }
+
         return c.resource(uri).accept(type).get(ClientResponse.class);
     }
 
@@ -158,7 +166,6 @@ public abstract class AbstractResourceTest extends TestCase {
         return config;
     }
 
-
     // ---------- Helper methods for handling the store and creating test data
 
     void formatDataStore() {
@@ -168,13 +175,13 @@ public abstract class AbstractResourceTest extends TestCase {
         store.getTableFormatter().format();
     }
 
-    String createAndSaveAnnotation() throws ProfileRepositoryException {
-        Annotation annotation = createTestAnnotation();
+    String createAndSaveAnnotation(String graphUri) throws ProfileRepositoryException {
+        Annotation annotation = createTestAnnotation(graphUri);
         saveAnnotation(annotation);
         return annotation.getId();
     }
 
-    Annotation createTestAnnotation() {
+    Annotation createTestAnnotation(String graphUri) {
 
         // body of the annotation
         Map<String, String> body = new HashMap<String, String>();
@@ -185,7 +192,7 @@ public abstract class AbstractResourceTest extends TestCase {
         Annotation annotation = new Annotation();
         annotation.setAnnotates(annotated);
         annotation.setType("SimpleComment");
-        annotation.setGraphId(userUriOne);
+        annotation.setGraphId(graphUri);
         annotation.setBody(body);
 
         return annotation;
@@ -202,7 +209,6 @@ public abstract class AbstractResourceTest extends TestCase {
 
     }
 
-
     // ---------- Handling credentials in the client
 
     void setCredentials(final String username, final String password) {
@@ -217,13 +223,11 @@ public abstract class AbstractResourceTest extends TestCase {
         Authenticator.setDefault(null);
     }
 
-
     // ---------- Jetty server configuration
 
     private Server server;
 
     final private int PORT_NUMBER = 9090;
-
 
     // ---------- Jersey configuration
 
@@ -234,36 +238,43 @@ public abstract class AbstractResourceTest extends TestCase {
 
     private final String SERVLET_PATH = "/caboto";
 
-
     // ---------- Spring configuration files
 
     final private String SPRING_CONTEXT = "classpath:caboto-context.xml";
 
     final private String SPRING_SECURITY_CONTEXT = "classpath:caboto-security.xml";
 
-
     // ---------- URIs and Data used accross tests
 
 
-    String baseUri = "http://localhost:9090/caboto/";
+    final String baseUri = "http://localhost:9090/caboto/annotation/";
 
-    String userPublicUriOne = "person/mike/public/";
+    private final String userPublicPathOne = "person/mike/public/";
 
-    String userPublicUriTwo = "person/damian/public/";
+    private final String userPublicPathTwo = "person/damian/public/";
 
-    String userUriOne = baseUri + userPublicUriOne;
+    private final String userPrivatePathOne = "person/mike/private/";
 
-    String userUriTwo = baseUri + userPublicUriTwo;
+    private final String userPrivatePathTwo = "person/damian/private/";
 
-    String annotated = "http://caboto.org/somethinginteresting";
+    String userPublicUriOne = baseUri + userPublicPathOne;
+
+    String userPublicUriTwo = baseUri + userPublicPathTwo;
+
+    String userPrivateUriOne = baseUri + userPrivatePathOne;
+
+    String userPrivateUriTwo = baseUri + userPrivatePathTwo;
+
+    final String annotated = "http://caboto.org/somethinginteresting";
 
     String validPostData = "title=A%20Title&description=A%20description&type=" +
             "SimpleComment&annotates=http%3A%2F%2Fexample.org%2Fthing";
 
+    String garbagePostData = "aaabbbcccdddeeefffggghhhiii";
 
     // ---------- Some test credentials
 
     final String usernameOne = "mike";
-    final String passwordOne = "cheese";
+    final String passwordOne = "potato";
 
 }
