@@ -4,6 +4,15 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:version.properties"/>
+    </bean>
+
+    <bean id="versionDetails" class="org.caboto.domain.VersionDetails">
+        <constructor-arg index="0" value="${caboto.version}"/>
+    </bean>
+
     <bean id="profileRepository" class="org.caboto.profile.ProfileRepositoryXmlImpl">
         <constructor-arg index="0" value="test-profiles.xml"/>
     </bean>
@@ -17,6 +26,20 @@
         <constructor-arg index="1" ref="storeFactory"/>
     </bean>
 
-    <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport" />
+    <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport"/>
+
+    <bean id="gatekeeper" class="org.caboto.security.spring.GateKeeperImpl">
+        <constructor-arg index="0" value="ROLE_ADMIN"/>
+    </bean>
+
+    <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">
+        <constructor-arg index="0" ref="gatekeeper"/>
+    </bean>
+
+    <bean id="annotationDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces" value="org.caboto.dao.AnnotationDao"/>
+        <property name="interceptorNames" value="exitGuard"/>
+        <property name="target" ref="annotationDao"/>
+    </bean>
 
 </beans>

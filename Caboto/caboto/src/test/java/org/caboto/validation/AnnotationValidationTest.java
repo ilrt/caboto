@@ -38,6 +38,8 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +51,7 @@ import java.util.Map;
  */
 public class AnnotationValidationTest extends TestCase {
 
+    @Before
     public void setUp() {
 
         // instantiate validator
@@ -59,6 +62,7 @@ public class AnnotationValidationTest extends TestCase {
         annotation.setType("SimpleComment");
         annotation.setAuthor("http://caboto.org/person/MikeJ/");
         annotation.setAnnotates("http://example.org/thing");
+        annotation.setGraphId("http://caboto.org/person/MikeJ/public/");
 
         // the body of the annotation
         Map<String, String> body = new HashMap<String, String>();
@@ -72,11 +76,44 @@ public class AnnotationValidationTest extends TestCase {
 
     }
 
+    @Test
     public void testSupportsClass() {
         assertTrue("Class not supported by validator",
                 validator.supports(Annotation.class));
     }
 
+    @Test
+    public void testPublicGraph() {
+
+        validator.validate(annotation, errors);
+
+        assertEquals("There should be no errors", 0, errors.getFieldErrorCount());
+    }
+
+    @Test
+    public void testPrivateGraph() {
+        
+        validator.validate(annotation, errors);
+
+        assertEquals("There should be no errors", 0, errors.getFieldErrorCount());
+    }
+
+    @Test
+    public void testIncorrectGraph() {
+
+        annotation.setGraphId("http://caboto.org/person/MikeJ/puublicc/");
+
+        validator.validate(annotation, errors);
+
+        assertEquals("There should be 1 error", 1, errors.getErrorCount());
+
+        ObjectError error = errors.getGlobalError();
+
+        assertEquals("Unexpected error code returned", "annotation.graph.unexpected",
+                error.getCode());
+    }
+
+    @Test
     public void testIncorrectType() {
 
         // change the type to something unsupported
@@ -92,6 +129,7 @@ public class AnnotationValidationTest extends TestCase {
 
     }
 
+    @Test
     public void testMissingAuthor() {
 
         annotation.setAuthor("");
@@ -109,6 +147,7 @@ public class AnnotationValidationTest extends TestCase {
 
     }
 
+    @Test
     public void testMissingAnnotates() {
 
         annotation.setAnnotates("");
@@ -126,7 +165,7 @@ public class AnnotationValidationTest extends TestCase {
 
     }
 
-
+    @Test
     public void testIncorrectBody() {
 
         annotation.getBody().put("extraField", "Some value or other");
@@ -150,6 +189,7 @@ public class AnnotationValidationTest extends TestCase {
                 fieldError2.getCode());
     }
 
+    @Test
     public void testMissingBodyValue() {
 
         annotation.getBody().put("title", "");
