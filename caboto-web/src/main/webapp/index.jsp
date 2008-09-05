@@ -13,7 +13,7 @@
 </head>
 <body onload="initializeAnnotations();">
 
-<security:authorize ifAnyGranted="USER,ADMIN">
+<security:authorize ifAnyGranted="ROLE_USER,ROLE_ADMIN">
     <h3 class="logout"><a href="./logout.jsp">Logout</a></h3>
 </security:authorize>
 
@@ -44,7 +44,7 @@
         <div id="annotation-messages"></div>
 
         <%-- show form if they are logged in --%>
-        <security:authorize ifAnyGranted="USER,ADMIN">
+        <security:authorize ifAnyGranted="ROLE_USER,ROLE_ADMIN">
             <form id="annotation-comment-form"
                   action="javascript:processForm('<%=request.getUserPrincipal().getName()%>')"
                   method="post">
@@ -65,7 +65,7 @@
         </security:authorize>
 
         <%-- message if not logged in --%>
-        <security:authorize ifNotGranted="USER,ADMIN">
+        <security:authorize ifNotGranted="ROLE_USER,ROLE_ADMIN">
             <p>You must be <a href="secured/">logged in</a> to add an annotation.</p>
 
             <p>The test accounts are mike/potato, damian/carrot, jasper/turnip, nikki/pea,
