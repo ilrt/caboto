@@ -74,7 +74,7 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
         return ACCESS_ABSTAIN;
     }
 
-    final private GateKeeper gateKeeper;
+    private final GateKeeper gateKeeper;
 
-    private Pattern annotationContextPattern;
+    private final Pattern annotationContextPattern;
 }
