@@ -41,7 +41,7 @@
 
     <servlet-mapping>
         <servlet-name>Jersey Spring Integration</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/annotation/*</url-pattern>
     </servlet-mapping>
 
 
