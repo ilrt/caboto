@@ -1,16 +1,16 @@
 package org.caboto.rest.resources;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import org.caboto.RdfMediaType;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Test;
 import org.caboto.profile.ProfileRepositoryException;
+import org.caboto.RdfMediaType;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.After;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.Client;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response;
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id$
  */
-public class PersonPublicAnnotationTest extends AbstractResourceTest {
+public class PersonPrivateAnnotationTest extends AbstractResourceTest {
 
     @Before
     public void setUp() {
@@ -33,9 +33,23 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     }
 
     @Test
-    public void testAddPublicAnnotationWithGarbage() {
+    public void testAddPrivateAnnotation() {
 
-        ClientResponse clientResponse = createPostClientResponse(null, null, userPublicUriOne,
+        ClientResponse clientResponse = createPostClientResponse(null, null, userPrivateUriOne,
+                MediaType.APPLICATION_FORM_URLENCODED, validPostData);
+
+        assertEquals("A 201 response should be returned", Response.Status.CREATED.getStatusCode(),
+                clientResponse.getStatus());
+
+        assertTrue("The created location should start with " + userPrivateUriOne,
+                clientResponse.getLocation().toString().startsWith(userPrivateUriOne));
+
+    }
+
+    @Test
+    public void testAddPrivateAnnotationWithGarbage() {
+
+        ClientResponse clientResponse = createPostClientResponse(null, null, userPrivateUriOne,
                 MediaType.APPLICATION_FORM_URLENCODED, garbagePostData);
 
         assertEquals("A 400 response should be returned",
@@ -43,23 +57,9 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     }
 
     @Test
-    public void testAddPublicAnnotation() {
+    public void testGetPrivateAnnotationAsJson() throws ProfileRepositoryException, JSONException {
 
-        ClientResponse clientResponse = createPostClientResponse(null, null, userPublicUriOne,
-                MediaType.APPLICATION_FORM_URLENCODED, validPostData);
-
-        assertEquals("A 201 response should be returned", Response.Status.CREATED.getStatusCode(),
-                clientResponse.getStatus());
-        assertTrue("The created location should start with " + userPublicUriOne,
-                clientResponse.getLocation().toString().startsWith(userPublicUriOne));
-
-    }
-
-    @Test
-    public void testGetPublicAnnotationAsJson() throws ProfileRepositoryException, JSONException {
-
-        // the url of the resource
-        String url = createAndSaveAnnotation(userPublicUriOne);
+        String url = createAndSaveAnnotation(userPrivateUriOne);
 
         ClientResponse clientResponse =
                 createGetClientResponse(null, null, url, MediaType.APPLICATION_JSON);
@@ -76,10 +76,9 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     }
 
     @Test
-    public void testGetPublicAnnotationAsRdfXml() throws ProfileRepositoryException, JSONException {
+    public void testGetPrivateAnnotationAsRdfXml() throws ProfileRepositoryException, JSONException {
 
-        // the url of the resource
-        String url = createAndSaveAnnotation(userPublicUriOne);
+        String url = createAndSaveAnnotation(userPrivateUriOne);
 
         ClientResponse clientResponse =
                 createGetClientResponse(null, null, url, RdfMediaType.APPLICATION_RDF_XML);
@@ -100,8 +99,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     @Test
     public void testGetPublicAnnotationAsRdfN3() throws ProfileRepositoryException, JSONException {
 
-        // the url of the resource
-        String url = createAndSaveAnnotation(userPublicUriOne);
+        String url = createAndSaveAnnotation(userPrivateUriOne);
 
         ClientResponse clientResponse =
                 createGetClientResponse(null, null, url, RdfMediaType.TEXT_RDF_N3);
@@ -123,7 +121,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testGetMissingResource() {
 
         ClientResponse clientResponse =
-                createGetClientResponse(null, null, userPublicUriOne + "aresourcethatdoesntexist",
+                createGetClientResponse(null, null, userPrivateUriOne + "aresourcethatdoesntexist",
                         MediaType.APPLICATION_JSON);
 
         assertEquals("A 404 response should be returned", Response.Status.NOT_FOUND
@@ -135,7 +133,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testDeleteResource() throws ProfileRepositoryException {
 
         // create an annotation to delete
-        String url = createAndSaveAnnotation(userPublicUriOne);
+        String url = createAndSaveAnnotation(userPrivateUriOne);
 
         // check that the thing we want to delete actually exists
         ClientResponse clientResponse1 =
@@ -160,7 +158,7 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
     public void testDeleteResourceThatDoesNotExist() {
 
         Client c = Client.create();
-        ClientResponse deleteResponse = c.resource(userPublicUriOne + "doesnotexist")
+        ClientResponse deleteResponse = c.resource(userPrivateUriOne + "doesnotexist")
                 .delete(ClientResponse.class);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 deleteResponse.getStatus());

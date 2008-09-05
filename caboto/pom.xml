@@ -12,6 +12,16 @@
     <version>0.2-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
     <build>
+        <filters>
+            <filter>src/main/filters/filter.properties</filter>
+        </filters>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
 
             <!-- allow generics etc -->
@@ -85,7 +95,25 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- clean up plugin -->
+            <plugin>
+                <inherited>false</inherited>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>.</directory>
+                            <includes>
+                                <include>derby.log</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
         </plugins>
+
     </build>
 
     <repositories>
@@ -167,7 +195,13 @@
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey</artifactId>
+            <artifactId>jersey-server</artifactId>
+            <version>${project.jersey.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
             <version>${project.jersey.version}</version>
         </dependency>
 
@@ -205,7 +239,7 @@
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
-            <version>0.8</version>
+            <version>0.9</version>
         </dependency>
 
         <dependency>
@@ -268,11 +302,24 @@
             <version>2.0.3</version>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>${project.spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>0.9-ea</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

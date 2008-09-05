@@ -2,6 +2,10 @@ package org.caboto;
 
 import javax.ws.rs.core.MediaType;
 
+/**
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id$
+ */
 public class RdfMediaType {
 
     private RdfMediaType() {
