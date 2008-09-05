@@ -29,7 +29,7 @@
     <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport"/>
 
     <bean id="gatekeeper" class="org.caboto.security.spring.GateKeeperImpl">
-        <constructor-arg index="0" value="ADMIN"/>
+        <constructor-arg index="0" value="ROLE_ADMIN"/>
     </bean>
 
     <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">

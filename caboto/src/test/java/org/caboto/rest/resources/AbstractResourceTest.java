@@ -275,6 +275,6 @@ public abstract class AbstractResourceTest extends TestCase {
     // ---------- Some test credentials
 
     final String usernameOne = "mike";
-    final String passwordOne = "cheese";
+    final String passwordOne = "potato";
 
 }
