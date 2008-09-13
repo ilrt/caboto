@@ -46,6 +46,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,11 +74,11 @@ public final class ProfileRepositoryXmlImpl implements ProfileRepository {
 
     private void loadXmlDocument(final String xmlFileName) throws ParserConfigurationException,
             IOException, SAXException {
-        String xmlFileNamePath = getClass().getClassLoader().getResource(xmlFileName).getPath();
+        InputStream xmlFile = getClass().getResourceAsStream(xmlFileName);
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
-        document = builder.parse(xmlFileNamePath);
+        document = builder.parse(xmlFile);
     }
 
 
