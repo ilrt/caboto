@@ -59,7 +59,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Date;
 
 /**
  *
@@ -109,15 +108,12 @@ public final class AnnotationDaoImpl implements AnnotationDao {
             annotationResource.addProperty(Annotea.author,
                     model.createResource(annotation.getAuthor()));
 
-            Date created = new Date();
-
             // creation date
             annotationResource.addProperty(Annotea.created,
-                    model.createTypedLiteral(CabotoUtility.parseDate(created),
+                    model.createTypedLiteral(CabotoUtility.parseDate(annotation.getCreated()),
                             XSDDatatype.XSDdateTime));
 
             annotation.setId(uri);
-            annotation.setCreated(created);
 
             // --- CREATE THE BODY OF THE ANNOTATION ---
 

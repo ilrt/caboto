@@ -32,7 +32,12 @@
 package org.caboto.domain;
 
 import javax.ws.rs.core.MultivaluedMap;
+
+import com.ibm.icu.text.DateFormat;
+
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -84,6 +89,17 @@ public final class AnnotationFactory {
         if (params.get("type") != null) {
             annotation.setType(params.remove("type").get(0));
         }
+        
+    	Date date=new Date();
+        if (params.get("created") !=null) {
+        	SimpleDateFormat format=new SimpleDateFormat("yyyy-mm-ddTHH:mm:ssZ");
+			try {
+				date = format.parse(params.remove("created").get(0));
+			} catch (ParseException e) {
+				// do nothing
+			}
+        } 
+        annotation.setCreated(date);
 
         // copy the rest of map
         for (String key : params.keySet()) {
