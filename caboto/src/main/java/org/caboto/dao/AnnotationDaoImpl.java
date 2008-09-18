@@ -1,0 +1,210 @@
+/*
+ * Copyright (c) 2008, University of Bristol
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1) Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2) Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3) Neither the name of the University of Bristol nor the names of its
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+package org.caboto.dao;
+
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.QuerySolutionMap;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.vocabulary.RDF;
+import org.caboto.CabotoUtility;
+import org.caboto.domain.Annotation;
+import org.caboto.jena.db.Database;
+import org.caboto.jena.db.ResultModel;
+import org.caboto.profile.Profile;
+import org.caboto.profile.ProfileEntry;
+import org.caboto.profile.ProfileRepository;
+import org.caboto.profile.ProfileRepositoryException;
+import org.caboto.vocabulary.Annotea;
+
+import java.util.Date;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+/**
+ *
+ * @author: Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version: $Id: AnnotationDaoImpl.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ *
+ **/
+public final class AnnotationDaoImpl implements AnnotationDao {
+
+    public AnnotationDaoImpl(Database database,
+            ProfileRepository profileRepository) {
+        this.database = database;
+        this.profileRepository = profileRepository;
+        findAnnotationSparql = database.loadSparql(findAnnotation);
+    }
+
+    public void addAnnotation(final Annotation annotation) throws AnnotationDaoException {
+
+        try {
+
+            // find the profile for the annotation type
+            Profile profile = profileRepository.findProfile(annotation.getType());
+
+            if (profile == null) {
+                throw new AnnotationDaoException("Unable to find a profile for "
+                        + "the annotation type: " + annotation.getType());
+            }
+
+            // obtain the named graph (model)
+            Model model = database.getUpdateModel();
+
+            model.setNsPrefix("caboto", "http://caboto.org/schema/annotations#");
+            model.setNsPrefix("annotea", "http://www.w3.org/2000/10/annotation-ns#");
+
+            // --- CREATE THE STANDARD ANNOTATION DETAILS ---
+
+            // generate uri and resource for the annotation
+            String uri = CabotoUtility.generateId(annotation.getGraphId());
+            Resource annotationResource = model.createResource(uri);
+
+            // what is being annotated?
+            annotationResource.addProperty(Annotea.annotates,
+                    model.createResource(annotation.getAnnotates()));
+
+            // who made the annotation?
+            annotationResource.addProperty(Annotea.author,
+                    model.createResource(annotation.getAuthor()));
+
+            // creation date
+            annotationResource.addProperty(Annotea.created,
+                    model.createTypedLiteral(CabotoUtility.parseDate(annotation.getCreated()),
+                            XSDDatatype.XSDdateTime));
+
+            annotation.setId(uri);
+
+            // --- CREATE THE BODY OF THE ANNOTATION ---
+
+            // create a  uri and resource
+            String bodyUri = uri + "#body";
+            Resource bodyResource = model.createResource(bodyUri);
+
+
+            for (ProfileEntry entry : profile.getProfileEntries()) {
+
+                String val = annotation.getBody().get(entry.getId());
+
+                Property prop = model.createProperty(entry.getPropertyType());
+
+                String dataType = entry.getObjectDatatype();
+
+                if (dataType != null) {
+
+                    if (dataType.equals("String")) {
+                        bodyResource.addProperty(prop, val, XSDDatatype.XSDstring);
+                    }
+
+                } else {
+                    bodyResource.addProperty(prop, val);
+                }
+
+            }
+
+            // add the body to the resource
+            annotationResource.addProperty(Annotea.body, bodyResource);
+
+            // add the type as a statement
+            model.add(model.createStatement(annotationResource, RDF.type,
+                    model.createResource(profile.getType())));
+
+            // Add the model to the database
+            if (!database.addModel(annotation.getGraphId(), model)) {
+                throw new AnnotationDaoException(
+                        "Error adding model to database");
+            }
+        } catch (ProfileRepositoryException e) {
+            throw new AnnotationDaoException(e.getMessage());
+        }
+
+
+    }
+
+    public Resource findAnnotation(final String id) throws AnnotationDaoException {
+
+        // extract the graph from the id
+        String graph = id.substring(0, (id.lastIndexOf('/') + 1));
+
+        // create bindings
+        QuerySolutionMap initialBindings = new QuerySolutionMap();
+        initialBindings.add("id", ResourceFactory.createResource(id));
+        initialBindings.add("graph", ResourceFactory.createResource(graph));
+
+        ResultModel model = database.executeConstructQuery(findAnnotationSparql,
+                initialBindings);
+        Model m = model.getResults();
+        model.close();
+
+        return m.createResource(id);
+    }
+
+    public Model findAnnotations(final String about) throws AnnotationDaoException {
+
+
+        // create bindings
+        QuerySolutionMap initialBindings = new QuerySolutionMap();
+        initialBindings.add("annotates", ResourceFactory.createResource(about));
+
+        ResultModel model = database.executeConstructQuery(findAnnotationSparql,
+                initialBindings);
+        model.close();
+
+        return model.getResults();
+
+    }
+
+    public void deleteAnnotation(final Resource resource) throws AnnotationDaoException {
+
+        String id = resource.getURI();
+
+        // extract the graph from the id
+        String graph = id.substring(0, (id.lastIndexOf('/') + 1));
+
+        Model model = database.getUpdateModel();
+
+        model.add(resource.getModel());
+
+        database.deleteModel(graph, model);
+    }
+
+    private Database database;
+    private ProfileRepository profileRepository;
+    private String findAnnotationSparql;
+    private final static String findAnnotation = "/sparql/findAnnotation.rql";
+}
