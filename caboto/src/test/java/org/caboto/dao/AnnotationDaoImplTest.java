@@ -35,9 +35,13 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
+import com.hp.hpl.jena.sdb.StoreDesc;
+import com.hp.hpl.jena.sdb.sql.SDBConnection;
 import com.hp.hpl.jena.sdb.store.StoreFormatter;
 import junit.framework.TestCase;
 import org.caboto.domain.Annotation;
+import org.caboto.jena.db.Database;
+import org.caboto.jena.db.impl.SDBDatabase;
 import org.caboto.profile.MockProfileRepositoryImpl;
 
 import java.io.InputStream;
@@ -45,6 +49,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  *
@@ -55,22 +60,25 @@ import java.util.Map;
 public class AnnotationDaoImplTest extends TestCase {
 
 
-    public void setUp() {
-        String storePath = null;
-        try {
-            storePath = URLDecoder.decode(
-                this.getClass().getResource(sdbConfigFile).getPath(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // Will never happen!
-            e.printStackTrace();
-        }
-        store = SDBFactory.connectStore(storePath);
-        StoreFormatter storeFormatter = store.getTableFormatter();
-        storeFormatter.format();
-        annotationDao = new AnnotationDaoImpl(sdbConfigFile, new MockProfileRepositoryImpl());
+    public void setUp() throws Exception {
+        annotationDao = new AnnotationDaoImpl(
+                new SDBDatabase("caboto.db", sdbConfigFile),
+                new MockProfileRepositoryImpl());
+        Properties properties = new Properties();
+        properties.load(getClass().getResourceAsStream(sdbConfigFile));
+        String configPrefix = "caboto.db";
+        String jdbc = properties.getProperty(configPrefix + ".jdbcUrl");
+        String user = properties.getProperty(configPrefix + ".username");
+        String pass = properties.getProperty(configPrefix + ".password");
+        String dbtype = properties.getProperty(configPrefix + ".dbtype");
+        String dblayout = properties.getProperty(configPrefix + ".dblayout");
+        StoreDesc storeDesc = new StoreDesc(dblayout, dbtype);
+        SDBConnection conn = new SDBConnection(jdbc, user, pass);
+        store = SDBFactory.connectStore(conn, storeDesc);
+        store.getTableFormatter().format();
     }
 
-    public void testAddAnnotation() {
+    public void testAddAnnotation() throws AnnotationDaoException {
 
         Annotation annotation = new Annotation();
         annotation.setGraphId("http://caboto.org/person/mikej/public/");
@@ -83,20 +91,14 @@ public class AnnotationDaoImplTest extends TestCase {
         map.put("description", "Some description of the annotation");
 
         annotation.setBody(map);
+        annotationDao.addAnnotation(annotation);
 
-        try {
-            annotationDao.addAnnotation(annotation);
+        assertTrue("There should be an id", annotation.getId() != null);
+        assertTrue("There should be a creation data", annotation.getCreated() != null);
 
-            assertTrue("There should be an id", annotation.getId() != null);
-            assertTrue("There should be a creation data", annotation.getCreated() != null);
+        Model model = SDBFactory.connectNamedModel(store, annotation.getGraphId());
 
-            Model model = SDBFactory.connectNamedModel(store, annotation.getGraphId());
-
-            assertTrue("There should be statements in the model", !model.isEmpty());
-
-        } catch (AnnotationDaoException e) {
-            e.printStackTrace();
-        }
+        assertTrue("There should be statements in the model", !model.isEmpty());
 
     }
 
@@ -169,5 +171,5 @@ public class AnnotationDaoImplTest extends TestCase {
 
     private Store store;
     private AnnotationDao annotationDao;
-    private String sdbConfigFile = "/sdb.ttl";
+    private String sdbConfigFile = "/sdb.properties";
 }
