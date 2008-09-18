@@ -43,7 +43,7 @@ public class ProfileRepositoryXmlImplTest extends TestCase {
 
     public void setUp() {
         try {
-            profileRepository = new ProfileRepositoryXmlImpl("test-profiles.xml");
+            profileRepository = new ProfileRepositoryXmlImpl("/test-profiles.xml");
         } catch (ProfileRepositoryException e) {
             e.printStackTrace();
         }
