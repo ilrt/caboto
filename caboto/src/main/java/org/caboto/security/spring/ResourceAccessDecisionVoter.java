@@ -69,8 +69,6 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
             return ACCESS_DENIED;
         }
 
-        System.out.println("I HAVE NO IDEA!");
-
         return ACCESS_ABSTAIN;
     }
 
