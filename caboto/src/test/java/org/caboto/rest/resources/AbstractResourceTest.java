@@ -1,6 +1,13 @@
 package org.caboto.rest.resources;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
+import com.hp.hpl.jena.sdb.StoreDesc;
+import com.hp.hpl.jena.sdb.sql.JDBC;
+import com.hp.hpl.jena.sdb.sql.SDBConnection;
+import com.hp.hpl.jena.sdb.store.DatabaseType;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -11,23 +18,29 @@ import junit.framework.TestCase;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoImpl;
 import org.caboto.domain.Annotation;
+import org.caboto.jena.db.Database;
+import org.caboto.jena.db.impl.SDBDatabase;
 import org.caboto.profile.ProfileRepository;
 import org.caboto.profile.ProfileRepositoryException;
 import org.caboto.profile.ProfileRepositoryXmlImpl;
 import org.caboto.rest.providers.JenaModelRdfProvider;
 import org.caboto.rest.providers.JenaResourceRdfProvider;
-import org.caboto.store.StoreFactory;
-import org.caboto.store.StoreFactoryDefaultImpl;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.springframework.web.context.ContextLoaderServlet;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -169,10 +182,24 @@ public abstract class AbstractResourceTest extends TestCase {
     // ---------- Helper methods for handling the store and creating test data
 
     void formatDataStore() {
-
-        StoreFactory storeFactory = new StoreFactoryDefaultImpl("/sdb.ttl");
-        Store store = storeFactory.create();
-        store.getTableFormatter().format();
+        try {
+            Model ttl = ModelFactory.createDefaultModel();
+            ttl.read(getClass().getResourceAsStream("/sdb.ttl"), null, "TTL");
+            StoreDesc storeDesc = StoreDesc.read(ttl);
+            String driver = JDBC.getDriver(storeDesc.getDbType());
+            JDBC.loadDriver(driver);
+            Connection sqlConn = DriverManager.getConnection(
+                    storeDesc.connDesc.getJdbcURL(),
+                    storeDesc.connDesc.getUser(),
+                    storeDesc.connDesc.getPassword());
+            Store store = SDBFactory.connectStore(sqlConn, storeDesc);
+            store.getTableFormatter().format();
+            store.getTableFormatter().truncate();
+            store.close();
+            sqlConn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     String createAndSaveAnnotation(String graphUri) throws ProfileRepositoryException {
@@ -200,12 +227,17 @@ public abstract class AbstractResourceTest extends TestCase {
 
     void saveAnnotation(Annotation annotation) throws ProfileRepositoryException {
 
-        StoreFactory storeFactory = new StoreFactoryDefaultImpl("/sdb.ttl");
+        try {
+            Database database = new SDBDatabase("/sdb.ttl");
+            ProfileRepository profileRepository = new ProfileRepositoryXmlImpl("test-profiles.xml");
+            AnnotationDao annotationDao = new AnnotationDaoImpl(profileRepository,
+                    database);
 
-        ProfileRepository profileRepository = new ProfileRepositoryXmlImpl("test-profiles.xml");
-        AnnotationDao annotationDao = new AnnotationDaoImpl(profileRepository, storeFactory);
-
-        annotationDao.addAnnotation(annotation);
+            annotationDao.addAnnotation(annotation);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ProfileRepositoryException(e.getMessage());
+        }
 
     }
 
