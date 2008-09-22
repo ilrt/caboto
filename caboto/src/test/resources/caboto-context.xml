@@ -17,13 +17,13 @@
         <constructor-arg index="0" value="test-profiles.xml"/>
     </bean>
 
-    <bean id="storeFactory" class="org.caboto.store.StoreFactoryDefaultImpl">
+    <bean id="database" class="org.caboto.jena.db.impl.SDBDatabase">
         <constructor-arg index="0" value="/sdb.ttl"/>
     </bean>
 
     <bean id="annotationDao" class="org.caboto.dao.AnnotationDaoImpl" scope="prototype">
         <constructor-arg index="0" ref="profileRepository"/>
-        <constructor-arg index="1" ref="storeFactory"/>
+        <constructor-arg index="1" ref="database"/>
     </bean>
 
     <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport"/>

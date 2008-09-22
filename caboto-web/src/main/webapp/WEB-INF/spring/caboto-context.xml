@@ -18,24 +18,14 @@
         <constructor-arg index="0" value="${caboto.version}"/>
     </bean>
 
-    <!-- check to see if the SDB Store needs initialization on startup. -->
-
-    <bean id="initializeStore" class="org.caboto.store.StoreInitializer"
-          init-method="initializeStore">
-        <constructor-arg index="0" value="/startup.properties"/>
-        <constructor-arg index="1" value="sdb.store.formatted"/>
-        <constructor-arg index="2" value="/sdb.ttl"/>
-    </bean>
-
     <!-- repository gives access to the profile of allowed annotations -->
-
     <bean id="profileRepository" class="org.caboto.profile.ProfileRepositoryXmlImpl">
         <constructor-arg index="0" value="profiles.xml"/>
     </bean>
 
     <!-- factory creates SDB stores: provides access to the RDF store -->
 
-    <bean id="storeFactory" class="org.caboto.store.StoreFactoryDefaultImpl">
+    <bean id="database" class="org.caboto.jena.db.impl.SDBDatabase">
         <constructor-arg index="0" value="/sdb.ttl"/>
     </bean>
 
@@ -43,7 +33,7 @@
 
     <bean id="annotationDao" class="org.caboto.dao.AnnotationDaoImpl" scope="prototype">
         <constructor-arg index="0" ref="profileRepository"/>
-        <constructor-arg index="1" ref="storeFactory"/>
+        <constructor-arg index="1" ref="database"/>
     </bean>
 
     <!-- utility class for converting RDF annotations to JSON -->
@@ -94,6 +84,7 @@
             <security:user name="jasper" password="turnip" authorities="ROLE_USER"/>
             <security:user name="nikki" password="pea" authorities="ROLE_USER"/>
             <security:user name="simon" password="radish" authorities="ROLE_USER"/>
+            <security:user name="andrew" password="onion" authorities="ROLE_USER"/>
             <security:user name="admin" password="boss" authorities="ROLE_USER,ROLE_ADMIN"/>
         </security:user-service>
     </security:authentication-provider>

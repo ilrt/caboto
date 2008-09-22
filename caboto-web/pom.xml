@@ -24,12 +24,6 @@
                             <maxIdleTime>60000</maxIdleTime>
                         </connector>
                     </connectors>
-                    <userRealms>
-                        <userRealm implementaition="org.mortbay.jetty.security.HashUserRealm">
-                            <name>Caboto Realm</name>
-                            <config>src/main/resources/realm.properties</config>
-                        </userRealm>
-                    </userRealms>
                 </configuration>
             </plugin>
         </plugins>
