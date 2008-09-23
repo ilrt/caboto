@@ -51,9 +51,6 @@ import com.hp.hpl.jena.sdb.sql.SDBConnection;
  */
 public abstract class SDBAbstractDatabase extends AbstractDatabase {
 
-    // The current version of the database
-    private static final float VERSION = 0.1f;
-
     // The store description
     private StoreDesc storeDesc = null;
 
@@ -71,40 +68,18 @@ public abstract class SDBAbstractDatabase extends AbstractDatabase {
         SDBConnection conn = new SDBConnection(sqlConn);
         Statement statement = sqlConn.createStatement();
         try {
-            ResultSet results = statement.executeQuery(
-                    "SELECT * FROM crew_version");
-            if (results.next()) {
-                float version = results.getFloat("version");
-                if (version > VERSION) {
-                    throw new RuntimeException (
-                            "Cannot downgrade database (current = "
-                            + VERSION + " db = " + version);
-                } else if (version < VERSION) {
-                    upgradeDB(version, VERSION);
-                }
-            } else {
-                throw new SQLException();
-            }
+            statement.executeQuery("SELECT * FROM db_initialized");
         } catch (SQLException e) {
 
             // If we are here, we should try to create the version table
             // and initialise the store
             statement.execute(
-                    "CREATE TABLE crew_version (version decimal(5, 5))");
-            statement.execute(
-                    "INSERT INTO crew_version VALUES (" + VERSION + ")");
-
+                    "CREATE TABLE db_initialized (initialized decimal(5, 5))");
             Store store = SDBFactory.connectStore(conn, storeDesc);
             store.getTableFormatter().format();
             store.close();
             }
         }
-
-    // Upgrades the database to the current version
-    private void upgradeDB(float oldVersion, float newVersion)
-            throws SQLException {
-        throw new SQLException("First version cannot upgrade");
-    }
 
     /**
      * Connects to the store
