@@ -36,11 +36,9 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.Properties;
 
 import org.caboto.jena.db.Data;
-import org.caboto.jena.db.DataException;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -60,37 +58,19 @@ import com.hp.hpl.jena.sdb.store.DatabaseType;
  */
 public class SDBDatabase extends SDBAbstractDatabase {
 
-    private String jdbcUrl = null;
+    // The store connected to
+    private Store store = null;
 
-    private String username = null;
-
-    private String password = null;
-
-    private LinkedList<Store> stores =
-        new LinkedList<Store>();
-
-    private int maxConnections = 0;
-
-    private int noConnections = 0;
 
     // A data implementation for SDB
     private class SDBData implements Data {
-
-        private Store store = null;
-
-        private SDBData(Store store) {
-            this.store = store;
-        }
 
         public Dataset getDataset() {
             return SDBFactory.connectDataset(store);
         }
 
         public void close() {
-            synchronized (stores) {
-                stores.addLast(store);
-                stores.notifyAll();
-            }
+            // Does Nothing
         }
     }
 
@@ -129,7 +109,7 @@ public class SDBDatabase extends SDBAbstractDatabase {
         String dbtype = properties.getProperty(configPrefix + ".dbtype");
         String dblayout = properties.getProperty(configPrefix + ".dblayout");
 
-        init(jdbc, user, pass, dbtype, dblayout, 0);
+        init(jdbc, user, pass, dbtype, dblayout);
     }
 
     /**
@@ -145,7 +125,7 @@ public class SDBDatabase extends SDBAbstractDatabase {
      */
     public SDBDatabase(String jdbcUrl, String username, String password,
             String dbtype, String dblayout) throws SQLException {
-        init(jdbcUrl, username, password, dbtype, dblayout, 0);
+        init(jdbcUrl, username, password, dbtype, dblayout);
     }
 
     /**
@@ -165,11 +145,11 @@ public class SDBDatabase extends SDBAbstractDatabase {
         SDBConnectionDesc desc = storeDesc.connDesc;
         init(desc.getJdbcURL(), desc.getUser(), desc.getPassword(),
                 storeDesc.getDbType().getName(),
-                storeDesc.getLayout().getName(), 0);
+                storeDesc.getLayout().getName());
     }
 
     private void init(String jdbcUrl, String username, String password,
-            String dbtype, String dblayout, int maxConnections)
+            String dbtype, String dblayout)
             throws SQLException {
 
         // Load the driver
@@ -182,61 +162,25 @@ public class SDBDatabase extends SDBAbstractDatabase {
         super.init(sqlConn, dbtype, dblayout);
 
         // Store db parameters
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
-        this.maxConnections = maxConnections;
-    }
-
-    private Store getStore() throws SQLException {
-        Store store = null;
-        synchronized (stores) {
-            if (stores.isEmpty()) {
-                if ((maxConnections > 0) && (noConnections >= maxConnections)) {
-                    while (stores.isEmpty()) {
-                        try {
-                            stores.wait();
-                        } catch (InterruptedException e) {
-                            // Do Nothing
-                        }
-                    }
-                } else {
-                    Connection conn = DriverManager.getConnection(jdbcUrl,
-                            username, password);
-                    stores.addLast(connectToStore(conn));
-                }
-            }
-            store = stores.removeFirst();
-        }
-        return store;
+        store = super.connectToStore(sqlConn);
     }
 
     /**
      *
      * @see org.caboto.jena.db.AbstractDatabase#getData()
      */
-    protected Data getData() throws DataException {
-        try {
-            Store store = getStore();
-            return new SDBData(store);
-        } catch (SQLException e) {
-            throw new DataException(e);
-        }
+    protected Data getData() {
+        return new SDBData();
     }
 
     /**
      *
      * @see org.caboto.jena.db.AbstractDatabase#getModel(java.lang.String)
      */
-    protected Model getModel(String uri) throws DataException {
-        try {
-            Store store = getStore();
-            if (uri == null) {
-                return SDBFactory.connectDefaultModel(store);
-            }
-            return SDBFactory.connectNamedModel(store, uri);
-        } catch (SQLException e) {
-            throw new DataException(e);
+    protected Model getModel(String uri) {
+        if (uri == null) {
+            return SDBFactory.connectDefaultModel(store);
         }
+        return SDBFactory.connectNamedModel(store, uri);
     }
 }
