@@ -57,7 +57,7 @@ public interface Database {
      * @param initialBindings The values for the variables in the query
      * @return The results of the query
      */
-    ResultModel executeConstructQuery(final String sparql,
+    Model executeConstructQuery(final String sparql,
             final QuerySolution initialBindings);
 
     /**

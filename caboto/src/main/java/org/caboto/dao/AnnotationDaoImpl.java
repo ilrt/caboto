@@ -41,7 +41,6 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import org.caboto.CabotoUtility;
 import org.caboto.domain.Annotation;
 import org.caboto.jena.db.Database;
-import org.caboto.jena.db.ResultModel;
 import org.caboto.profile.Profile;
 import org.caboto.profile.ProfileEntry;
 import org.caboto.profile.ProfileRepository;
@@ -159,10 +158,8 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         initialBindings.add("id", ResourceFactory.createResource(id));
         initialBindings.add("graph", ResourceFactory.createResource(graph));
 
-        ResultModel model = database.executeConstructQuery(findAnnotationSparql,
+        Model m = database.executeConstructQuery(findAnnotationSparql,
                 initialBindings);
-        Model m = model.getResults();
-        model.close();
 
         return m.createResource(id);
     }
@@ -173,10 +170,8 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("annotates", ResourceFactory.createResource(about));
 
-        ResultModel model = database.executeConstructQuery(findAnnotationSparql,
+        Model m = database.executeConstructQuery(findAnnotationSparql,
                 initialBindings);
-        Model m = model.getResults();
-        model.close();
 
         return m;
 

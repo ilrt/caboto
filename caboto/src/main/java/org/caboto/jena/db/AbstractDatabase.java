@@ -97,7 +97,7 @@ public abstract class AbstractDatabase implements Database {
      * @see org.caboto.jena.db.Database#executeConstructQuery(java.lang.String,
      *     com.hp.hpl.jena.query.QuerySolution)
      */
-    public ResultModel executeConstructQuery(String sparql,
+    public Model executeConstructQuery(String sparql,
             QuerySolution initialBindings) {
         try {
             Data data = getData();
@@ -110,8 +110,10 @@ public abstract class AbstractDatabase implements Database {
             } else {
                 queryExec = QueryExecutionFactory.create(query, dataset);
             }
-
-            return new ResultModel(queryExec.execConstruct(), queryExec, data);
+            Model model = queryExec.execConstruct();
+            queryExec.close();
+            data.close();
+            return model;
         } catch (DataException e) {
             e.printStackTrace();
             return null;
