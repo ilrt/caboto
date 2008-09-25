@@ -31,11 +31,6 @@
 
 package org.caboto.jena.db;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -163,31 +158,4 @@ public abstract class AbstractDatabase implements Database {
             return false;
         }
     }
-
-    /**
-     *
-     * @see org.caboto.jena.db.Database#loadSparql(java.lang.String)
-     */
-    public String loadSparql(final String sparqlPath) {
-
-       StringBuffer buffer = new StringBuffer();
-
-       try {
-
-           InputStream is = getClass().getResourceAsStream(sparqlPath);
-           BufferedReader d = new BufferedReader(new InputStreamReader(is));
-
-           String s;
-           while ((s = d.readLine()) != null) {
-               buffer.append(s);
-               buffer.append("\n");
-           }
-
-       } catch (IOException ex) {
-           ex.printStackTrace();
-       }
-
-       return buffer.toString();
-   }
-
 }

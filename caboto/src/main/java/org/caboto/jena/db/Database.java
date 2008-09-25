@@ -31,6 +31,8 @@
 
 package org.caboto.jena.db;
 
+import java.io.InputStream;
+
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.Model;
 
@@ -83,13 +85,4 @@ public interface Database {
      * @return true if the model was deleted, false if not
      */
     boolean deleteModel(String uri, Model model);
-
-    /**
-     * <p>A utility method that loads a SPARQL query from a file and places the
-     *    contents in a <code>String</code>
-     *
-     * @param sparqlPath    the path of the SPARQL file
-     * @return a <code>String</code> holding the SPARQL
-     */
-    String loadSparql(final String sparqlPath);
 }

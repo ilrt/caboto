@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.caboto.jena.db.Data;
+import org.caboto.jena.db.DataException;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -58,19 +59,32 @@ import com.hp.hpl.jena.sdb.store.DatabaseType;
  */
 public class SDBDatabase extends SDBAbstractDatabase {
 
-    // The store connected to
-    private Store store = null;
+    // The JDBC URL
+    private String jdbcUrl = null;
+
+    // The username
+    private String username = null;
+
+    // The password
+    private String password = null;
 
 
     // A data implementation for SDB
     private class SDBData implements Data {
+
+        private Store store = null;
+
+        private SDBData(Store store) {
+            this.store = store;
+        }
 
         public Dataset getDataset() {
             return SDBFactory.connectDataset(store);
         }
 
         public void close() {
-            // Does Nothing
+            store.close();
+            store.getConnection().close();
         }
     }
 
@@ -160,27 +174,43 @@ public class SDBDatabase extends SDBAbstractDatabase {
         Connection sqlConn = DriverManager.getConnection(jdbcUrl, username,
                 password);
         super.init(sqlConn, dbtype, dblayout);
+        sqlConn.close();
 
-        // Store db parameters
-        store = super.connectToStore(sqlConn);
+        this.jdbcUrl = jdbcUrl;
+        this.username = username;
+        this.password = password;
+    }
+
+    private Store getStore() throws SQLException {
+        Connection sqlConn = DriverManager.getConnection(jdbcUrl, username,
+                password);
+        return connectToStore(sqlConn);
     }
 
     /**
      *
      * @see org.caboto.jena.db.AbstractDatabase#getData()
      */
-    protected Data getData() {
-        return new SDBData();
+    protected Data getData() throws DataException {
+        try {
+            return new SDBData(getStore());
+        } catch (SQLException e) {
+            throw new DataException(e);
+        }
     }
 
     /**
      *
      * @see org.caboto.jena.db.AbstractDatabase#getModel(java.lang.String)
      */
-    protected Model getModel(String uri) {
-        if (uri == null) {
-            return SDBFactory.connectDefaultModel(store);
+    protected Model getModel(String uri) throws DataException {
+        try {
+            if (uri == null) {
+                return SDBFactory.connectDefaultModel(getStore());
+            }
+            return SDBFactory.connectNamedModel(getStore(), uri);
+        } catch (SQLException e) {
+            throw new DataException(e);
         }
-        return SDBFactory.connectNamedModel(store, uri);
     }
 }

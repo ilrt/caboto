@@ -41,6 +41,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 import org.caboto.CabotoUtility;
 import org.caboto.domain.Annotation;
 import org.caboto.jena.db.Database;
+import org.caboto.jena.db.Utils;
 import org.caboto.profile.Profile;
 import org.caboto.profile.ProfileEntry;
 import org.caboto.profile.ProfileRepository;
@@ -59,7 +60,7 @@ public final class AnnotationDaoImpl implements AnnotationDao {
                              final Database database) {
         this.profileRepository = profileRepository;
         String findAnnotation = "/sparql/findAnnotation.rql";
-        findAnnotationSparql = database.loadSparql(findAnnotation);
+        findAnnotationSparql = Utils.loadSparql(findAnnotation);
         this.database = database;
     }
 
