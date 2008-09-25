@@ -52,6 +52,9 @@ public class Results {
     // The data to query
     private Data data = null;
 
+    // True if closed
+    private boolean closed = false;
+
     /**
      * Creates a new Results
      * @param resultSet The result set
@@ -77,8 +80,11 @@ public class Results {
      * Frees resources
      */
     public void close() {
-        queryExecution.close();
-        data.close();
+        if (!closed) {
+            closed = true;
+            queryExecution.close();
+            data.close();
+        }
     }
 
     /**
