@@ -33,7 +33,6 @@ package org.caboto.jena.db.impl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.caboto.jena.db.AbstractDatabase;
 
@@ -65,20 +64,12 @@ public abstract class SDBAbstractDatabase extends AbstractDatabase {
             String dblayout) throws SQLException {
         this.storeDesc = new StoreDesc(dblayout, dbtype);
         SDBConnection conn = new SDBConnection(sqlConn);
-        Statement statement = sqlConn.createStatement();
-        try {
-            statement.executeQuery("SELECT * FROM db_initialized");
-        } catch (SQLException e) {
-
-            // If we are here, we should try to create the version table
-            // and initialise the store
-            statement.execute(
-                    "CREATE TABLE db_initialized (initialized decimal(5, 5))");
-            Store store = SDBFactory.connectStore(conn, storeDesc);
-            store.getTableFormatter().format();
-            store.close();
-            }
+        Store store = SDBFactory.connectStore(conn, storeDesc);
+        if (!Scratch.formatted(store)) {
+            store.getTableFormatter().create();
         }
+        store.close();
+    }
 
     /**
      * Connects to the store
