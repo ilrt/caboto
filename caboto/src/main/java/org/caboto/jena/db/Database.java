@@ -31,8 +31,6 @@
 
 package org.caboto.jena.db;
 
-import java.io.InputStream;
-
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.Model;
 
