@@ -136,6 +136,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.caboto</groupId>
+            <artifactId>database</artifactId>
+            <version>${project.caboto.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${project.junit.version}</version>
@@ -168,21 +174,6 @@
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>jena</artifactId>
             <version>${project.jena.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hp.hpl.jena</groupId>
-            <artifactId>sdb</artifactId>
-            <version>${project.sdb.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hp.hpl.jena</groupId>
-            <artifactId>arq</artifactId>
-            <version>${project.arq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hp.hpl.jena</groupId>
-            <artifactId>arq-extra</artifactId>
-            <version>${project.arq.version}</version>
         </dependency>
 
         <!-- jersey dependencies -->
