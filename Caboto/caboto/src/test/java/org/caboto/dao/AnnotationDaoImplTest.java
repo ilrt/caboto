@@ -32,25 +32,26 @@
 package org.caboto.dao;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.SDBFactory;
+import com.hp.hpl.jena.sdb.StoreDesc;
+import com.hp.hpl.jena.sdb.sql.JDBC;
+import com.hp.hpl.jena.sdb.sql.SDBConnection;
+import com.hp.hpl.jena.sdb.store.DatabaseType;
+
 import junit.framework.TestCase;
-import org.apache.commons.configuration.ConfigurationException;
 import org.caboto.domain.Annotation;
+import org.caboto.jena.db.Database;
+import org.caboto.jena.db.impl.SDBDatabase;
 import org.caboto.profile.MockProfileRepositoryImpl;
-import org.caboto.store.StoreFactory;
-import org.caboto.store.StoreFactoryDefaultImpl;
-import org.caboto.store.StoreInitializer;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -62,34 +63,23 @@ import java.util.Properties;
 public class AnnotationDaoImplTest extends TestCase {
 
     @Before
-    public void setUp() throws ConfigurationException {
+    public void setUp() throws Exception {
 
-        // initialize the store
-        StoreInitializer storeInitializer = new StoreInitializer(formatConfigFile,
-                formatPropertyKey, sdbConfigFile);
-        storeInitializer.initializeStore();
+        Database database = new SDBDatabase("/sdb.ttl");
+        annotationDao = new AnnotationDaoImpl(new MockProfileRepositoryImpl(),
+                database);
 
-        storeFactory = new StoreFactoryDefaultImpl(sdbConfigFile);
-        store = storeFactory.create();
-
-        annotationDao = new AnnotationDaoImpl(new MockProfileRepositoryImpl(), storeFactory);
-    }
-
-    @After
-    public void tearDown() throws IOException {
-
-        // ensure that the formatter configuration is reset after each test, i.e "true" is
-        // replaced with "false" ... this ensures that the store is reformatted at the start
-        // of each test and thus deletes data that was left after the previous test.
-
-        String fullPath = getClass().getResource(formatConfigFile).getPath();
-        Properties props = new Properties();
-        props.load(new FileInputStream(new File(fullPath)));
-        props.setProperty(formatPropertyKey, "false");
-        props.store(new FileOutputStream(new File(fullPath)), null);
-
-        storeFactory.destroy(store);
-
+        Model ttl = ModelFactory.createDefaultModel();
+        ttl.read(getClass().getResourceAsStream("/sdb.ttl"), null, "TTL");
+        StoreDesc storeDesc = StoreDesc.read(ttl);
+        String driver = JDBC.getDriver(storeDesc.getDbType());
+        JDBC.loadDriver(driver);
+        Connection sqlConn = DriverManager.getConnection(
+                storeDesc.connDesc.getJdbcURL(),
+                storeDesc.connDesc.getUser(),
+                storeDesc.connDesc.getPassword());
+        store = SDBFactory.connectStore(sqlConn, storeDesc);
+        store.getTableFormatter().format();
     }
 
     @Test
@@ -175,9 +165,5 @@ public class AnnotationDaoImplTest extends TestCase {
     }
 
     private AnnotationDao annotationDao;
-    private final String sdbConfigFile = "/sdb.ttl";
-    private final String formatConfigFile = "/startup.properties";
-    private final String formatPropertyKey = "sdb.store.formatted";
-    private StoreFactory storeFactory;
     private Store store;
 }
