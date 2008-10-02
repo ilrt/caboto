@@ -32,32 +32,22 @@
 package org.caboto.dao;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.sdb.SDBFactory;
-import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.caboto.CabotoUtility;
 import org.caboto.domain.Annotation;
+import org.caboto.jena.db.Database;
+import org.caboto.jena.db.Utils;
 import org.caboto.profile.Profile;
 import org.caboto.profile.ProfileEntry;
 import org.caboto.profile.ProfileRepository;
 import org.caboto.profile.ProfileRepositoryException;
-import org.caboto.store.StoreFactory;
 import org.caboto.vocabulary.Annotea;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Date;
 
 /**
@@ -67,21 +57,16 @@ import java.util.Date;
 public final class AnnotationDaoImpl implements AnnotationDao {
 
     public AnnotationDaoImpl(final ProfileRepository profileRepository,
-                             final StoreFactory storeFactory) {
+                             final Database database) {
         this.profileRepository = profileRepository;
         String findAnnotation = "/sparql/findAnnotation.rql";
-        findAnnotationSparql = loadSparqlFromFile(findAnnotation);
-        this.storeFactory = storeFactory;
+        findAnnotationSparql = Utils.loadSparql(findAnnotation);
+        this.database = database;
     }
 
     public void addAnnotation(final Annotation annotation) {
 
-        Store store = null;
-
         try {
-
-            // get the store
-            store = storeFactory.create();
 
             // find the profile for the annotation type
             Profile profile = profileRepository.findProfile(annotation.getType());
@@ -92,7 +77,7 @@ public final class AnnotationDaoImpl implements AnnotationDao {
             }
 
             // obtain the named graph (model)
-            Model model = SDBFactory.connectDataset(store).getNamedModel(annotation.getGraphId());
+            Model model = database.getUpdateModel();
 
             model.setNsPrefix("caboto", "http://caboto.org/schema/annotations#");
             model.setNsPrefix("annotea", "http://www.w3.org/2000/10/annotation-ns#");
@@ -155,67 +140,39 @@ public final class AnnotationDaoImpl implements AnnotationDao {
             model.add(model.createStatement(annotationResource, RDF.type,
                     model.createResource(profile.getType())));
 
+            database.addModel(annotation.getGraphId(), model);
+
         } catch (ProfileRepositoryException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            storeFactory.destroy(store);
         }
-
-
     }
 
     public Resource findAnnotation(final String id) {
 
-        // get the store
-        Store store = storeFactory.create();
-
         // extract the graph from the id
         String graph = id.substring(0, (id.lastIndexOf('/') + 1));
-
-        // obtain the dataset
-        Dataset dataset = SDBFactory.connectDataset(store);
 
         // create bindings
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("id", ResourceFactory.createResource(id));
         initialBindings.add("graph", ResourceFactory.createResource(graph));
 
-        Query query = QueryFactory.create(findAnnotationSparql);
-
-        // execute query
-        QueryExecution qe = QueryExecutionFactory.create(query, dataset, initialBindings);
-
-        Model m = qe.execConstruct();
-
-        // clean up
-        storeFactory.destroy(store);
+        Model m = database.executeConstructQuery(findAnnotationSparql,
+                initialBindings);
 
         return m.createResource(id);
     }
 
     public Model findAnnotations(final String about) {
 
-        // get the store
-        Store store = storeFactory.create();
-
-        // obtain the dataset
-        Dataset dataset = SDBFactory.connectDataset(store);
-
         // create bindings
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("annotates", ResourceFactory.createResource(about));
 
-        Query query = QueryFactory.create(findAnnotationSparql);
-
-        // execute query
-        QueryExecution qe = QueryExecutionFactory.create(query, dataset, initialBindings);
-
-        Model m = qe.execConstruct();
-
-        // clean up
-        storeFactory.destroy(store);
+        Model m = database.executeConstructQuery(findAnnotationSparql,
+                initialBindings);
 
         return m;
 
@@ -223,50 +180,16 @@ public final class AnnotationDaoImpl implements AnnotationDao {
 
     public void deleteAnnotation(final Resource resource) {
 
-        // get the store
-        Store store = storeFactory.create();
-
         String id = resource.getURI();
 
         // extract the graph from the id
         String graph = id.substring(0, (id.lastIndexOf('/') + 1));
-
-        Dataset dataset = SDBFactory.connectDataset(store);
-
-        Model model = dataset.getNamedModel(graph);
-
-        model.remove(resource.getModel());
-
-        // clean up
-        storeFactory.destroy(store);
-
-    }
-
-
-    private String loadSparqlFromFile(final String sparqlPath) {
-
-        StringBuffer buffer = new StringBuffer();
-
-        try {
-
-            InputStream is = this.getClass().getResourceAsStream(sparqlPath);
-            BufferedReader d = new BufferedReader(new InputStreamReader(is));
-
-            String s;
-
-            while ((s = d.readLine()) != null) {
-                buffer.append(s);
-                buffer.append("\n");
-            }
-
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-
-        return buffer.toString();
+        Model model = database.getUpdateModel();
+        model.add(resource.getModel());
+        database.deleteModel(graph, model);
     }
 
     private final ProfileRepository profileRepository;
     private final String findAnnotationSparql;
-    private final StoreFactory storeFactory;
+    private final Database database;
 }
