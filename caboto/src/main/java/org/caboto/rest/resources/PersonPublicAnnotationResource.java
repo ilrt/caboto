@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008, University of Bristol
+ * Copyright (c) 2008, University of Manchester
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +13,8 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  *
- * 3) Neither the name of the University of Bristol nor the names of its
+ * 3) Neither the names of the University of Bristol and the
+ *    University of Manchester nor the names of their
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
@@ -50,8 +52,17 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
 
