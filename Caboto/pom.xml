@@ -1,24 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.caboto</groupId>
     <artifactId>caboto-parent</artifactId>
     <packaging>pom</packaging>
     <version>0.3-SNAPSHOT</version>
-    <name>Caboto Maven Webapp</name>
+    <name>Caboto Parent</name>
     <url>http://maven.apache.org</url>
     <modules>
+        <module>database</module>
         <module>caboto</module>
         <module>caboto-web</module>
-      <module>database</module>
-  </modules>
+    </modules>
     <properties>
         <spring.version>2.5.5</spring.version>
         <junit.version>4.4</junit.version>
         <jena.version>2.5.6</jena.version>
         <sdb.version>1.1</sdb.version>
         <arq.version>2.3</arq.version>
-        <jersey.version>0.9-ea</jersey.version>
+        <jersey.version>1.0</jersey.version>
         <caboto.version>0.3-SNAPSHOT</caboto.version>
     </properties>
+    <build>
+
+        <plugins>
+
+            <!-- allow generics etc -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
+            <!-- attach source code -->
+            <plugin>
+                <inherited>true</inherited>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- attach javadocs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+        </plugins>
+
+    </build>
 </project>
