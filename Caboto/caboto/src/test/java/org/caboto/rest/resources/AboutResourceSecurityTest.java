@@ -13,6 +13,10 @@ import org.junit.Test;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+ * @author Mike Jones (mike.a.jones@bristol.ac.uk)
+ * @version $Id$
+ */
 public class AboutResourceSecurityTest extends AbstractResourceTest {
 
 
