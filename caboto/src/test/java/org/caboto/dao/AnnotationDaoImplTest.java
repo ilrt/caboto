@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008, University of Bristol
+ * Copyright (c) 2008, University of Manchester
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -12,7 +13,8 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  *
- * 3) Neither the name of the University of Bristol nor the names of its
+ * 3) Neither the names of the University of Bristol and the
+ *    University of Manchester nor the names of their
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
@@ -34,13 +36,10 @@ package org.caboto.dao;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.SDBFactory;
+import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
 import com.hp.hpl.jena.sdb.sql.JDBC;
-import com.hp.hpl.jena.sdb.sql.SDBConnection;
-import com.hp.hpl.jena.sdb.store.DatabaseType;
-
 import junit.framework.TestCase;
 import org.caboto.domain.Annotation;
 import org.caboto.jena.db.Database;
@@ -54,7 +53,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
