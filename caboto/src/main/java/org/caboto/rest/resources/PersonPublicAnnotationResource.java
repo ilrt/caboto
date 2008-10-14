@@ -32,8 +32,6 @@
 package org.caboto.rest.resources;
 
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.sun.jersey.spi.inject.Inject;
-import com.sun.jersey.spi.resource.PerRequest;
 import org.caboto.CabotoJsonSupport;
 import org.caboto.RdfMediaType;
 import org.caboto.dao.AnnotationDao;
@@ -44,21 +42,16 @@ import org.caboto.profile.ProfileRepositoryXmlImpl;
 import org.caboto.validation.AnnotationValidatorImpl;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -66,8 +59,9 @@ import java.net.URISyntaxException;
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id: PersonPublicAnnotationResource.java 177 2008-05-30 13:50:59Z mike.a.jones $
  */
-@PerRequest
+@Scope("singleton")
 @Path("/person/{uid}/{type}/")
+@Component
 public final class PersonPublicAnnotationResource {
 
     @POST
@@ -160,10 +154,11 @@ public final class PersonPublicAnnotationResource {
     @Context
     private UriInfo uriInfo = null;
 
-    @Inject("annotationDao")
+    @Autowired
+    @Qualifier("annotationDao")
     private AnnotationDao annotationDao = null;
 
-    @Inject
+    @Autowired
     private CabotoJsonSupport jsonSupport = null;
 
 }

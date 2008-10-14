@@ -6,8 +6,6 @@ import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
 import com.hp.hpl.jena.sdb.sql.JDBC;
-import com.hp.hpl.jena.sdb.sql.SDBConnection;
-import com.hp.hpl.jena.sdb.store.DatabaseType;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -31,16 +29,12 @@ import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.springframework.web.context.ContextLoaderServlet;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -174,8 +168,8 @@ public abstract class AbstractResourceTest extends TestCase {
     ClientConfig createClientConfig() {
 
         ClientConfig config = new DefaultClientConfig();
-        config.getProviderClasses().add(JenaResourceRdfProvider.class);
-        config.getProviderClasses().add(JenaModelRdfProvider.class);
+        config.getClasses().add(JenaResourceRdfProvider.class);
+        config.getClasses().add(JenaModelRdfProvider.class);
         return config;
     }
 

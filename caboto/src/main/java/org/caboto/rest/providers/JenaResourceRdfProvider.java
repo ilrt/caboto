@@ -32,6 +32,7 @@
 package org.caboto.rest.providers;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import org.caboto.RdfMediaType;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -43,8 +44,6 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import org.caboto.RdfMediaType;
-
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id: JenaResourceRdfProvider.java 177 2008-05-30 13:50:59Z mike.a.jones $
@@ -55,14 +54,11 @@ public final class JenaResourceRdfProvider implements MessageBodyWriter<Object> 
 
     // ---- Writer implementation
 
-    public boolean isWriteable(final Class<?> aClass, final Type type,
-                               final Annotation[] annotations) {
-
+    public boolean isWriteable(Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
         return Resource.class.isAssignableFrom(aClass);
-
     }
 
-    public long getSize(final Object o) {
+    public long getSize(Object o, Class<?> aClass, Type type, Annotation[] annotations, MediaType mediaType) {
 
         // since we are dealing with a model we would need to serialize it to the desired
         // format before we would know the size.
