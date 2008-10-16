@@ -37,8 +37,12 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 /**
  * A useful database abstraction that implements the details of the queries,
  * but keeps the database implementation free
@@ -152,6 +156,34 @@ public abstract class AbstractDatabase implements Database {
             data.withDefaultMappings(model);
             data.remove(model);
             data.close();
+            return true;
+        } catch (DataException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @see org.caboto.jena.db.Database#updateProperty(java.lang.String,
+     *     java.lang.String,
+     *     com.hp.hpl.jena.rdf.model.Property,
+     *     com.hp.hpl.jena.rdf.model.Literal)
+     */
+    public boolean updateProperty(String uri, String resourceUri,
+            Property property, Literal literal) {
+        try {
+            Model data = getModel(uri);
+            if (!data.containsResource(
+                    ResourceFactory.createResource(resourceUri))) {
+                return false;
+            }
+            Resource resource = data.getResource(resourceUri);
+            if (resource.hasProperty(property)) {
+                resource.getProperty(property).changeObject(literal);
+            } else {
+                resource.addProperty(property, literal);
+            }
             return true;
         } catch (DataException e) {
             e.printStackTrace();

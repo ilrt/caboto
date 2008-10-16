@@ -32,7 +32,9 @@
 package org.caboto.jena.db;
 
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
 
 /**
  * Hides access to the database (in case we change it later)
@@ -83,4 +85,15 @@ public interface Database {
      * @return true if the model was deleted, false if not
      */
     boolean deleteModel(String uri, Model model);
+
+    /**
+     * Replaces the value of a property of a resource
+     * @param uri The uri of the graph (null for default graph)
+     * @param resourceUri The uri of the resource to update
+     * @param property The property to update
+     * @param value The value to replace the current value with
+     * @return true if the value was updated, false if not
+     */
+    boolean updateProperty(String uri, String resourceUri, Property property,
+            Literal value);
 }
