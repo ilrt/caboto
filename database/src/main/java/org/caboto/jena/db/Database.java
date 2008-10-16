@@ -32,9 +32,9 @@
 package org.caboto.jena.db;
 
 import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  * Hides access to the database (in case we change it later)
@@ -95,5 +95,5 @@ public interface Database {
      * @return true if the value was updated, false if not
      */
     boolean updateProperty(String uri, String resourceUri, Property property,
-            Literal value);
+            RDFNode value);
 }

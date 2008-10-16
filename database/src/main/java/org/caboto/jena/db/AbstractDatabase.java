@@ -37,10 +37,10 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 /**
@@ -168,10 +168,10 @@ public abstract class AbstractDatabase implements Database {
      * @see org.caboto.jena.db.Database#updateProperty(java.lang.String,
      *     java.lang.String,
      *     com.hp.hpl.jena.rdf.model.Property,
-     *     com.hp.hpl.jena.rdf.model.Literal)
+     *     com.hp.hpl.jena.rdf.model.RDFNode)
      */
     public boolean updateProperty(String uri, String resourceUri,
-            Property property, Literal literal) {
+            Property property, RDFNode value) {
         try {
             Model data = getModel(uri);
             if (!data.containsResource(
@@ -180,9 +180,9 @@ public abstract class AbstractDatabase implements Database {
             }
             Resource resource = data.getResource(resourceUri);
             if (resource.hasProperty(property)) {
-                resource.getProperty(property).changeObject(literal);
+                resource.getProperty(property).changeObject(value);
             } else {
-                resource.addProperty(property, literal);
+                resource.addProperty(property, value);
             }
             return true;
         } catch (DataException e) {
