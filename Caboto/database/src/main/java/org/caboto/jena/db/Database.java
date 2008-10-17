@@ -33,6 +33,8 @@ package org.caboto.jena.db;
 
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 /**
  * Hides access to the database (in case we change it later)
@@ -44,21 +46,23 @@ public interface Database {
 
     /**
      * Executes the given SPARQL select query on the database
-     * @param sparql The query
+     *
+     * @param sparql          The query
      * @param initialBindings The values for the variables in the query
      * @return The results of the query
      */
     Results executeSelectQuery(final String sparql,
-            final QuerySolution initialBindings);
+                               final QuerySolution initialBindings);
 
     /**
      * Executes the given SPARQL construct query on the database
-     * @param sparql The query
+     *
+     * @param sparql          The query
      * @param initialBindings The values for the variables in the query
      * @return The results of the query
      */
     Model executeConstructQuery(final String sparql,
-            final QuerySolution initialBindings);
+                                final QuerySolution initialBindings);
 
     /**
      * Gets a model that can be used to update the database using the methods
@@ -70,7 +74,8 @@ public interface Database {
 
     /**
      * Adds a model to the database
-     * @param uri The uri of the model (null for default graph)
+     *
+     * @param uri   The uri of the model (null for default graph)
      * @param model The model to add
      * @return true if the model was added, false if not
      */
@@ -78,9 +83,22 @@ public interface Database {
 
     /**
      * Deletes a model from the database
-     * @param uri The uri of the model (null for default graph)
+     *
+     * @param uri   The uri of the model (null for default graph)
      * @param model The model to delete
      * @return true if the model was deleted, false if not
      */
     boolean deleteModel(String uri, Model model);
+
+    /**
+     * Replaces the value of a property of a resource
+     *
+     * @param uri         The uri of the graph (null for default graph)
+     * @param resourceUri The uri of the resource to update
+     * @param property    The property to update
+     * @param value       The value to replace the current value with
+     * @return true if the value was updated, false if not
+     */
+    boolean updateProperty(String uri, String resourceUri, Property property,
+                           RDFNode value);
 }
