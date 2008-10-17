@@ -31,25 +31,23 @@
 
 package org.caboto.jena.db.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import org.caboto.jena.db.Data;
-import org.caboto.jena.db.DataException;
-
 import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
 import com.hp.hpl.jena.sdb.sql.JDBC;
 import com.hp.hpl.jena.sdb.sql.SDBConnectionDesc;
 import com.hp.hpl.jena.sdb.store.DatabaseType;
+import org.caboto.jena.db.Data;
+import org.caboto.jena.db.DataException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * Represents access to the SDB database
@@ -90,15 +88,15 @@ public class SDBDatabase extends SDBAbstractDatabase {
 
     /**
      * Creates a database
-     *
+     * <p/>
      * The database configuration file should contain (replacing {prefix} with
      * the value passed in configPrefix):
-     *     {prefix}.jdbcUrl  - The JDBC url to connect to
-     *     {prefix}.username - The username to connect with (optional)
-     *     {prefix}.password - The password to connect with (optional)
-     *     {prefix}.dbtype   - The Jena SDB DatabaseType of the database
-     *     {prefix}.dblayout - The Jena SDB LayoutType of the database
-     *
+     * {prefix}.jdbcUrl  - The JDBC url to connect to
+     * {prefix}.username - The username to connect with (optional)
+     * {prefix}.password - The password to connect with (optional)
+     * {prefix}.dbtype   - The Jena SDB DatabaseType of the database
+     * {prefix}.dblayout - The Jena SDB LayoutType of the database
+     * <p/>
      * The database will store the current version of the data and will
      * contain if the database has been initialised.  If the data indicates that
      * it has not been initialised, initialisation will be performed, which may
@@ -106,10 +104,9 @@ public class SDBDatabase extends SDBAbstractDatabase {
      *
      * @param configPrefix The prefix to the configuration to use
      * @param dbConfigFile The database configuration file
-     *                         location relative to the classpath
-     * @throws IOException if there is an error loading the configuration file
+     *                     location relative to the classpath
+     * @throws IOException  if there is an error loading the configuration file
      * @throws SQLException if there is an error handling the database
-     *
      */
     public SDBDatabase(String configPrefix, String dbConfigFile)
             throws IOException, SQLException {
@@ -129,21 +126,21 @@ public class SDBDatabase extends SDBAbstractDatabase {
     /**
      * Creates a new SDBDatabase
      *
-     * @param jdbcUrl The url of the database
+     * @param jdbcUrl  The url of the database
      * @param username The username used to access the database
      * @param password The password used to access the database
-     * @param dbtype The SDB DatabaseType of the database
+     * @param dbtype   The SDB DatabaseType of the database
      * @param dblayout The SDB DatabaseLayout of the database
-     *
      * @throws SQLException if there is an error handling the database
      */
     public SDBDatabase(String jdbcUrl, String username, String password,
-            String dbtype, String dblayout) throws SQLException {
+                       String dbtype, String dblayout) throws SQLException {
         init(jdbcUrl, username, password, dbtype, dblayout);
     }
 
     /**
      * Creates an SDBDatabase from an SDB config file
+     *
      * @param sdbConfigFile The path to the config file
      * @throws SQLException
      */
@@ -163,7 +160,7 @@ public class SDBDatabase extends SDBAbstractDatabase {
     }
 
     private void init(String jdbcUrl, String username, String password,
-            String dbtype, String dblayout)
+                      String dbtype, String dblayout)
             throws SQLException {
 
         // Load the driver
@@ -188,7 +185,6 @@ public class SDBDatabase extends SDBAbstractDatabase {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.AbstractDatabase#getData()
      */
     protected Data getData() throws DataException {
@@ -200,7 +196,6 @@ public class SDBDatabase extends SDBAbstractDatabase {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.AbstractDatabase#getModel(java.lang.String)
      */
     protected Model getModel(String uri) throws DataException {
@@ -211,6 +206,33 @@ public class SDBDatabase extends SDBAbstractDatabase {
             return SDBFactory.connectNamedModel(getStore(), uri);
         } catch (SQLException e) {
             throw new DataException(e);
+        }
+    }
+
+    /**
+     * @see org.caboto.jena.db.Database#updateProperty(java.lang.String,
+     *      java.lang.String,
+     *      com.hp.hpl.jena.rdf.model.Property,
+     *      com.hp.hpl.jena.rdf.model.RDFNode)
+     */
+    public boolean updateProperty(String uri, String resourceUri,
+                                  Property property, RDFNode value) {
+        try {
+            Model data = getModel(uri);
+            if (!data.containsResource(
+                    ResourceFactory.createResource(resourceUri))) {
+                return false;
+            }
+            Resource resource = data.getResource(resourceUri);
+            if (resource.hasProperty(property)) {
+                resource.getProperty(property).changeObject(value);
+            } else {
+                resource.addProperty(property, value);
+            }
+            return true;
+        } catch (DataException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
