@@ -31,14 +31,9 @@
 
 package org.caboto.jena.db;
 
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.rdf.model.*;
+
 /**
  * A useful database abstraction that implements the details of the queries,
  * but keeps the database implementation free
@@ -50,6 +45,7 @@ public abstract class AbstractDatabase implements Database {
 
     /**
      * Gets the data object of the database for querying
+     *
      * @return The data object
      * @throws DataException If there is an error getting the data
      */
@@ -57,18 +53,18 @@ public abstract class AbstractDatabase implements Database {
 
     /**
      * Gets the model of the database for updating
+     *
      * @param uri The uri of the model to get (null for default graph)
      * @return The model
      */
     protected abstract Model getModel(String uri) throws DataException;
 
     /**
-     *
      * @see org.caboto.jena.db.Database#executeSelectQuery(java.lang.String,
-     *     com.hp.hpl.jena.query.QuerySolution)
+     *      com.hp.hpl.jena.query.QuerySolution)
      */
     public Results executeSelectQuery(String sparql,
-            QuerySolution initialBindings) {
+                                      QuerySolution initialBindings) {
         try {
             Data data = getData();
             Dataset dataset = data.getDataset();
@@ -88,12 +84,11 @@ public abstract class AbstractDatabase implements Database {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.Database#executeConstructQuery(java.lang.String,
-     *     com.hp.hpl.jena.query.QuerySolution)
+     *      com.hp.hpl.jena.query.QuerySolution)
      */
     public Model executeConstructQuery(String sparql,
-            QuerySolution initialBindings) {
+                                       QuerySolution initialBindings) {
         try {
             Data data = getData();
             Dataset dataset = data.getDataset();
@@ -116,7 +111,6 @@ public abstract class AbstractDatabase implements Database {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.Database#getUpdateModel()
      */
     public Model getUpdateModel() {
@@ -124,9 +118,8 @@ public abstract class AbstractDatabase implements Database {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.Database#addModel(java.lang.String,
-     *     com.hp.hpl.jena.rdf.model.Model)
+     *      com.hp.hpl.jena.rdf.model.Model)
      */
     public boolean addModel(String uri, Model model) {
         try {
@@ -142,9 +135,8 @@ public abstract class AbstractDatabase implements Database {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.Database#deleteModel(java.lang.String,
-     *     com.hp.hpl.jena.rdf.model.Model)
+     *      com.hp.hpl.jena.rdf.model.Model)
      */
     public boolean deleteModel(String uri, Model model) {
         try {
@@ -152,6 +144,33 @@ public abstract class AbstractDatabase implements Database {
             data.withDefaultMappings(model);
             data.remove(model);
             data.close();
+            return true;
+        } catch (DataException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * @see org.caboto.jena.db.Database#updateProperty(java.lang.String,
+     *      java.lang.String,
+     *      com.hp.hpl.jena.rdf.model.Property,
+     *      com.hp.hpl.jena.rdf.model.RDFNode)
+     */
+    public boolean updateProperty(String uri, String resourceUri,
+                                  Property property, RDFNode value) {
+        try {
+            Model data = getModel(uri);
+            if (!data.containsResource(
+                    ResourceFactory.createResource(resourceUri))) {
+                return false;
+            }
+            Resource resource = data.getResource(resourceUri);
+            if (resource.hasProperty(property)) {
+                resource.getProperty(property).changeObject(value);
+            } else {
+                resource.addProperty(property, value);
+            }
             return true;
         } catch (DataException e) {
             e.printStackTrace();
