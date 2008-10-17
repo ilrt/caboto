@@ -209,30 +209,4 @@ public class SDBDatabase extends SDBAbstractDatabase {
         }
     }
 
-    /**
-     * @see org.caboto.jena.db.Database#updateProperty(java.lang.String,
-     *      java.lang.String,
-     *      com.hp.hpl.jena.rdf.model.Property,
-     *      com.hp.hpl.jena.rdf.model.RDFNode)
-     */
-    public boolean updateProperty(String uri, String resourceUri,
-                                  Property property, RDFNode value) {
-        try {
-            Model data = getModel(uri);
-            if (!data.containsResource(
-                    ResourceFactory.createResource(resourceUri))) {
-                return false;
-            }
-            Resource resource = data.getResource(resourceUri);
-            if (resource.hasProperty(property)) {
-                resource.getProperty(property).changeObject(value);
-            } else {
-                resource.addProperty(property, value);
-            }
-            return true;
-        } catch (DataException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 }
