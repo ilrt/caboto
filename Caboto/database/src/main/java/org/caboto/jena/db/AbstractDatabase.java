@@ -153,6 +153,18 @@ public abstract class AbstractDatabase implements Database {
         }
     }
 
+    public boolean deleteAll(String uri) {
+        try {
+            Model data = getModel(uri);
+            data.removeAll();
+            return true;
+        } catch (DataException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     /**
      * @see org.caboto.jena.db.Database#updateProperty(java.lang.String,
      *      java.lang.String,
