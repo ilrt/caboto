@@ -197,4 +197,19 @@ public class PersonPrivateAnnotationTest extends AbstractResourceTest {
                 deleteResponse.getStatus());
     }
 
+    @Test
+    public void testGetPublicGraph() throws Exception {
+
+        // Store some data
+        createAndSaveAnnotation(userPrivateUriOne);
+        createAndSaveAnnotation(userPrivateUriTwo);
+
+        ClientResponse clientResponse = createGetClientResponse(null, null, userPrivateUriOne,
+                RdfMediaType.APPLICATION_RDF_XML);
+
+        assertEquals("A 200 should be expected", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+
+    }
+
 }

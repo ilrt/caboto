@@ -49,6 +49,8 @@ public interface AnnotationDao {
 
     Resource findAnnotation(String id);
 
+    Model findAnnotationsByGraph(String graph);
+
     Model findAnnotations(String about);
 
     void deleteAnnotation(Resource resource);
