@@ -103,6 +103,17 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
                 clientResponse.getStatus());
     }
 
+    public void testGetAnnotationsByGraphUnauthenticated() throws ProfileRepositoryException {
+
+        createAndSaveAnnotation(userPublicUriOne);
+
+        ClientResponse clientResponse = createGetClientResponse(null, null, userPublicUriOne,
+                MediaType.APPLICATION_JSON);
+
+        assertEquals("A 200 should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+    }
+
     @Test
     public void testGetAnnotationAuthenticated() throws ProfileRepositoryException {
 
@@ -110,6 +121,18 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
 
         ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
                 url, MediaType.APPLICATION_JSON);
+
+        assertEquals("A 200 should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+    }
+
+    @Test
+    public void testGetAnnotationByGraphAuthenticated() throws ProfileRepositoryException {
+
+        createAndSaveAnnotation(userPublicUriOne);
+
+        ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
+                userPublicUriOne, MediaType.APPLICATION_JSON);
 
         assertEquals("A 200 should be returned", Response.Status.OK.getStatusCode(),
                 clientResponse.getStatus());

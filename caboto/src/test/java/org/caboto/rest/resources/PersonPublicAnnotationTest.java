@@ -41,9 +41,9 @@ import org.caboto.RdfMediaType;
 import org.caboto.profile.ProfileRepositoryException;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.After;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -197,6 +197,21 @@ public class PersonPublicAnnotationTest extends AbstractResourceTest {
                 .delete(ClientResponse.class);
         assertEquals("A 404 should be returned", Response.Status.NOT_FOUND.getStatusCode(),
                 deleteResponse.getStatus());
+    }
+
+    @Test
+    public void testGetPublicGraph() throws Exception {
+
+        // Store some data
+        createAndSaveAnnotation(userPublicUriOne);
+        createAndSaveAnnotation(userPublicUriTwo);
+
+        ClientResponse clientResponse = createGetClientResponse(null, null, userPublicUriOne,
+                RdfMediaType.APPLICATION_RDF_XML);
+
+        assertEquals("A 200 should be expected", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+
     }
 
 }

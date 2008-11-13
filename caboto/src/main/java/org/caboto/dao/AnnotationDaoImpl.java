@@ -167,6 +167,16 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         return m.createResource(id);
     }
 
+    public Model findAnnotationsByGraph(String graph) {
+
+        QuerySolutionMap initialBindings = new QuerySolutionMap();
+        initialBindings.add("graph", ResourceFactory.createResource(graph));
+
+        return database.executeConstructQuery(findAnnotationSparql,
+                initialBindings);
+    }
+
+
     public Model findAnnotations(final String about) {
 
         // create bindings

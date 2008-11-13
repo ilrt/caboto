@@ -142,4 +142,27 @@ public class PersonPrivateAnnotationSecurityTest extends AbstractResourceTest {
 
     }
 
+    @Test
+    public void testGetGraphUnAuthenticated() throws ProfileRepositoryException {
+
+        createAndSaveAnnotation(userPrivateUriOne);
+
+        ClientResponse clientResponse = createGetClientResponse(null, null,
+                userPrivateUriOne, MediaType.APPLICATION_JSON);
+
+        assertEquals("A 403 should be returned", Response.Status.UNAUTHORIZED.getStatusCode(),
+                clientResponse.getStatus());
+    }
+
+    @Test
+    public void testGetGraphAuthenticated() throws ProfileRepositoryException {
+
+        createAndSaveAnnotation(userPrivateUriOne);
+
+        ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
+                userPrivateUriOne, MediaType.APPLICATION_JSON);
+
+        assertEquals("A 100 should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+    }
 }
