@@ -57,7 +57,8 @@ public class ExitGuard implements AfterReturningAdvice {
             throws Throwable {
 
         // only interested in the find annotations method
-        if (method.getName().equals("findAnnotations")) {
+        if (method.getName().equals("findAnnotations")
+                || method.getName().equals("findAnnotationsByGraph")) {
 
             Model results = (Model) returnValue;
 

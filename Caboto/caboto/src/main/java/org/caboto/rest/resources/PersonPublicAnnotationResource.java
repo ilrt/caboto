@@ -34,6 +34,7 @@
 package org.caboto.rest.resources;
 
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Model;
 import org.caboto.CabotoJsonSupport;
 import org.caboto.RdfMediaType;
 import org.caboto.dao.AnnotationDao;
@@ -44,6 +45,7 @@ import org.caboto.profile.ProfileRepositoryXmlImpl;
 import org.caboto.validation.AnnotationValidatorImpl;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -113,6 +115,36 @@ public final class PersonPublicAnnotationResource {
         return Response.created(new URI(annotation.getId())).build();
     }
 
+    @GET
+    @Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+    public Response getAnnotationByGraph() {
+
+        Model model = annotationDao.findAnnotationsByGraph(uriInfo.getRequestUri().toString());
+
+        if (model.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return Response.status(Response.Status.OK).entity(model).build();
+        }
+
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAnnotationByGraphAsJson() throws JSONException {
+
+        Model model = annotationDao.findAnnotationsByGraph(uriInfo.getRequestUri().toString());
+
+        if (model.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+
+            JSONArray jsonArray = jsonSupport.generateJsonArray(model);
+
+            return Response.status(Response.Status.OK).entity(jsonArray).build();
+        }
+
+    }
 
     @Path("{id}")
     @GET
