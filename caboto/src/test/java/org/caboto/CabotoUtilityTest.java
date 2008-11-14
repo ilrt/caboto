@@ -187,6 +187,10 @@ public class CabotoUtilityTest extends TestCase {
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PUBLIC_URI_TEN));
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_NINE));
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_TEN));
+	
+	// openid
+        assertEquals("Incorrect name", USER_SIX, CabotoUtility.extractUsername(PUBLIC_URI_ELEVEN));
+        assertEquals("Incorrect name", USER_SIX, CabotoUtility.extractUsername(PRIVATE_URI_ELEVEN));
     }
 
     @Test
@@ -236,6 +240,8 @@ public class CabotoUtilityTest extends TestCase {
             "/annotations/person/???/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PUBLIC_URI_TEN =
             "/annotations/person/???/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PUBLIC_URI_ELEVEN =
+            "/annotations/person/http://someone.openid.org/id//public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
 
     // private URIs
     private final String PRIVATE_URI_ONE = "/person/mike/private/";
@@ -256,6 +262,8 @@ public class CabotoUtilityTest extends TestCase {
             "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_TEN =
             "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PRIVATE_URI_ELEVEN =
+            "/annotations/person/http://someone.openid.org/id//private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
 
 
     // public graphs
@@ -281,6 +289,7 @@ public class CabotoUtilityTest extends TestCase {
     private final String USER_THREE = "jasper";
     private final String USER_FOUR = "gérard";
     private final String USER_FIVE = "???";
+    private final String USER_SIX = "http://someone.openid.org/id/";
 
     // date formats and dates
     private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
