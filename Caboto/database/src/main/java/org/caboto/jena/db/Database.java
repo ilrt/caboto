@@ -107,7 +107,6 @@ public interface Database {
     /**
      * Deletes all data from a model
      * @param uri       The URI Of the graph
-     * @param model     The model to delete
      * @return true if the data was deleted
      */
     boolean deleteAll(String uri);
