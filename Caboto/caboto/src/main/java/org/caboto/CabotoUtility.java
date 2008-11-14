@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * <p>A generic utility class with static methods that are used across a number of classes.</p>
@@ -121,12 +122,16 @@ public final class CabotoUtility {
      * @return the username that is part of the path.
      */
     public static String extractUsername(String path) {
-
-        int loc = path.indexOf(personPath);
-        loc += personPath.length();
-        String temp = path.substring(loc, path.length());
-        return temp.substring(0, temp.indexOf("/"));
+	Matcher m = usernamePattern.matcher(path);
+	if(m.matches()) {
+	        return m.group(1);
+	}
+	// can't recover from this!
+	//return null;
+	throw new RuntimeException("No username found in the path.");
     }
+
+    private static Pattern usernamePattern = Pattern.compile("^.*/person/(.*)/(public|private)/[^/]*$");
 
     private static Pattern publicResourcePattern = Pattern.compile("^.*/person/.*/public/.*$");
     private static Pattern privateResourcePattern = Pattern.compile("^.*/person/.*/private/.*$");
