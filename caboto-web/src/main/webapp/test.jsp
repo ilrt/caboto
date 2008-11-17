@@ -60,13 +60,7 @@
         <p>Log in to add your own annotation...</p>
 		
 		<p>
-			<form id="openid-form" action="j_spring_openid_security_check" method="POST">
-				<label><strong>Openid :</strong></label>
-				<input type="text" size="30" name="j_username" class="oid"/>
-				<input type="submit" value="log in..."/>
-			</form>
-		
-			<form id="openid-logout" action="j_spring_security_logout" method="POST">
+		    <form id="openid-logout" action="j_spring_security_logout" method="POST">
 				<input type="submit" value="log out..."/>
 			</form>
 		</p>
