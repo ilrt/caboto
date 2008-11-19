@@ -5,7 +5,7 @@
 
 _:c rdf:type sdb:SDBConnection ;
     sdb:sdbType     "derby" ;
-    sdb:sdbName     "target/DB/SDB2" ;
+    sdb:sdbName     "/usr/local/projects/cip/derby/caboto?create=true" ;
     sdb:driver      "org.apache.derby.jdbc.EmbeddedDriver" ;
     .
 
