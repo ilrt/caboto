@@ -161,7 +161,10 @@ function formatAnnotation(annotation, uid, admin) {
      var date = parseDate(annotation.created);
      var author = parseAuthor(annotation.author);
      var body = annotation.body.description.replace(/\n|\r/g, "<br />\n");
-
+     
+     // Replace [[link]] with an clickable link (quite conservative)
+     body = body.replace(/\[\[(http:[^<>"\]]+)\]\]/g, "<a href=\"$1\">$1</a>");
+     
      var output = "<div class='annotation-entry'>"
              + "<div class='annotation-entry-title'>" +  
 annotation.body.title + "</div>"
@@ -264,6 +267,7 @@ function processForm(uri) {
 function clearForm() {
      if (document.getElementById('annotation-comment-form')) {
          if (getCookie("uid")) {
+             Form.enable('openid-logout');
         	 Form.enable('annotation-comment-form');
         	 Form.Element.clear('annotation-title');
         	 Form.Element.clear('annotation-body');

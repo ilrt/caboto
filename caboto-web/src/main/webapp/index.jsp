@@ -61,7 +61,7 @@
 		
 		<p>
 		    <form id="openid-logout" action="j_spring_security_logout" method="POST">
-				<input type="submit" value="log out..."/>
+				<input type="submit" value="log out..." disabled="disabled"/>
 			</form>
 		</p>
 
