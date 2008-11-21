@@ -124,7 +124,10 @@ public final class CabotoUtility {
     public static String extractUsername(String path) {
 	Matcher m = usernamePattern.matcher(path);
 	if(m.matches()) {
-	        return m.group(1);
+		String name = m.group(1);
+		name = name.replaceAll("_U", "_");
+		name = name.replaceAll("_S", "/");
+	        return name;
 	}
 	// can't recover from this!
 	//return null;
