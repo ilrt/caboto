@@ -33,19 +33,18 @@
  */
 package org.caboto.jena.db.impl;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.caboto.jena.db.AbstractDatabase;
+import org.caboto.jena.db.Data;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.caboto.jena.db.AbstractDatabase;
-import org.caboto.jena.db.Data;
-
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * A database represented by a set of files
@@ -65,6 +64,10 @@ public class FileDatabase extends AbstractDatabase {
             return dataset;
         }
 
+        public Model getModel(String uri) {
+            return ModelFactory.createDefaultModel();
+        }
+
         public void close() {
             // Does Nothing
         }
@@ -80,62 +83,52 @@ public class FileDatabase extends AbstractDatabase {
     public FileDatabase(final String defaultModelFile,
                         final String namedGraphsDir) throws IOException {
 
-        // get the default model
-        File aDefaultModelFile = null;
         try {
-            aDefaultModelFile = new File(URLDecoder.decode(
+            // get the default model
+             File aDefaultModelFile = new File(URLDecoder.decode(
                     getClass().getResource(defaultModelFile).getPath(),
                     "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            // Not Going to happen!
-            e.printStackTrace();
-        }
 
-        if (!aDefaultModelFile.exists() || !aDefaultModelFile.isFile()) {
-            throw new IOException(new StringBuilder()
-                    .append(aDefaultModelFile.getAbsolutePath())
-                    .append(" - The file specified as the default model is either ")
-                    .append("does not exist or is not a file").toString());
-        }
+            if (!aDefaultModelFile.exists() || !aDefaultModelFile.isFile()) {
+                throw new IOException(new StringBuilder()
+                        .append(aDefaultModelFile.getAbsolutePath())
+                        .append(" - The file specified as the default model is either ")
+                        .append("does not exist or is not a file").toString());
+            }
 
-        // find the named graphs
-        File namedGraphsPath = null;
-        try {
-            namedGraphsPath = new File(URLDecoder.decode(
+
+            // find the named graphs
+             File namedGraphsPath = new File(URLDecoder.decode(
                     getClass().getResource(namedGraphsDir).getPath(), "UTF-8"));
+
+            if (!namedGraphsPath.exists() || !namedGraphsPath.isDirectory()) {
+                throw new IOException(new StringBuilder()
+                        .append("The directory specified for the named graphs is ")
+                        .append("either does not exist or is not a directory").toString());
+            }
+
+
+            List<String> namedGraphsList = new ArrayList<String>();
+
+            File[] namedGraphFiles = namedGraphsPath.listFiles(new RdfFileFilter());
+
+            for (File namedGraphFile : namedGraphFiles) {
+                namedGraphsList.add(namedGraphFile.getAbsolutePath());
+            }
+
+            dataset = com.hp.hpl.jena.query.DatasetFactory
+                    .create(aDefaultModelFile.getAbsolutePath(), namedGraphsList);
+
         } catch (UnsupportedEncodingException e) {
             // Not Going to happen!
             e.printStackTrace();
         }
-
-        if (!namedGraphsPath.exists() || !namedGraphsPath.isDirectory()) {
-            throw new IOException(new StringBuilder()
-                    .append("The directory specified for the named graphs is ")
-                    .append("either does not exist or is not a directory").toString());
-        }
-
-        List<String> namedGraphsList = new ArrayList<String>();
-
-        File[] namedGraphFiles = namedGraphsPath.listFiles(new RdfFileFilter());
-
-        for (File namedGraphFile : namedGraphFiles) {
-            namedGraphsList.add(namedGraphFile.getAbsolutePath());
-        }
-
-        dataset = com.hp.hpl.jena.query.DatasetFactory.create(aDefaultModelFile.getAbsolutePath(),
-                namedGraphsList);
     }
 
     /**
-     *
      * @see org.caboto.jena.db.AbstractDatabase#getData()
      */
-    protected Data getData() {
+    public Data getData() {
         return new FileData();
     }
-
-    protected Model getModel(String uri) {
-        return ModelFactory.createDefaultModel();
-    }
-
 }
