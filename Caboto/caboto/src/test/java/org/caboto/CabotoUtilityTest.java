@@ -241,7 +241,7 @@ public class CabotoUtilityTest extends TestCase {
     private final String PUBLIC_URI_TEN =
             "/annotations/person/???/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PUBLIC_URI_ELEVEN =
-            "/annotations/person/http://someone.openid.org/id//public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+            "/annotations/person/http:_S_Ssomeone.openid.org_Sid_S/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
 
     // private URIs
     private final String PRIVATE_URI_ONE = "/person/mike/private/";
@@ -263,7 +263,7 @@ public class CabotoUtilityTest extends TestCase {
     private final String PRIVATE_URI_TEN =
             "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_ELEVEN =
-            "/annotations/person/http://someone.openid.org/id//private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+            "/annotations/person/http:_S_Ssomeone.openid.org_Sid_S/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
 
 
     // public graphs
