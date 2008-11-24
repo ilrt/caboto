@@ -31,29 +31,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package org.caboto.dao;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Model;
-import org.caboto.domain.Annotation;
-import org.caboto.filters.AnnotationFilter;
+package org.caboto.filters;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * <p>A Data Access Object to add, find and delete annotations.</p>
  *
- * @author Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version $Id: AnnotationDao.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ * @author pldms
  */
-public interface AnnotationDao {
-
-    void addAnnotation(Annotation annotation);
-
-    Resource findAnnotation(String id);
-
-    Model findAnnotationsByGraph(String graph, AnnotationFilter... filters);
-
-    Model findAnnotations(String about, AnnotationFilter... filters);
-
-    void deleteAnnotation(Resource resource);
-
+public class AnnotationFilterFactory {
+    public static AnnotationFilter[]
+            getFromParameters(Map<String, String> parameters) {
+        final List<AnnotationFilter> filters = new LinkedList();
+        for (Entry<String, String> attVal: parameters.entrySet()) {
+            if (attVal.getKey().contains(":")) {
+                
+            }
+        }
+         // life is too short to understand why I need a cast here
+        return (AnnotationFilter[]) filters.toArray();
+    }
 }

@@ -51,6 +51,7 @@ import org.caboto.profile.ProfileRepositoryException;
 import org.caboto.vocabulary.Annotea;
 
 import java.util.Date;
+import org.caboto.filters.AnnotationFilter;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -167,7 +168,8 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         return m.createResource(id);
     }
 
-    public Model findAnnotationsByGraph(String graph) {
+    public Model findAnnotationsByGraph(String graph,
+            AnnotationFilter... filters) {
 
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("graph", ResourceFactory.createResource(graph));
@@ -177,7 +179,8 @@ public final class AnnotationDaoImpl implements AnnotationDao {
     }
 
 
-    public Model findAnnotations(final String about) {
+    public Model findAnnotations(final String about,
+            AnnotationFilter... filters) {
 
         // create bindings
         QuerySolutionMap initialBindings = new QuerySolutionMap();

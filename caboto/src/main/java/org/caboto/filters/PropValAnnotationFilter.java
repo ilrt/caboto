@@ -31,29 +31,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package org.caboto.dao;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Model;
-import org.caboto.domain.Annotation;
-import org.caboto.filters.AnnotationFilter;
+package org.caboto.filters;
+
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 /**
- * <p>A Data Access Object to add, find and delete annotations.</p>
+ * Prime annoyance: namespaces. what to do about them?
  *
- * @author Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version $Id: AnnotationDao.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ * @author pldms
  */
-public interface AnnotationDao {
+public class PropValAnnotationFilter extends AnnotationFilterBase {
 
-    void addAnnotation(Annotation annotation);
+    private final String property;
+    private final RDFNode value;
 
-    Resource findAnnotation(String id);
+    /**
+     * 
+     * @param propertyS
+     * @param valueS
+     */
+    public PropValAnnotationFilter(final String propertyS, final String valueS) {
+        this(propertyS, toValue(valueS));
+    }
 
-    Model findAnnotationsByGraph(String graph, AnnotationFilter... filters);
+    public PropValAnnotationFilter(String property, RDFNode value) {
+        this.property = property;
+        this.value = value;
+    }
+    
+    private static RDFNode toValue(String valueS) {
+        // Do we want number support?
+        if (valueS.startsWith("U:"))
+            return ResourceFactory.createResource(valueS.substring(2));
+        return ResourceFactory.createPlainLiteral(valueS);
+    }
 
-    Model findAnnotations(String about, AnnotationFilter... filters);
-
-    void deleteAnnotation(Resource resource);
-
+    public void visitQueryPattern(Query arg0) {
+        System.err.println("Query: " + arg0.serialize());
+    }
 }
