@@ -38,6 +38,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 
 /**
@@ -49,15 +50,6 @@ public class PropValAnnotationFilter extends AnnotationFilterBase {
 
     private final String propertyS;
     private final Node value;
-
-    public static void main(String... args) {
-        Query query =
-                QueryFactory.create("SELECT * { ?s ?s ?s . GRAPH ?g { ?s ?p ?o . ?p ?o ?s . } FILTER (?s < 3) }");
-        PropValAnnotationFilter filter =
-                new PropValAnnotationFilter("foo", "bar");
-        filter.augmentQuery(query, "s");
-        System.err.println("Query:\n" + query + "\n====\n");
-    }
 
     /**
      * 
@@ -88,7 +80,7 @@ public class PropValAnnotationFilter extends AnnotationFilterBase {
         if (expandedProp == null)
             throw new RuntimeException("Cannot expand property: " + propertyS);
         arg0.addTriple(Triple.create(
-                Node.createVariable(annotationBodyVar),
+                Var.alloc(annotationBodyVar),
                 Node.createURI(expandedProp),
                 value));
     }

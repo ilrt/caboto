@@ -34,6 +34,7 @@
 
 package org.caboto.filters;
 
+import com.hp.hpl.jena.query.Query;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -49,10 +50,16 @@ public class AnnotationFilterFactory {
         final List<AnnotationFilter> filters = new LinkedList();
         for (Entry<String, String> attVal: parameters.entrySet()) {
             if (attVal.getKey().contains(":")) {
-                
+                filters.add(new PropValAnnotationFilter(attVal.getKey(), attVal.getValue()));
             }
         }
          // life is too short to understand why I need a cast here
         return (AnnotationFilter[]) filters.toArray();
+    }
+
+    public static void applyFilters(Query original,
+            String annotationBodyVar, AnnotationFilter... filters) {
+        for (AnnotationFilter filter: filters)
+            filter.augmentQuery(original, annotationBodyVar);
     }
 }
