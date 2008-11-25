@@ -34,62 +34,42 @@
 
 package org.caboto.filters;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * Prime annoyance: namespaces. what to do about them?
  *
  * @author pldms
  */
-public class PropValAnnotationFilter extends AnnotationFilterBase {
+public class PropValAnnotationFilterTest {
 
-    private final String propertyS;
-    private final Node value;
+    public PropValAnnotationFilterTest() {
+    }
 
-    public static void main(String... args) {
-        Query query =
-                QueryFactory.create("SELECT * { ?s ?s ?s . GRAPH ?g { ?s ?p ?o . ?p ?o ?s . } FILTER (?s < 3) }");
-        PropValAnnotationFilter filter =
-                new PropValAnnotationFilter("foo", "bar");
-        filter.augmentQuery(query, "s");
-        System.err.println("Query:\n" + query + "\n====\n");
+    @Before
+    public void setUp() {
+    }
+
+    @After
+    public void tearDown() {
     }
 
     /**
-     * 
-     * @param propertyS
-     * @param valueS
+     * Test of visitQueryPattern method, of class PropValAnnotationFilter.
      */
-    public PropValAnnotationFilter(final String propertyS,
-            final String valueS) {
-        this(propertyS, toValue(valueS));
+    @Test
+    public void testAugmentQuery() {
+        Query query = QueryFactory.create("SELECT * { GRAPH ?g { ?s ?p ?o }}");
+        PropValAnnotationFilter filter =
+                new PropValAnnotationFilter("foo", "bar");
+        filter.augmentQuery(query, "s");
+        
     }
 
-    public PropValAnnotationFilter(String propertyS, Node value) {
-        this.propertyS = propertyS;
-        this.value = value;
-    }
-    
-    private static Node toValue(String valueS) {
-        // Do we want number support?
-        if (valueS.startsWith("U:"))
-            return Node.createURI(valueS.substring(2));
-        return Node.createLiteral(valueS);
-    }
-
-    public void augmentBlock(ElementTriplesBlock arg0,
-            String annotationBodyVar) {
-        String expandedProp = getQuery().expandPrefixedName(propertyS);
-        // TODO Caboto exception policy?
-        if (expandedProp == null)
-            throw new RuntimeException("Cannot expand property: " + propertyS);
-        arg0.addTriple(Triple.create(
-                Node.createVariable(annotationBodyVar),
-                Node.createURI(expandedProp),
-                value));
-    }
 }
