@@ -36,10 +36,6 @@ package org.caboto.filters;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -52,24 +48,27 @@ public class PropValAnnotationFilterTest {
     public PropValAnnotationFilterTest() {
     }
 
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
-
     /**
      * Test of visitQueryPattern method, of class PropValAnnotationFilter.
      */
     @Test
-    public void testAugmentQuery() {
-        Query query = QueryFactory.create("SELECT * { GRAPH ?g { ?s ?p ?o }}");
+    public final void testAugmentQuery() {
+        Query query = QueryFactory.create("PREFIX x: <http://ex.com/> "
+                + "SELECT * { GRAPH ?g { ?s ?p ?o }}");
         PropValAnnotationFilter filter =
-                new PropValAnnotationFilter("foo", "bar");
-        filter.augmentQuery(query, "s");
-        
+                new PropValAnnotationFilter("x:prop", "bar");
+        Query toChange = query.cloneQuery();
+        filter.augmentQuery(toChange, "s");
+        Query query2 = QueryFactory.create("PREFIX x: <http://ex.com/> "
+                + "SELECT * { GRAPH ?g { ?s ?p ?o ; x:prop \"bar\" }}");
+        assertEquals(query2, toChange);
+
+        filter = new PropValAnnotationFilter("x:prop", "U:http://ex.com/z");
+        toChange = query.cloneQuery();
+        filter.augmentQuery(toChange, "s");
+        query2 = QueryFactory.create("PREFIX x: <http://ex.com/> "
+                + "SELECT * { GRAPH ?g { ?s ?p ?o ; x:prop <http://ex.com/z> }}");
+        assertEquals(query2, toChange);
     }
 
 }

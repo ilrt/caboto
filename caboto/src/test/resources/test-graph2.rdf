@@ -10,6 +10,7 @@
         <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Another title</dc:title>
         <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ut enim ad minim veniam, quis nostrud
             exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</dc:description>
+        <dc:subject>test</dc:subject>
       </rdf:Description>
     </annotea:body>
     <annotea:annotates rdf:resource="http://chillyinside.com/blog/?p=45"/>

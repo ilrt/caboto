@@ -34,6 +34,8 @@
 package org.caboto.dao;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -52,6 +54,7 @@ import org.caboto.vocabulary.Annotea;
 
 import java.util.Date;
 import org.caboto.filters.AnnotationFilter;
+import org.caboto.filters.AnnotationFilterFactory;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -173,8 +176,9 @@ public final class AnnotationDaoImpl implements AnnotationDao {
 
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("graph", ResourceFactory.createResource(graph));
-
-        return database.executeConstructQuery(findAnnotationSparql,
+        Query query = QueryFactory.create(findAnnotationSparql);
+        AnnotationFilterFactory.applyFilters(query, "body", filters);
+        return database.executeConstructQuery(query,
                 initialBindings);
     }
 
@@ -185,10 +189,10 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         // create bindings
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("annotates", ResourceFactory.createResource(about));
-
-        return database.executeConstructQuery(findAnnotationSparql,
+        Query query = QueryFactory.create(findAnnotationSparql);
+        AnnotationFilterFactory.applyFilters(query, "body", filters);
+        return database.executeConstructQuery(query,
                 initialBindings);
-
     }
 
     public void deleteAnnotation(final Resource resource) {
