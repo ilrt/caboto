@@ -195,6 +195,16 @@ public final class AnnotationDaoImpl implements AnnotationDao {
                 initialBindings);
     }
 
+    public Model findAnnotations(AnnotationFilter[] filters) {
+        // TODO The query may need reordering in this case
+        // create bindings
+        QuerySolutionMap initialBindings = new QuerySolutionMap();
+        Query query = QueryFactory.create(findAnnotationSparql);
+        AnnotationFilterFactory.applyFilters(query, "body", filters);
+        return database.executeConstructQuery(query,
+                initialBindings);
+    }
+
     public void deleteAnnotation(final Resource resource) {
 
         String id = resource.getURI();

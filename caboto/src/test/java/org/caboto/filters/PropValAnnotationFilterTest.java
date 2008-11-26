@@ -50,6 +50,7 @@ public class PropValAnnotationFilterTest {
 
     /**
      * Test of visitQueryPattern method, of class PropValAnnotationFilter.
+     * TODO Test factory!
      */
     @Test
     public final void testAugmentQuery() {

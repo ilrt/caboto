@@ -58,6 +58,7 @@ import org.caboto.filters.PropValAnnotationFilter;
 public class AnnotationDaoImplTest extends TestCase {
 
     @Before
+    @Override
     public void setUp() throws Exception {
 
         store = SDBFactory.connectStore(this.getClass().getResource("/sdb.ttl").getPath());

@@ -50,6 +50,8 @@ public interface AnnotationDao {
 
     Resource findAnnotation(String id);
 
+    Model findAnnotations(AnnotationFilter[] filters);
+
     Model findAnnotationsByGraph(String graph, AnnotationFilter... filters);
 
     Model findAnnotations(String about, AnnotationFilter... filters);
