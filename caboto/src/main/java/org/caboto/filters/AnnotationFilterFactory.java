@@ -46,11 +46,14 @@ import java.util.Map.Entry;
  */
 public class AnnotationFilterFactory {
     public static AnnotationFilter[]
-            getFromParameters(Map<String, String> parameters) {
+            getFromParameters(Map<String, List<String>> parameters) {
         final List<AnnotationFilter> filters = new LinkedList();
-        for (Entry<String, String> attVal: parameters.entrySet()) {
+        for (Entry<String, List<String>> attVal: parameters.entrySet()) {
             if (attVal.getKey().contains(":")) {
-                filters.add(new PropValAnnotationFilter(attVal.getKey(), attVal.getValue()));
+                for (String value: attVal.getValue()) {
+                    filters.add(new PropValAnnotationFilter(attVal.getKey(),
+                            value));
+                }
             }
         }
          // life is too short to understand why I need a cast here

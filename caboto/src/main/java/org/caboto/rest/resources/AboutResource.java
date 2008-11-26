@@ -48,8 +48,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import org.caboto.filters.AnnotationFilter;
+import org.caboto.filters.AnnotationFilterFactory;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -88,6 +92,47 @@ public final class AboutResource {
 
         return Response.status(Response.Status.OK).entity(jsonArray).build();
     }
+    
+    @GET
+    @Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+    public Response findAnnotations() {
+        AnnotationFilter[] filters =
+                AnnotationFilterFactory.getFromParameters(uriInfo.getQueryParameters());
+        if (filters.length == 0)
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        
+        Model results = annotationDao.findAnnotations(filters);
+
+        if (results.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.status(Response.Status.OK).entity(results).build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findAnnotationsAsJson()
+            throws JSONException {
+        AnnotationFilter[] filters =
+                AnnotationFilterFactory.getFromParameters(uriInfo.getQueryParameters());
+
+        if (filters.length == 0)
+            return Response.status(Response.Status.BAD_REQUEST).build();
+
+        Model results = annotationDao.findAnnotations(filters);
+
+        if (results.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        JSONArray jsonArray = jsonSupport.generateJsonArray(results);
+
+        return Response.status(Response.Status.OK).entity(jsonArray).build();
+    }
+
+    @Context
+    private UriInfo uriInfo = null;
 
     @Autowired
     @Qualifier("annotationDaoProxy")
