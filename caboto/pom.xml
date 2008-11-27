@@ -304,7 +304,6 @@
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
             <version>0.9-ea</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>
