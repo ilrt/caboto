@@ -26,7 +26,7 @@ public class AboutResourceTest extends AbstractResourceTest {
     @Override
     public void setUp() {
         formatDataStore();
-        startJetty();
+        startJettyWithSecurity();
     }
 
     @After
