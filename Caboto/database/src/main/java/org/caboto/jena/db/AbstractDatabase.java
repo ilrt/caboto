@@ -154,6 +154,7 @@ public abstract class AbstractDatabase implements Database {
             Data data = getData();
             Model m = data.getModel(uri);
             m.removeAll();
+            m.close();
             data.close();
             return true;
         } catch (DataException e) {
@@ -186,6 +187,8 @@ public abstract class AbstractDatabase implements Database {
             } else {
                 resource.addProperty(property, value);
             }
+            m.close();
+            data.close();
             return true;
         } catch (DataException e) {
             e.printStackTrace();
