@@ -34,12 +34,14 @@
 
 package org.caboto.filters;
 
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
  * Prime annoyance: namespaces. what to do about them?
@@ -70,7 +72,8 @@ public class PropValAnnotationFilter extends AnnotationFilterBase {
         // Do we want number support?
         if (valueS.startsWith("U:"))
             return Node.createURI(valueS.substring(2));
-        return Node.createLiteral(valueS);
+        //return Node.createLiteral(valueS);
+        return Node.createLiteral(valueS, null, XSDDatatype.XSDstring);
     }
 
     public void augmentBlock(ElementTriplesBlock arg0,

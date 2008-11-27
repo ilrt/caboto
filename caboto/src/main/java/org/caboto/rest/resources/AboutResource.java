@@ -67,8 +67,16 @@ public final class AboutResource {
     @GET
     @Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
     public Response findAnnotations(@QueryParam("id") final String about) {
-
-        Model results = annotationDao.findAnnotations(about);
+        Model results;
+        
+        if (about != null) results = annotationDao.findAnnotations(about);
+        else {
+            AnnotationFilter[] filters =
+                AnnotationFilterFactory.getFromParameters(uriInfo.getQueryParameters());
+            if (filters.length == 0)
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            results = annotationDao.findAnnotations(filters);
+        }
 
         if (results.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -93,9 +101,9 @@ public final class AboutResource {
         return Response.status(Response.Status.OK).entity(jsonArray).build();
     }
     
-    @GET
-    @Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
-    public Response findAnnotations() {
+    //@GET
+    //@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+    public Response findFAnnotations() {
         AnnotationFilter[] filters =
                 AnnotationFilterFactory.getFromParameters(uriInfo.getQueryParameters());
         if (filters.length == 0)
@@ -110,8 +118,8 @@ public final class AboutResource {
         return Response.status(Response.Status.OK).entity(results).build();
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    //@GET
+    //@Produces(MediaType.APPLICATION_JSON)
     public Response findAnnotationsAsJson()
             throws JSONException {
         AnnotationFilter[] filters =

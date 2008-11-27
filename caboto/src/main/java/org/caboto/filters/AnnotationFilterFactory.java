@@ -56,13 +56,14 @@ public class AnnotationFilterFactory {
                 }
             }
         }
-         // life is too short to understand why I need a cast here
-        return (AnnotationFilter[]) filters.toArray();
+         // life is too short to understand why this nonsense is needed
+        return filters.toArray(new AnnotationFilter[0]);
     }
 
     public static void applyFilters(Query original,
             String annotationBodyVar, AnnotationFilter... filters) {
         for (AnnotationFilter filter: filters)
             filter.augmentQuery(original, annotationBodyVar);
+        System.err.println("Query is now:\n===============\n" + original + "\n======\n");
     }
 }
