@@ -34,22 +34,33 @@
 package org.caboto.jena.db;
 
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.Model;
 
 /**
- * Represents data that can be queried by the abstract database
+ * Represents data that can be queried by the abstract database.
+ *
  * @author Andrew G D Rowley
  * @version 1.0
  */
 public interface Data {
 
     /**
-     * Gets the queryable dataset
-     * @return The dataset
+     * Gets the queryable dataset.
+     *
+     * @return The dataset.
      */
     Dataset getDataset();
 
     /**
-     * Indicates that the data is finished with
+     * Gets a queryable model. If the uri is null the default model is returned.
+     *
+     * @param uri uri of a named graph or null if the default graph.
+     * @return a model.
+     */
+    Model getModel(String uri);
+
+    /**
+     * Indicates that the data is finished with.
      */
     void close();
 }
