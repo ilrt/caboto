@@ -33,22 +33,21 @@
  */
 package org.caboto.jena.db.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
-
-import org.caboto.jena.db.Data;
-import org.caboto.jena.db.DataException;
-
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
+import org.caboto.jena.db.Data;
+import org.caboto.jena.db.DataException;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * A database based on an SQL datasource
+ *
  * @author Andrew G D Rowley
  * @version 1.0
  */
@@ -70,7 +69,15 @@ public class DatasourceDatabase extends SDBAbstractDatabase {
             return SDBFactory.connectDataset(store);
         }
 
+        public Model getModel(String uri) {
+            if (uri == null) {
+                return SDBFactory.connectDefaultModel(store);
+            }
+            return SDBFactory.connectNamedModel(store, uri);
+        }
+
         public void close() {
+            //System.out.println("Close -> " + store.getConnection().getSqlConnection().hashCode());
             store.getConnection().close();
             store.close();
         }
@@ -78,13 +85,14 @@ public class DatasourceDatabase extends SDBAbstractDatabase {
 
     /**
      * Creates a new DatasourceDatabase
+     *
      * @param dataSource The datasource to use for connections
-     * @param dbtype The type of the database
-     * @param dblayout The layout of the database
-     * @throws SQLException
+     * @param dbtype     The type of the database
+     * @param dblayout   The layout of the database
+     * @throws SQLException fd there is an error
      */
     public DatasourceDatabase(DataSource dataSource, String dbtype,
-            String dblayout) throws SQLException {
+                              String dblayout) throws SQLException {
         this.dataSource = dataSource;
         Connection conn = dataSource.getConnection();
         super.init(conn, dbtype, dblayout);
@@ -92,44 +100,29 @@ public class DatasourceDatabase extends SDBAbstractDatabase {
 
     /**
      * Creates a new DatasourceDatabase
-     * @param dataSource The datasource to use for connections
+     *
+     * @param dataSource    The datasource to use for connections
      * @param sdbConfigFile The configuration file for the database
-     * @throws SQLException
+     * @throws SQLException id there is an error
      */
     public DatasourceDatabase(DataSource dataSource, String sdbConfigFile)
             throws SQLException {
         this.dataSource = dataSource;
         Connection conn = dataSource.getConnection();
+        //System.out.println("Get -> " + conn.hashCode());
         StoreDesc storeDesc = StoreDesc.read(sdbConfigFile);
         super.init(conn, storeDesc.getDbType().getName(),
                 storeDesc.getLayout().getName());
     }
 
     /**
-     *
      * @see org.caboto.jena.db.AbstractDatabase#getData()
      */
-    protected Data getData() throws DataException {
+    public Data getData() throws DataException {
         try {
             Connection connection = dataSource.getConnection();
+            //System.out.println("Get -> " + connection.hashCode());
             return new SDBData(connectToStore(connection));
-        } catch (SQLException e) {
-            throw new DataException(e);
-        }
-    }
-
-    /**
-     *
-     * @see org.caboto.jena.db.AbstractDatabase#getModel(java.lang.String)
-     */
-    protected Model getModel(String uri) throws DataException {
-        try {
-            Connection connection = dataSource.getConnection();
-            Store store = connectToStore(connection);
-            if (uri == null) {
-                return SDBFactory.connectDefaultModel(store);
-            }
-            return SDBFactory.connectNamedModel(store, uri);
         } catch (SQLException e) {
             throw new DataException(e);
         }
