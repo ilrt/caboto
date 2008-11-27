@@ -3,13 +3,13 @@
     <parent>
         <artifactId>caboto-parent</artifactId>
         <groupId>org.caboto</groupId>
-        <version>0.5-SNAPSHOT</version>
+        <version>0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.caboto</groupId>
     <artifactId>caboto</artifactId>
     <name>caboto</name>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
     <build>
         <filters>
