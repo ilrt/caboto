@@ -77,6 +77,7 @@ public class DatasourceDatabase extends SDBAbstractDatabase {
         }
 
         public void close() {
+            //System.out.println("Close -> " + store.getConnection().getSqlConnection().hashCode());
             store.getConnection().close();
             store.close();
         }
@@ -108,6 +109,7 @@ public class DatasourceDatabase extends SDBAbstractDatabase {
             throws SQLException {
         this.dataSource = dataSource;
         Connection conn = dataSource.getConnection();
+        //System.out.println("Get -> " + conn.hashCode());
         StoreDesc storeDesc = StoreDesc.read(sdbConfigFile);
         super.init(conn, storeDesc.getDbType().getName(),
                 storeDesc.getLayout().getName());
@@ -119,6 +121,7 @@ public class DatasourceDatabase extends SDBAbstractDatabase {
     public Data getData() throws DataException {
         try {
             Connection connection = dataSource.getConnection();
+            //System.out.println("Get -> " + connection.hashCode());
             return new SDBData(connectToStore(connection));
         } catch (SQLException e) {
             throw new DataException(e);
