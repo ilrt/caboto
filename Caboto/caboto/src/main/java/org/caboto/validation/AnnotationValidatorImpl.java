@@ -113,11 +113,12 @@ public final class AnnotationValidatorImpl implements Validator {
 
                     // (1) check that we have the expected number of entries in the Map
 
-                    if (annotation.getBody().size() != profile.getProfileEntries().size()) {
-                        errors.rejectValue("body", "annotation.body.missmatch",
-                                new Integer[]{profile.getProfileEntries().size(),
-                                        annotation.getBody().size()}, "");
-                    }
+// Does not work with missing un-required entries
+//                    if (annotation.getBody().size() != profile.getProfileEntries().size()) {
+//                        errors.rejectValue("body", "annotation.body.missmatch",
+//                                new Integer[]{profile.getProfileEntries().size(),
+//                                        annotation.getBody().size()}, "");
+//                    }
 
                     // (2) check that the keys sent in the Map match the ids in the profile entries
 
