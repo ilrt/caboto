@@ -65,7 +65,7 @@ public final class AnnotationDaoRestImpl implements AnnotationDao {
     private final String username;
     private final String password;
 
-	
+
     public AnnotationDaoRestImpl(final String uri, final String username, final String password, final boolean publicAnnotation) {
         this.uri=uri+"/person/"+username+"/"+(publicAnnotation?"public":"private")+"/";
         this.username=username;
@@ -73,42 +73,42 @@ public final class AnnotationDaoRestImpl implements AnnotationDao {
     }
 
     public void addAnnotation(final Annotation annotation) {
-    	Map<String,String> annotationBody=annotation.getBody(); 
-    	Iterator<Entry<String,String>> iter= annotationBody.entrySet().iterator();
-    	String postData;
-		try {
-			postData = "annotates="+URLEncoder.encode(annotation.getAnnotates(),"UTF-8");
-	    	postData+="&created="+annotation.getCreated();
-	    	postData+="&type="+annotation.getType();
-	    	
-	    	Entry<String, String> e;
-	    	while (iter.hasNext()){
-	    		e=(Entry<String, String>) iter.next();
-	    		postData+="&"+e.getKey()+"="+e.getValue();
-	    	}
-	
-	        Client c = Client.create();
-	
-	        if (username != null && password != null) {
-	            c.addFilter(new BasicAuthenticationClientFilter(username, password));
-	        }
-	
-	        ClientResponse clientResponse = c.resource(uri).type(annotation.getType()).post(ClientResponse.class, postData);
-	        if (clientResponse.getStatus()!=Response.Status.CREATED.getStatusCode()) 
-	        	throw new RuntimeException(clientResponse.toString());
-	        annotation.setId(clientResponse.getLocation().toString());
-		} catch (UnsupportedEncodingException e1) {
-			throw new RuntimeException(e1);
-		}
+        Map<String,String> annotationBody=annotation.getBody();
+        Iterator<Entry<String,String>> iter= annotationBody.entrySet().iterator();
+        String postData;
+        try {
+            postData = "annotates="+URLEncoder.encode(annotation.getAnnotates(),"UTF-8");
+            postData+="&created="+annotation.getCreated();
+            postData+="&type="+annotation.getType();
+
+            Entry<String, String> e;
+            while (iter.hasNext()){
+                e=(Entry<String, String>) iter.next();
+                postData+="&"+e.getKey()+"="+e.getValue();
+            }
+
+            Client c = Client.create();
+
+            if (username != null && password != null) {
+                c.addFilter(new BasicAuthenticationClientFilter(username, password));
+            }
+
+            ClientResponse clientResponse = c.resource(uri).type(annotation.getType()).post(ClientResponse.class, postData);
+            if (clientResponse.getStatus()!=Response.Status.CREATED.getStatusCode())
+                throw new RuntimeException(clientResponse.toString());
+            annotation.setId(clientResponse.getLocation().toString());
+        } catch (UnsupportedEncodingException e1) {
+            throw new RuntimeException(e1);
+        }
     }
 
     public Resource findAnnotation(final String id) {
- 
-    	
+
+
         ClientConfig config = new DefaultClientConfig();
-        config.getProviderClasses().add(JenaResourceRdfProvider.class);
-        config.getProviderClasses().add(JenaModelRdfProvider.class);
-    	Client c = Client.create(config);
+        config.getClasses().add(JenaResourceRdfProvider.class);
+        config.getClasses().add(JenaModelRdfProvider.class);
+        Client c = Client.create(config);
 
         if (username != null && password != null) {
             c.addFilter(new BasicAuthenticationClientFilter(username, password));
@@ -116,25 +116,25 @@ public final class AnnotationDaoRestImpl implements AnnotationDao {
 
         return c.resource(id).accept(RdfMediaType.APPLICATION_RDF_XML_TYPE).get(Resource.class);
     }
-    
+
     public Annotation getAnnotation(final String id){
-    	Annotation annotation=null;
-		try {
-			annotation=new Annotation(findAnnotation(id),null);
-		} catch (AnnotationException e) {
-			e.printStackTrace();
-		}
-    	return annotation;
+        Annotation annotation=null;
+        try {
+            annotation=new Annotation(findAnnotation(id),null);
+        } catch (AnnotationException e) {
+            e.printStackTrace();
+        }
+        return annotation;
     }
 
     public Model findAnnotations(final String about) {
 
         Annotation annotation = new Annotation();
         annotation.setAnnotates(about);
-        
+
         ClientConfig config = new DefaultClientConfig();
-        config.getProviderClasses().add(JenaResourceRdfProvider.class);
-        config.getProviderClasses().add(JenaModelRdfProvider.class);
+        config.getClasses().add(JenaResourceRdfProvider.class);
+        config.getClasses().add(JenaModelRdfProvider.class);
 
         Client c = Client.create(config);
 
@@ -148,10 +148,10 @@ public final class AnnotationDaoRestImpl implements AnnotationDao {
 
         return model;
     }
-    
+
     public  List<Annotation> getAnnotations(final String about){
-    	Model annModel = findAnnotations(about);
-    	return AnnotationFactory.annotationsFromModel(annModel,null);
+        Model annModel = findAnnotations(about);
+        return AnnotationFactory.annotationsFromModel(annModel,null);
     }
 
 
@@ -159,10 +159,10 @@ public final class AnnotationDaoRestImpl implements AnnotationDao {
 
         Annotation annotation = new Annotation();
         annotation.setAuthor(author);
-        
+
         ClientConfig config = new DefaultClientConfig();
-        config.getProviderClasses().add(JenaResourceRdfProvider.class);
-        config.getProviderClasses().add(JenaModelRdfProvider.class);
+        config.getClasses().add(JenaResourceRdfProvider.class);
+        config.getClasses().add(JenaModelRdfProvider.class);
 
         Client c = Client.create(config);
 
@@ -176,21 +176,26 @@ public final class AnnotationDaoRestImpl implements AnnotationDao {
 
         return model;
     }
-    
+
     public  List<Annotation> getAnnotationsByAuthor(final String author){
-    	Model annModel = findAnnotationsByAuthor(author);
-    	return AnnotationFactory.annotationsFromModel(annModel,null);
+        Model annModel = findAnnotationsByAuthor(author);
+        return AnnotationFactory.annotationsFromModel(annModel,null);
     }
 
-    
+
     public void deleteAnnotation(final Resource resource) {
 
         String url = resource.getURI();
         // delete the resource
         Client c = Client.create();
         ClientResponse deleteResponse = c.resource(url).delete(ClientResponse.class);
-        if (deleteResponse.getStatus()!=Response.Status.OK.getStatusCode()) 
-        	throw new RuntimeException(deleteResponse.toString()); 
+        if (deleteResponse.getStatus()!=Response.Status.OK.getStatusCode())
+            throw new RuntimeException(deleteResponse.toString());
+    }
+
+    public Model findAnnotationsByGraph(String graph) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 

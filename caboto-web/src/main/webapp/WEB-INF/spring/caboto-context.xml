@@ -2,21 +2,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
                            http://www.springframework.org/schema/security
-                           http://www.springframework.org/schema/security/spring-security-2.0.xsd">
+                           http://www.springframework.org/schema/security/spring-security-2.0.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-    <!-- load properties files -->
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:version.properties"/>
-    </bean>
-
-    <!-- bean to hold version details-->
-    <bean id="versionDetails" class="org.caboto.domain.VersionDetails">
-        <constructor-arg index="0" value="${caboto.version}"/>
-    </bean>
+    <context:component-scan base-package="org.caboto"/>
 
     <!-- repository gives access to the profile of allowed annotations -->
     <bean id="profileRepository" class="org.caboto.profile.ProfileRepositoryXmlImpl">
@@ -71,7 +65,7 @@
         <security:intercept-url pattern="^.*/private/.*$" method="GET" access="IS_AUTHENTICATED_FULLY"/>
         <security:intercept-url pattern="^.*/private/.*$" method="POST" access="IS_AUTHENTICATED_FULLY"/>
         <security:intercept-url pattern="^.*/private/.*$" method="DELETE" access="IS_AUTHENTICATED_FULLY"/>
-        <security:intercept-url pattern="^.*/secured/.*$"  method="GET" access="IS_AUTHENTICATED_FULLY"/>
+        <security:intercept-url pattern="^.*/secured/.*$" method="GET" access="IS_AUTHENTICATED_FULLY"/>
         <security:intercept-url pattern=".*" method="GET" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
     </security:http>
 
