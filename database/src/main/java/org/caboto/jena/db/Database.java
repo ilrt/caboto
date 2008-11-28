@@ -77,6 +77,14 @@ public interface Database {
     Model executeConstructQuery(final Query query,
                                 final QuerySolution initialBindings);
     /**
+     * Get the data object that encapsualates out dataset, model and store.
+     *
+     * @return the data object.
+     * @throws DataException if there is an error.
+     */
+    public Data getData() throws DataException;
+
+    /**
      * Gets a model that can be used to update the database using the methods
      * in this interface
      *
