@@ -89,46 +89,16 @@ public final class AboutResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response findAnnotationsAsJson(@QueryParam("id") final String about)
             throws JSONException {
+        Model results;
 
-        Model results = annotationDao.findAnnotations(about);
-
-        if (results.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        JSONArray jsonArray = jsonSupport.generateJsonArray(results);
-
-        return Response.status(Response.Status.OK).entity(jsonArray).build();
-    }
-    
-    //@GET
-    //@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
-    public Response findFAnnotations() {
-        AnnotationFilter[] filters =
+        if (about != null) results = annotationDao.findAnnotations(about);
+        else {
+            AnnotationFilter[] filters =
                 AnnotationFilterFactory.getFromParameters(uriInfo.getQueryParameters());
-        if (filters.length == 0)
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        
-        Model results = annotationDao.findAnnotations(filters);
-
-        if (results.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            if (filters.length == 0)
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            results = annotationDao.findAnnotations(filters);
         }
-
-        return Response.status(Response.Status.OK).entity(results).build();
-    }
-
-    //@GET
-    //@Produces(MediaType.APPLICATION_JSON)
-    public Response findAnnotationsAsJson()
-            throws JSONException {
-        AnnotationFilter[] filters =
-                AnnotationFilterFactory.getFromParameters(uriInfo.getQueryParameters());
-
-        if (filters.length == 0)
-            return Response.status(Response.Status.BAD_REQUEST).build();
-
-        Model results = annotationDao.findAnnotations(filters);
 
         if (results.isEmpty()) {
             return Response.status(Response.Status.NOT_FOUND).build();
