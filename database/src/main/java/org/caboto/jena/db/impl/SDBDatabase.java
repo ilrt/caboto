@@ -82,6 +82,13 @@ public class SDBDatabase extends SDBAbstractDatabase {
             return SDBFactory.connectDataset(store);
         }
 
+        public Model getModel(String uri) {
+            if (uri == null) {
+                return SDBFactory.connectDefaultModel(store);
+            }
+            return SDBFactory.connectNamedModel(store, uri);
+        }
+
         public void close() {
             store.close();
             store.getConnection().close();
@@ -144,7 +151,7 @@ public class SDBDatabase extends SDBAbstractDatabase {
      * Creates an SDBDatabase from an SDB config file
      *
      * @param sdbConfigFile The path to the config file
-     * @throws SQLException
+     * @throws SQLException if there is an error.
      */
     public SDBDatabase(String sdbConfigFile) throws SQLException {
         Model ttl = ModelFactory.createDefaultModel();
@@ -189,23 +196,9 @@ public class SDBDatabase extends SDBAbstractDatabase {
     /**
      * @see org.caboto.jena.db.AbstractDatabase#getData()
      */
-    protected Data getData() throws DataException {
+    public Data getData() throws DataException {
         try {
             return new SDBData(getStore());
-        } catch (SQLException e) {
-            throw new DataException(e);
-        }
-    }
-
-    /**
-     * @see org.caboto.jena.db.AbstractDatabase#getModel(java.lang.String)
-     */
-    protected Model getModel(String uri) throws DataException {
-        try {
-            if (uri == null) {
-                return SDBFactory.connectDefaultModel(getStore());
-            }
-            return SDBFactory.connectNamedModel(getStore(), uri);
         } catch (SQLException e) {
             throw new DataException(e);
         }

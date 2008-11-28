@@ -51,15 +51,7 @@ public abstract class AbstractDatabase implements Database {
      * @return The data object
      * @throws DataException If there is an error getting the data
      */
-    protected abstract Data getData() throws DataException;
-
-    /**
-     * Gets the model of the database for updating
-     *
-     * @param uri The uri of the model to get (null for default graph)
-     * @return The model
-     */
-    protected abstract Model getModel(String uri) throws DataException;
+    public abstract Data getData() throws DataException;
 
     /**
      * @see org.caboto.jena.db.Database#executeSelectQuery(java.lang.String,
@@ -70,7 +62,7 @@ public abstract class AbstractDatabase implements Database {
         try {
             Data data = getData();
             Dataset dataset = data.getDataset();
-            QueryExecution queryExec = null;
+            QueryExecution queryExec;
             if (initialBindings != null) {
                 queryExec = QueryExecutionFactory.create(sparql, dataset,
                         initialBindings);
@@ -93,7 +85,7 @@ public abstract class AbstractDatabase implements Database {
         try {
             Data data = getData();
             Dataset dataset = data.getDataset();
-            QueryExecution queryExec = null;
+            QueryExecution queryExec;
             if (initialBindings != null) {
                 queryExec = QueryExecutionFactory.create(query, dataset,
                         initialBindings);
@@ -132,9 +124,11 @@ public abstract class AbstractDatabase implements Database {
      */
     public boolean addModel(String uri, Model model) {
         try {
-            Model data = getModel(uri);
-            data.withDefaultMappings(model);
-            data.add(model);
+            Data data = getData();
+            Model m = data.getModel(uri);
+            m.withDefaultMappings(model);
+            m.add(model);
+            m.close();
             data.close();
             return true;
         } catch (DataException e) {
@@ -149,9 +143,11 @@ public abstract class AbstractDatabase implements Database {
      */
     public boolean deleteModel(String uri, Model model) {
         try {
-            Model data = getModel(uri);
-            data.withDefaultMappings(model);
-            data.remove(model);
+            Data data = getData();
+            Model m = data.getModel(uri);
+            m.withDefaultMappings(model);
+            m.remove(model);
+            m.close();
             data.close();
             return true;
         } catch (DataException e) {
@@ -162,8 +158,11 @@ public abstract class AbstractDatabase implements Database {
 
     public boolean deleteAll(String uri) {
         try {
-            Model data = getModel(uri);
-            data.removeAll();
+            Data data = getData();
+            Model m = data.getModel(uri);
+            m.removeAll();
+            m.close();
+            data.close();
             return true;
         } catch (DataException e) {
             e.printStackTrace();
@@ -181,17 +180,22 @@ public abstract class AbstractDatabase implements Database {
     public boolean updateProperty(String uri, String resourceUri,
                                   Property property, RDFNode value) {
         try {
-            Model data = getModel(uri);
-            if (!data.containsResource(
+            Data data = getData();
+            Model m = data.getModel(uri);
+            if (!m.containsResource(
                     ResourceFactory.createResource(resourceUri))) {
+                m.close();
+                data.close();
                 return false;
             }
-            Resource resource = data.getResource(resourceUri);
+            Resource resource = m.getResource(resourceUri);
             if (resource.hasProperty(property)) {
                 resource.getProperty(property).changeObject(value);
             } else {
                 resource.addProperty(property, value);
             }
+            m.close();
+            data.close();
             return true;
         } catch (DataException e) {
             e.printStackTrace();

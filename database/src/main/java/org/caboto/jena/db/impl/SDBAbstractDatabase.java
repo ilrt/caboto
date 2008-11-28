@@ -33,15 +33,14 @@
  */
 package org.caboto.jena.db.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import org.caboto.jena.db.AbstractDatabase;
-
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
 import com.hp.hpl.jena.sdb.sql.SDBConnection;
+import org.caboto.jena.db.AbstractDatabase;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * An abstract database for using SDB
@@ -60,7 +59,7 @@ public abstract class SDBAbstractDatabase extends AbstractDatabase {
      * @param sqlConn An SQL connection to the underlying database
      * @param dbtype The database type
      * @param dblayout The database layout
-     * @throws SQLException
+     * @throws SQLException if there is an error
      */
     protected void init(Connection sqlConn, String dbtype,
             String dblayout) throws SQLException {
