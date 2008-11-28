@@ -119,19 +119,22 @@ public final class AnnotationDaoImpl implements AnnotationDao {
 
                 String val = annotation.getBody().get(entry.getId());
 
-                Property prop = model.createProperty(entry.getPropertyType());
+		if(val != null) { // may by un-required entry
 
-                String dataType = entry.getObjectDatatype();
+	                Property prop = model.createProperty(entry.getPropertyType());
 
-                if (dataType != null) {
+        	        String dataType = entry.getObjectDatatype();
 
-                    if (dataType.equals("String")) {
-                        bodyResource.addProperty(prop, val, XSDDatatype.XSDstring);
-                    }
+        	        if (dataType != null) {
 
-                } else {
-                    bodyResource.addProperty(prop, val);
-                }
+        	            if (dataType.equals("String")) {
+        	                bodyResource.addProperty(prop, val, XSDDatatype.XSDstring);
+        	            }
+
+        	        } else {
+        	            bodyResource.addProperty(prop, val);
+        	        }
+		}
 
             }
 
