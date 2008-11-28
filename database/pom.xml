@@ -3,15 +3,19 @@
     <parent>
         <artifactId>caboto-parent</artifactId>
         <groupId>org.caboto</groupId>
-        <version>0.5-SNAPSHOT</version>
+        <version>0.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.caboto</groupId>
     <artifactId>database</artifactId>
     <name>database</name>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <packaging>jar</packaging>
     <repositories>
+        <repository>
+            <id>ilrt</id>
+            <url>http://maven.ilrt.bris.ac.uk</url>
+        </repository>
         <repository>
             <id>jena.dev</id>
             <url>http://jena.hpl.hp.com/repo</url>
