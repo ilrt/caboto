@@ -13,6 +13,7 @@ import com.hp.hpl.jena.sparql.syntax.ElementFilter;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
 import com.hp.hpl.jena.sparql.syntax.ElementNamedGraph;
 import com.hp.hpl.jena.sparql.syntax.ElementOptional;
+import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementService;
 import com.hp.hpl.jena.sparql.syntax.ElementSubQuery;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
@@ -92,5 +93,7 @@ public abstract class AnnotationFilterBase
     public void visit(ElementSubQuery arg0) {
         arg0.getQuery().getQueryPattern().visit(this);
     }
-
+    public void visit(ElementPathBlock arg0) {
+        /* Got me there! What's in this? */
+    }
 }

@@ -61,7 +61,7 @@ public class PropValAnnotationFilterTest {
         Query toChange = query.cloneQuery();
         filter.augmentQuery(toChange, "s");
         Query query2 = QueryFactory.create("PREFIX x: <http://ex.com/> "
-                + "SELECT * { GRAPH ?g { ?s ?p ?o ; x:prop \"bar\" }}");
+                + "SELECT * { GRAPH ?g { ?s ?p ?o ; x:prop \"bar\"^^<http://www.w3.org/2001/XMLSchema#string> }}");
         assertEquals(query2, toChange);
 
         filter = new PropValAnnotationFilter("x:prop", "U:http://ex.com/z");
