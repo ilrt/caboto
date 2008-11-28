@@ -1,3 +1,36 @@
+/*
+ * Copyright (c) 2008, University of Bristol
+ * Copyright (c) 2008, University of Manchester
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1) Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2) Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3) Neither the names of the University of Bristol and the
+ *    University of Manchester nor the names of their
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 package org.caboto;
 
 import junit.framework.TestCase;
@@ -154,6 +187,10 @@ public class CabotoUtilityTest extends TestCase {
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PUBLIC_URI_TEN));
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_NINE));
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_TEN));
+	
+	// openid
+        assertEquals("Incorrect name", USER_SIX, CabotoUtility.extractUsername(PUBLIC_URI_ELEVEN));
+        assertEquals("Incorrect name", USER_SIX, CabotoUtility.extractUsername(PRIVATE_URI_ELEVEN));
     }
 
     @Test
@@ -203,6 +240,8 @@ public class CabotoUtilityTest extends TestCase {
             "/annotations/person/???/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PUBLIC_URI_TEN =
             "/annotations/person/???/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PUBLIC_URI_ELEVEN =
+            "/annotations/person/http://someone.openid.org/id//public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
 
     // private URIs
     private final String PRIVATE_URI_ONE = "/person/mike/private/";
@@ -223,6 +262,8 @@ public class CabotoUtilityTest extends TestCase {
             "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_TEN =
             "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+    private final String PRIVATE_URI_ELEVEN =
+            "/annotations/person/http://someone.openid.org/id//private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
 
 
     // public graphs
@@ -248,6 +289,7 @@ public class CabotoUtilityTest extends TestCase {
     private final String USER_THREE = "jasper";
     private final String USER_FOUR = "gérard";
     private final String USER_FIVE = "???";
+    private final String USER_SIX = "http://someone.openid.org/id/";
 
     // date formats and dates
     private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";

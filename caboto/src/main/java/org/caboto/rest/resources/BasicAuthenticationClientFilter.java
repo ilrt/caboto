@@ -1,9 +1,10 @@
 package org.caboto.rest.resources;
 
-import com.sun.jersey.api.client.ClientFilter;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.filter.ClientFilter;
+
 import org.apache.commons.codec.binary.Base64;
 
 import java.util.ArrayList;

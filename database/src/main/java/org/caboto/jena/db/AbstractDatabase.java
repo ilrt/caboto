@@ -1,20 +1,22 @@
 /*
- * @(#)AbstractDatabase.java
- * Created: 12 Sep 2008
- * Version: 1.0
- * Copyright (c) 2005-2006, University of Manchester All rights reserved.
+ * Copyright (c) 2008, University of Bristol
+ * Copyright (c) 2008, University of Manchester
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer. Redistributions in binary
- * form must reproduce the above copyright notice, this list of conditions and
- * the following disclaimer in the documentation and/or other materials
- * provided with the distribution. Neither the name of the University of
- * Manchester nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written
- * permission.
+ * 1) Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2) Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3) Neither the names of the University of Bristol and the
+ *    University of Manchester nor the names of their
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,6 +29,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 package org.caboto.jena.db;
@@ -54,20 +57,13 @@ public abstract class AbstractDatabase implements Database {
 
     /**
      * Gets the data object of the database for querying
+     *
      * @return The data object
      * @throws DataException If there is an error getting the data
      */
-    protected abstract Data getData() throws DataException;
+    public abstract Data getData() throws DataException;
 
     /**
-     * Gets the model of the database for updating
-     * @param uri The uri of the model to get (null for default graph)
-     * @return The model
-     */
-    protected abstract Model getModel(String uri) throws DataException;
-
-    /**
-     *
      * @see org.caboto.jena.db.Database#executeSelectQuery(java.lang.String,
      *     com.hp.hpl.jena.query.QuerySolution)
      */
@@ -76,7 +72,7 @@ public abstract class AbstractDatabase implements Database {
         try {
             Data data = getData();
             Dataset dataset = data.getDataset();
-            QueryExecution queryExec = null;
+            QueryExecution queryExec;
             if (initialBindings != null) {
                 queryExec = QueryExecutionFactory.create(sparql, dataset,
                         initialBindings);
@@ -92,7 +88,6 @@ public abstract class AbstractDatabase implements Database {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.Database#executeConstructQuery(java.lang.String,
      *     com.hp.hpl.jena.query.QuerySolution)
      */
@@ -101,7 +96,7 @@ public abstract class AbstractDatabase implements Database {
         try {
             Data data = getData();
             Dataset dataset = data.getDataset();
-            QueryExecution queryExec = null;
+            QueryExecution queryExec;
             Query query = QueryFactory.create(sparql);
             if (initialBindings != null) {
                 queryExec = QueryExecutionFactory.create(query, dataset,
@@ -120,7 +115,6 @@ public abstract class AbstractDatabase implements Database {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.Database#getUpdateModel()
      */
     public Model getUpdateModel() {
@@ -128,15 +122,16 @@ public abstract class AbstractDatabase implements Database {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.Database#addModel(java.lang.String,
      *     com.hp.hpl.jena.rdf.model.Model)
      */
     public boolean addModel(String uri, Model model) {
         try {
-            Model data = getModel(uri);
-            data.withDefaultMappings(model);
-            data.add(model);
+            Data data = getData();
+            Model m = data.getModel(uri);
+            m.withDefaultMappings(model);
+            m.add(model);
+            m.close();
             data.close();
             return true;
         } catch (DataException e) {
@@ -146,15 +141,16 @@ public abstract class AbstractDatabase implements Database {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.Database#deleteModel(java.lang.String,
      *     com.hp.hpl.jena.rdf.model.Model)
      */
     public boolean deleteModel(String uri, Model model) {
         try {
-            Model data = getModel(uri);
-            data.withDefaultMappings(model);
-            data.remove(model);
+            Data data = getData();
+            Model m = data.getModel(uri);
+            m.withDefaultMappings(model);
+            m.remove(model);
+            m.close();
             data.close();
             return true;
         } catch (DataException e) {
@@ -163,27 +159,46 @@ public abstract class AbstractDatabase implements Database {
         }
     }
 
+    public boolean deleteAll(String uri) {
+        try {
+            Data data = getData();
+            Model m = data.getModel(uri);
+            m.removeAll();
+            m.close();
+            data.close();
+            return true;
+        } catch (DataException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     /**
-     *
      * @see org.caboto.jena.db.Database#updateProperty(java.lang.String,
-     *     java.lang.String,
-     *     com.hp.hpl.jena.rdf.model.Property,
-     *     com.hp.hpl.jena.rdf.model.RDFNode)
+     *      java.lang.String,
+     *      com.hp.hpl.jena.rdf.model.Property,
+     *      com.hp.hpl.jena.rdf.model.RDFNode)
      */
     public boolean updateProperty(String uri, String resourceUri,
-            Property property, RDFNode value) {
+                                  Property property, RDFNode value) {
         try {
-            Model data = getModel(uri);
-            if (!data.containsResource(
+            Data data = getData();
+            Model m = data.getModel(uri);
+            if (!m.containsResource(
                     ResourceFactory.createResource(resourceUri))) {
+                m.close();
+                data.close();
                 return false;
             }
-            Resource resource = data.getResource(resourceUri);
+            Resource resource = m.getResource(resourceUri);
             if (resource.hasProperty(property)) {
                 resource.getProperty(property).changeObject(value);
             } else {
                 resource.addProperty(property, value);
             }
+            m.close();
+            data.close();
             return true;
         } catch (DataException e) {
             e.printStackTrace();

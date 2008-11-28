@@ -1,20 +1,22 @@
 /*
- * @(#)Database.java
- * Created: 20 Aug 2008
- * Version: 1.0
- * Copyright (c) 2005-2006, University of Manchester All rights reserved.
+ * Copyright (c) 2008, University of Bristol
+ * Copyright (c) 2008, University of Manchester
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer. Redistributions in binary
- * form must reproduce the above copyright notice, this list of conditions and
- * the following disclaimer in the documentation and/or other materials
- * provided with the distribution. Neither the name of the University of
- * Manchester nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written
- * permission.
+ * 1) Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ *
+ * 2) Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3) Neither the names of the University of Bristol and the
+ *    University of Manchester nor the names of their
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,9 +29,20 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
-
 package org.caboto.jena.db.impl;
+
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.sdb.SDBFactory;
+import com.hp.hpl.jena.sdb.Store;
+import com.hp.hpl.jena.sdb.StoreDesc;
+import com.hp.hpl.jena.sdb.sql.JDBC;
+import com.hp.hpl.jena.sdb.sql.SDBConnectionDesc;
+import com.hp.hpl.jena.sdb.store.DatabaseType;
+import org.caboto.jena.db.Data;
+import org.caboto.jena.db.DataException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,19 +50,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-
-import org.caboto.jena.db.Data;
-import org.caboto.jena.db.DataException;
-
-import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sdb.SDBFactory;
-import com.hp.hpl.jena.sdb.Store;
-import com.hp.hpl.jena.sdb.StoreDesc;
-import com.hp.hpl.jena.sdb.sql.JDBC;
-import com.hp.hpl.jena.sdb.sql.SDBConnectionDesc;
-import com.hp.hpl.jena.sdb.store.DatabaseType;
 
 /**
  * Represents access to the SDB database
@@ -82,6 +82,13 @@ public class SDBDatabase extends SDBAbstractDatabase {
             return SDBFactory.connectDataset(store);
         }
 
+        public Model getModel(String uri) {
+            if (uri == null) {
+                return SDBFactory.connectDefaultModel(store);
+            }
+            return SDBFactory.connectNamedModel(store, uri);
+        }
+
         public void close() {
             store.close();
             store.getConnection().close();
@@ -90,15 +97,15 @@ public class SDBDatabase extends SDBAbstractDatabase {
 
     /**
      * Creates a database
-     *
+     * <p/>
      * The database configuration file should contain (replacing {prefix} with
      * the value passed in configPrefix):
-     *     {prefix}.jdbcUrl  - The JDBC url to connect to
-     *     {prefix}.username - The username to connect with (optional)
-     *     {prefix}.password - The password to connect with (optional)
-     *     {prefix}.dbtype   - The Jena SDB DatabaseType of the database
-     *     {prefix}.dblayout - The Jena SDB LayoutType of the database
-     *
+     * {prefix}.jdbcUrl  - The JDBC url to connect to
+     * {prefix}.username - The username to connect with (optional)
+     * {prefix}.password - The password to connect with (optional)
+     * {prefix}.dbtype   - The Jena SDB DatabaseType of the database
+     * {prefix}.dblayout - The Jena SDB LayoutType of the database
+     * <p/>
      * The database will store the current version of the data and will
      * contain if the database has been initialised.  If the data indicates that
      * it has not been initialised, initialisation will be performed, which may
@@ -106,10 +113,9 @@ public class SDBDatabase extends SDBAbstractDatabase {
      *
      * @param configPrefix The prefix to the configuration to use
      * @param dbConfigFile The database configuration file
-     *                         location relative to the classpath
-     * @throws IOException if there is an error loading the configuration file
+     *                     location relative to the classpath
+     * @throws IOException  if there is an error loading the configuration file
      * @throws SQLException if there is an error handling the database
-     *
      */
     public SDBDatabase(String configPrefix, String dbConfigFile)
             throws IOException, SQLException {
@@ -129,23 +135,23 @@ public class SDBDatabase extends SDBAbstractDatabase {
     /**
      * Creates a new SDBDatabase
      *
-     * @param jdbcUrl The url of the database
+     * @param jdbcUrl  The url of the database
      * @param username The username used to access the database
      * @param password The password used to access the database
-     * @param dbtype The SDB DatabaseType of the database
+     * @param dbtype   The SDB DatabaseType of the database
      * @param dblayout The SDB DatabaseLayout of the database
-     *
      * @throws SQLException if there is an error handling the database
      */
     public SDBDatabase(String jdbcUrl, String username, String password,
-            String dbtype, String dblayout) throws SQLException {
+                       String dbtype, String dblayout) throws SQLException {
         init(jdbcUrl, username, password, dbtype, dblayout);
     }
 
     /**
      * Creates an SDBDatabase from an SDB config file
+     *
      * @param sdbConfigFile The path to the config file
-     * @throws SQLException
+     * @throws SQLException if there is an error.
      */
     public SDBDatabase(String sdbConfigFile) throws SQLException {
         Model ttl = ModelFactory.createDefaultModel();
@@ -163,7 +169,7 @@ public class SDBDatabase extends SDBAbstractDatabase {
     }
 
     private void init(String jdbcUrl, String username, String password,
-            String dbtype, String dblayout)
+                      String dbtype, String dblayout)
             throws SQLException {
 
         // Load the driver
@@ -188,10 +194,9 @@ public class SDBDatabase extends SDBAbstractDatabase {
     }
 
     /**
-     *
      * @see org.caboto.jena.db.AbstractDatabase#getData()
      */
-    protected Data getData() throws DataException {
+    public Data getData() throws DataException {
         try {
             return new SDBData(getStore());
         } catch (SQLException e) {
@@ -200,17 +205,10 @@ public class SDBDatabase extends SDBAbstractDatabase {
     }
 
     /**
-     *
-     * @see org.caboto.jena.db.AbstractDatabase#getModel(java.lang.String)
+     * Removes everything from the database
+     * @throws SQLException
      */
-    protected Model getModel(String uri) throws DataException {
-        try {
-            if (uri == null) {
-                return SDBFactory.connectDefaultModel(getStore());
-            }
-            return SDBFactory.connectNamedModel(getStore(), uri);
-        } catch (SQLException e) {
-            throw new DataException(e);
-        }
+    public void clean() throws SQLException {
+        getStore().getTableFormatter().format();
     }
 }
