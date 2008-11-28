@@ -64,6 +64,5 @@ public class AnnotationFilterFactory {
             String annotationBodyVar, AnnotationFilter... filters) {
         for (AnnotationFilter filter: filters)
             filter.augmentQuery(original, annotationBodyVar);
-        System.err.println("Query is now:\n===============\n" + original + "\n======\n");
     }
 }
