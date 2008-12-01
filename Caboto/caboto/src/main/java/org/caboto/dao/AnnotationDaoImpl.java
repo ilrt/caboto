@@ -34,6 +34,8 @@
 package org.caboto.dao;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -51,6 +53,8 @@ import org.caboto.profile.ProfileRepositoryException;
 import org.caboto.vocabulary.Annotea;
 
 import java.util.Date;
+import org.caboto.filters.AnnotationFilter;
+import org.caboto.filters.AnnotationFilterFactory;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -167,25 +171,38 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         return m.createResource(id);
     }
 
-    public Model findAnnotationsByGraph(String graph) {
+    public Model findAnnotationsByGraph(String graph,
+            AnnotationFilter... filters) {
 
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("graph", ResourceFactory.createResource(graph));
-
-        return database.executeConstructQuery(findAnnotationSparql,
+        Query query = QueryFactory.create(findAnnotationSparql);
+        AnnotationFilterFactory.applyFilters(query, "body", filters);
+        return database.executeConstructQuery(query,
                 initialBindings);
     }
 
 
-    public Model findAnnotations(final String about) {
+    public Model findAnnotations(final String about,
+            AnnotationFilter... filters) {
 
         // create bindings
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("annotates", ResourceFactory.createResource(about));
-
-        return database.executeConstructQuery(findAnnotationSparql,
+        Query query = QueryFactory.create(findAnnotationSparql);
+        AnnotationFilterFactory.applyFilters(query, "body", filters);
+        return database.executeConstructQuery(query,
                 initialBindings);
+    }
 
+    public Model findAnnotations(AnnotationFilter[] filters) {
+        // TODO The query may need reordering in this case
+        // create bindings
+        QuerySolutionMap initialBindings = new QuerySolutionMap();
+        Query query = QueryFactory.create(findAnnotationSparql);
+        AnnotationFilterFactory.applyFilters(query, "body", filters);
+        return database.executeConstructQuery(query,
+                initialBindings);
     }
 
     public void deleteAnnotation(final Resource resource) {
