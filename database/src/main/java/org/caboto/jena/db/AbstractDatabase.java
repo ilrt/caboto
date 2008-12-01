@@ -86,18 +86,16 @@ public abstract class AbstractDatabase implements Database {
             return null;
         }
     }
-
     /**
-     * @see org.caboto.jena.db.Database#executeConstructQuery(java.lang.String,
+     * @see org.caboto.jena.db.Database#executeConstructQuery(com.hp.hpl.jena.query.Query,
      *     com.hp.hpl.jena.query.QuerySolution)
      */
-    public Model executeConstructQuery(String sparql,
+    public Model executeConstructQuery(Query query,
             QuerySolution initialBindings) {
         try {
             Data data = getData();
             Dataset dataset = data.getDataset();
             QueryExecution queryExec;
-            Query query = QueryFactory.create(sparql);
             if (initialBindings != null) {
                 queryExec = QueryExecutionFactory.create(query, dataset,
                         initialBindings);
@@ -112,6 +110,15 @@ public abstract class AbstractDatabase implements Database {
             e.printStackTrace();
             return null;
         }
+    }
+    /**
+     * @see org.caboto.jena.db.Database#executeConstructQuery(java.lang.String,
+     *      com.hp.hpl.jena.query.QuerySolution)
+     */
+    public Model executeConstructQuery(String sparql,
+                                       QuerySolution initialBindings) {
+        Query query = QueryFactory.create(sparql);
+        return executeConstructQuery(query, initialBindings);
     }
 
     /**
