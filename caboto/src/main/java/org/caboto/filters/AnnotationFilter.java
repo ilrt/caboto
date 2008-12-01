@@ -31,41 +31,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package org.caboto.dao;
 
-import java.util.List;
+package org.caboto.filters;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Model;
-import org.caboto.domain.Annotation;
-import org.caboto.filters.AnnotationFilter;
+import com.hp.hpl.jena.query.Query;
 
 /**
- * <p>A Data Access Object to add, find and delete annotations.</p>
  *
- * @author Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version $Id: AnnotationDao.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ * @author pldms
  */
-public interface AnnotationDao {
-
-    void addAnnotation(Annotation annotation);
-
-    Resource findAnnotation(String id);
+public interface AnnotationFilter {
     
-    Model findAnnotations(AnnotationFilter[] filters);
-
-    Model findAnnotationsByGraph(String graph, AnnotationFilter... filters);
-
-    Annotation getAnnotation(String id);
-    
-    Model findAnnotations(String about, AnnotationFilter... filters);
-    
-    List<Annotation> getAnnotations(String about);
-    
-    Model findAnnotationsByAuthor(String author);
-    
-    List<Annotation> getAnnotationsByAuthor(String author);
-
-    void deleteAnnotation(Resource resource);
+    public void augmentQuery(Query query, String annotationBodyVar);
 
 }

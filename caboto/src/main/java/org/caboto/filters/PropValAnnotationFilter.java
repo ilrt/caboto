@@ -31,41 +31,60 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package org.caboto.dao;
 
-import java.util.List;
+package org.caboto.filters;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Model;
-import org.caboto.domain.Annotation;
-import org.caboto.filters.AnnotationFilter;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
- * <p>A Data Access Object to add, find and delete annotations.</p>
+ * Prime annoyance: namespaces. what to do about them?
  *
- * @author Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version $Id: AnnotationDao.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ * @author pldms
  */
-public interface AnnotationDao {
+public class PropValAnnotationFilter extends AnnotationFilterBase {
 
-    void addAnnotation(Annotation annotation);
+    private final String propertyS;
+    private final Node value;
 
-    Resource findAnnotation(String id);
+    /**
+     * 
+     * @param propertyS
+     * @param valueS
+     */
+    public PropValAnnotationFilter(final String propertyS,
+            final String valueS) {
+        this(propertyS, toValue(valueS));
+    }
+
+    public PropValAnnotationFilter(String propertyS, Node value) {
+        this.propertyS = propertyS;
+        this.value = value;
+    }
     
-    Model findAnnotations(AnnotationFilter[] filters);
+    private static Node toValue(String valueS) {
+        // Do we want number support?
+        if (valueS.startsWith("U:"))
+            return Node.createURI(valueS.substring(2));
+        //return Node.createLiteral(valueS);
+        return Node.createLiteral(valueS, null, XSDDatatype.XSDstring);
+    }
 
-    Model findAnnotationsByGraph(String graph, AnnotationFilter... filters);
-
-    Annotation getAnnotation(String id);
-    
-    Model findAnnotations(String about, AnnotationFilter... filters);
-    
-    List<Annotation> getAnnotations(String about);
-    
-    Model findAnnotationsByAuthor(String author);
-    
-    List<Annotation> getAnnotationsByAuthor(String author);
-
-    void deleteAnnotation(Resource resource);
-
+    public void augmentBlock(ElementTriplesBlock arg0,
+            String annotationBodyVar) {
+        String expandedProp = getQuery().expandPrefixedName(propertyS);
+        // TODO Caboto exception policy?
+        if (expandedProp == null)
+            throw new RuntimeException("Cannot expand property: " + propertyS);
+        arg0.addTriple(Triple.create(
+                Var.alloc(annotationBodyVar),
+                Node.createURI(expandedProp),
+                value));
+    }
 }

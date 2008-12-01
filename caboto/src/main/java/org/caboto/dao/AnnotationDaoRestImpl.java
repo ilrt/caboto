@@ -42,6 +42,7 @@ import org.caboto.RdfMediaType;
 import org.caboto.domain.Annotation;
 import org.caboto.domain.AnnotationException;
 import org.caboto.domain.AnnotationFactory;
+import org.caboto.filters.AnnotationFilter;
 import org.caboto.rest.providers.JenaModelRdfProvider;
 import org.caboto.rest.providers.JenaResourceRdfProvider;
 import org.caboto.rest.resources.BasicAuthenticationClientFilter;
@@ -194,6 +195,22 @@ public final class AnnotationDaoRestImpl implements AnnotationDao {
     }
 
     public Model findAnnotationsByGraph(String graph) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Model findAnnotations(AnnotationFilter[] filters) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Model findAnnotations(String about, AnnotationFilter... filters) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Model findAnnotationsByGraph(String graph,
+            AnnotationFilter... filters) {
         // TODO Auto-generated method stub
         return null;
     }

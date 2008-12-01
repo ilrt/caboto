@@ -54,6 +54,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
+import org.caboto.filters.AnnotationFilter;
+import org.caboto.filters.PropValAnnotationFilter;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -62,6 +64,7 @@ import java.util.Map;
 public class AnnotationDaoImplTest extends TestCase {
 
     @Before
+    @Override
     public void setUp() throws Exception {
 
 
@@ -139,9 +142,12 @@ public class AnnotationDaoImplTest extends TestCase {
 
         Model m = annotationDao.findAnnotations("http://chillyinside.com/blog/?p=45");
 
-        assertEquals("Unexpected size", 14, m.size());
+        assertEquals("Unexpected size", 15, m.size());
 
-
+        AnnotationFilter filter = new PropValAnnotationFilter("dc:subject", "test");
+        m = annotationDao.findAnnotations("http://chillyinside.com/blog/?p=45",
+                filter);
+        assertEquals("Filtered size", 8, m.size());
     }
 
     @Test
