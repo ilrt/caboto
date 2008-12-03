@@ -31,31 +31,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package org.caboto.dao;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Model;
-import org.caboto.domain.Annotation;
-import org.caboto.filters.AnnotationFilter;
+package org.caboto.filters;
+
+import com.hp.hpl.jena.query.Query;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * <p>A Data Access Object to add, find and delete annotations.</p>
  *
- * @author Mike Jones (mike.a.jones@bristol.ac.uk)
- * @version $Id: AnnotationDao.java 177 2008-05-30 13:50:59Z mike.a.jones $
+ * @author pldms
  */
-public interface AnnotationDao {
+public class AnnotationFilterFactory {
+    public static AnnotationFilter[]
+            getFromParameters(Map<String, List<String>> parameters) {
+        final List<AnnotationFilter> filters = new LinkedList();
+        for (Entry<String, List<String>> attVal: parameters.entrySet()) {
+            if (attVal.getKey().contains(":")) {
+                for (String value: attVal.getValue()) {
+                    filters.add(new PropValAnnotationFilter(attVal.getKey(),
+                            value));
+                }
+            }
+        }
+         // life is too short to understand why this nonsense is needed
+        return filters.toArray(new AnnotationFilter[0]);
+    }
 
-    void addAnnotation(Annotation annotation);
-
-    Resource findAnnotation(String id);
-
-    Model findAnnotations(AnnotationFilter[] filters);
-
-    Model findAnnotationsByGraph(String graph, AnnotationFilter... filters);
-
-    Model findAnnotations(String about, AnnotationFilter... filters);
-
-    void deleteAnnotation(Resource resource);
-
+    public static void applyFilters(Query original,
+            String annotationBodyVar, AnnotationFilter... filters) {
+        for (AnnotationFilter filter: filters)
+            filter.augmentQuery(original, annotationBodyVar);
+    }
 }

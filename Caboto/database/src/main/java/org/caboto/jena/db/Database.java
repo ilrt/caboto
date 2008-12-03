@@ -33,6 +33,7 @@
  */
 package org.caboto.jena.db;
 
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -65,6 +66,23 @@ public interface Database {
      */
     Model executeConstructQuery(final String sparql,
                                 final QuerySolution initialBindings);
+
+    /**
+     * Executes the given SPARQL construct query on the database
+     *
+     * @param query           The query
+     * @param initialBindings The values for the variables in the query
+     * @return The results of the query
+     */
+    Model executeConstructQuery(final Query query,
+                                final QuerySolution initialBindings);
+    /**
+     * Get the data object that encapsualates out dataset, model and store.
+     *
+     * @return the data object.
+     * @throws DataException if there is an error.
+     */
+    public Data getData() throws DataException;
 
     /**
      * Gets a model that can be used to update the database using the methods
