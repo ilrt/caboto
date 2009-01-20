@@ -37,5 +37,10 @@
             <artifactId>arq-extra</artifactId>
             <version>${project.arq.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.hp.hpl.jena</groupId>
+            <artifactId>jena</artifactId>
+            <version>${project.jena.version}</version>
+        </dependency>
     </dependencies>
 </project>
