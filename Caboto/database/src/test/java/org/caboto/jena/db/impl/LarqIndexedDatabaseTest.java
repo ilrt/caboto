@@ -3,6 +3,7 @@ package org.caboto.jena.db.impl;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.caboto.jena.db.Database;
 import org.caboto.jena.db.Results;
@@ -20,11 +21,13 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class LarqIndexedDatabaseTest {
 
 	private LarqIndexedDatabase indexedDb;
+	private FileDatabase db;
+	private File ldir;
 
 	@Before
 	public void setUp() throws Exception {
-		Database db = new FileDatabase("/empty.n3","/graphs/test");
-		File ldir = new File(System.getProperty("java.io.tmpdir"),"larq-test");
+		db = new FileDatabase("/empty.n3","/graphs/test");
+		ldir = new File(System.getProperty("java.io.tmpdir"),"larq-test");
 		if (ldir.exists()) remove(ldir);
 		if (!ldir.mkdirs()) throw new Error("Can't create " + ldir);
 		ldir.deleteOnExit();
@@ -45,8 +48,12 @@ public class LarqIndexedDatabaseTest {
 	}
 	
 	@Test
-	public void testBasics() {
+	public void testBasics() throws IOException {
 		assertEquals("Files were indexed",ResourceFactory.createResource("http://example.com/foo/1"),find("tester"));
+		// reopen!
+		indexedDb.close();
+		indexedDb = new LarqIndexedDatabase(db,ldir,false);
+		assertEquals("Files were still indexed",ResourceFactory.createResource("http://example.com/foo/1"),find("tester"));
 	}
 	
 	@Test

@@ -37,9 +37,10 @@ public class LarqIndexedDatabase implements Database {
 	public LarqIndexedDatabase(final Database db, final File indexDirectory, final boolean createIndex) throws IOException {
 		this.database = db;
 		this.indexDirectory = indexDirectory;
-		//FSDirectory fsd = FSDirectory.getDirectory(indexDirectory);
-		//IndexWriter indexWriter = new IndexWriter(fsd, new StandardAnalyzer(), createIndex);
-		reindex(); // Why won't it persist?!
+		FSDirectory fsd = FSDirectory.getDirectory(indexDirectory);
+		IndexWriter indexWriter = new IndexWriter(fsd, new StandardAnalyzer(), createIndex);
+		ib = new IndexBuilderSubject(indexWriter);
+		if (createIndex) reindex();
 	}
 	
 	public boolean addModel(String uri, Model model) {
@@ -120,5 +121,9 @@ public class LarqIndexedDatabase implements Database {
 			LARQ.setDefaultIndex(ib.getIndex());
 		}
 		return ib;
+	}
+
+	public void close() {
+		getIndexBuilder().closeWriter();
 	}
 }
