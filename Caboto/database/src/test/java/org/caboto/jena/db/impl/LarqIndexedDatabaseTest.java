@@ -125,7 +125,7 @@ public class LarqIndexedDatabaseTest {
 	}
 	
 	@Test
-	public void testAddModel() {http://en.wikipedia.org/wiki/River_Shannon
+	public void testAddModel() {
 		assertNull("Unique ain't there", find("unique"));
 		Model m = ModelFactory.createDefaultModel();
 		m.add(m.createResource("http://example.com/unique"), RDFS.label, "unique");
