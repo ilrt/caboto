@@ -102,5 +102,33 @@ public class AboutResourceTest extends AbstractResourceTest {
         model = response.getEntity(Model.class);
         assertEquals("Got two annotations", 14, model.size());
     }
-
+    
+    /**
+     * Test LARQ business
+     */
+    @Test
+    public void testFindByTest() throws Exception {
+    	createAndSaveAnnotation(userPublicUriOne);
+        String url = createAndSaveAnnotation(userPublicUriOne);
+        ClientResponse response = createGetClientResponse(null, null,
+                baseUri + "about/?search=foo",
+                RdfMediaType.APPLICATION_RDF_XML);
+        assertEquals("Got nothing", Response.Status.NOT_FOUND.getStatusCode(),
+                response.getStatus());
+        response = createGetClientResponse(null, null,
+                url,
+                RdfMediaType.APPLICATION_RDF_XML);
+        response = createGetClientResponse(null, null,
+                baseUri + "about/?search=title1",
+                RdfMediaType.APPLICATION_RDF_XML);
+        assertEquals("Got something", Response.Status.OK.getStatusCode(),
+                response.getStatus());
+        Model model = response.getEntity(Model.class);
+        assertEquals("Got one annotation", 7, model.size());
+        response = createGetClientResponse(null, null,
+                baseUri + "about/?search=A%20description",
+                RdfMediaType.APPLICATION_RDF_XML);
+        model = response.getEntity(Model.class);
+        assertEquals("Got two annotations", 14, model.size());
+    }
 }
