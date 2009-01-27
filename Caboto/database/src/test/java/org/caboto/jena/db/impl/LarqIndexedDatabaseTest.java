@@ -78,7 +78,7 @@ public class LarqIndexedDatabaseTest {
 		if (ldir.exists()) remove(ldir);
 		if (!ldir.mkdirs()) throw new Error("Can't create " + ldir);
 		ldir.deleteOnExit();
-		indexedDb = new LarqIndexedDatabase(db,ldir);
+		indexedDb = new LarqIndexedDatabase(db,ldir.getAbsolutePath());
 	}
 
 	private void remove(File file) {
@@ -99,7 +99,7 @@ public class LarqIndexedDatabaseTest {
 		assertEquals("Files were indexed",ResourceFactory.createResource("http://example.com/foo/1"),find("tester"));
 		// reopen!
 		indexedDb.close();
-		indexedDb = new LarqIndexedDatabase(db,ldir,false);
+		indexedDb = new LarqIndexedDatabase(db,ldir.getAbsolutePath(),false);
 		assertEquals("Files were still indexed",ResourceFactory.createResource("http://example.com/foo/1"),find("tester"));
 	}
 	
@@ -109,7 +109,7 @@ public class LarqIndexedDatabaseTest {
 		Model m = ModelFactory.createDefaultModel();
 		m.add(m.createResource("http://example.com/index-orig"), RDFS.label, "loseme");
 		db.addModel("http://example.com/index-orig", m);
-		indexedDb = new LarqIndexedDatabase(db,ldir);
+		indexedDb = new LarqIndexedDatabase(db,ldir.getAbsolutePath());
 		assertNull("Starting state is correct", find("reindexme"));
 		assertNotNull("Starting state is correct", find("loseme"));
 		// go behind larq index's back

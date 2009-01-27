@@ -42,5 +42,10 @@
             <artifactId>jena</artifactId>
             <version>${project.jena.version}</version>
         </dependency>
+        <dependency>
+        	<groupId>junit</groupId>
+        	<artifactId>junit</artifactId>
+        	<version>${project.junit.version}</version>
+        </dependency>
     </dependencies>
 </project>

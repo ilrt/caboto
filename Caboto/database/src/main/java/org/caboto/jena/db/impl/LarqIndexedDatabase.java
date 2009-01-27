@@ -34,7 +34,6 @@
 
 package org.caboto.jena.db.impl;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -45,6 +44,7 @@ import org.caboto.jena.db.DataException;
 import org.caboto.jena.db.Database;
 import org.caboto.jena.db.Results;
 
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
@@ -68,12 +68,12 @@ import com.hp.hpl.jena.rdf.model.Statement;
 public class LarqIndexedDatabase implements Database {
 	
 	private Database database;
-	private File indexDirectory;
+	private String indexDirectory;
 	private IndexBuilderModel ib;
 	
-	public LarqIndexedDatabase(final Database db, final File indexDirectory) throws IOException { this(db, indexDirectory, true); }
+	public LarqIndexedDatabase(final Database db, final String indexDirectory) throws IOException { this(db, indexDirectory, true); }
 	
-	public LarqIndexedDatabase(final Database db, final File indexDirectory, final boolean createIndex) throws IOException {
+	public LarqIndexedDatabase(final Database db, final String indexDirectory, final boolean createIndex) throws IOException {
 		this.database = db;
 		this.indexDirectory = indexDirectory;
 		FSDirectory fsd = FSDirectory.getDirectory(indexDirectory);
@@ -83,44 +83,84 @@ public class LarqIndexedDatabase implements Database {
 	}
 	
 	public boolean addModel(String uri, Model model) {
+		System.err.println("!!!!! Adding model:\n" + model);
 		index(model);
 		return database.addModel(uri, model);
 	}
 
 	public boolean deleteAll(String uri) {
+		System.err.println("!!!! !!!");
 		return database.deleteAll(uri);
 	}
 
 	public boolean deleteModel(String uri, Model model) {
+		System.err.println("!!!! !!! --");
 		unindex(model);
 		return database.deleteModel(uri, model);
 	}
 
 	public Model executeConstructQuery(String sparql,
 			QuerySolution initialBindings) {
+		System.err.println("!!!! !!! con");
 		return database.executeConstructQuery(sparql, initialBindings);
 	}
 
 	public Model executeConstructQuery(Query query,
 			QuerySolution initialBindings) {
+		System.err.println("!!!! Query\n" + query);
+		try {
+			reindex();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return database.executeConstructQuery(query, initialBindings);
 	}
 
 	public Results executeSelectQuery(String sparql,
 			QuerySolution initialBindings) {
+		System.err.println("!!!! !!!");
 		return database.executeSelectQuery(sparql, initialBindings);
 	}
 
 	public Data getData() throws DataException {
-		return database.getData();
+		System.err.println("!!!! !!! data");
+		return new DataWrapper(database.getData());
 	}
+	
+	class DataWrapper implements Data {
+		
+		private Data data;
 
+		public DataWrapper(final Data data) {
+			this.data = data;
+		}
+		
+		public void close() {
+			data.close();
+		}
+
+		public Dataset getDataset() {
+			System.err.println("Get ds");
+			return data.getDataset();
+		}
+
+		public Model getModel(String uri) {
+			System.err.println("GET MODEL!!");
+			Model m = data.getModel(uri);
+			m.register(ib);
+			return m;
+		}
+		
+	}
+	
 	public Model getUpdateModel() {
 		return database.getUpdateModel();
 	}
 
 	public boolean updateProperty(String uri, String resourceUri,
 			Property property, RDFNode value) {
+		System.err.println("!!!! !!! up");
 		return database.updateProperty(uri, resourceUri, property, value);
 	}
 	
@@ -142,10 +182,12 @@ public class LarqIndexedDatabase implements Database {
 			Statement s = ResourceFactory.createStatement(soln.getResource("s"),
 					(Property) soln.getResource("p").as(Property.class),
 					soln.get("o"));
+			System.err.println("!! St:" + s);
 			larqBuilder.indexStatement(s);
 		}
 		larqBuilder.flushWriter();
 		ib = larqBuilder;
+		System.err.println("Contains title1?" + larqBuilder.getIndex().hasMatch("title1"));
 		LARQ.setDefaultIndex(larqBuilder.getIndex());
 	}
 	
