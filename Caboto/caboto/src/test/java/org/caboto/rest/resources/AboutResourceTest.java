@@ -126,7 +126,7 @@ public class AboutResourceTest extends AbstractResourceTest {
         Model model = response.getEntity(Model.class);
         assertEquals("Got one annotation", 7, model.size());
         response = createGetClientResponse(null, null,
-                baseUri + "about/?search=A%20description",
+                baseUri + "about/?search=description",
                 RdfMediaType.APPLICATION_RDF_XML);
         model = response.getEntity(Model.class);
         assertEquals("Got two annotations", 14, model.size());
