@@ -37,6 +37,8 @@ package org.caboto.rest.resources;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.client.ClientResponse;
 import java.util.Map;
+
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.caboto.RdfMediaType;
 import org.caboto.domain.Annotation;
@@ -79,16 +81,13 @@ public class AboutResourceTest extends AbstractResourceTest {
      */
     @Test
     public void testFindAnnotations() throws Exception {
-        createAndSaveAnnotation(userPublicUriOne);
-        String url = createAndSaveAnnotation(userPublicUriOne);
+    	createAndSaveAnnotation(userPublicUriOne);
+    	createAndSaveAnnotation(userPublicUriOne);
         ClientResponse response = createGetClientResponse(null, null,
                 baseUri + "about/?rdf:type=foo",
                 RdfMediaType.APPLICATION_RDF_XML);
         assertEquals("Got nothing", Response.Status.NOT_FOUND.getStatusCode(),
                 response.getStatus());
-        response = createGetClientResponse(null, null,
-                url,
-                RdfMediaType.APPLICATION_RDF_XML);
         response = createGetClientResponse(null, null,
                 baseUri + "about/?dc:title=title1",
                 RdfMediaType.APPLICATION_RDF_XML);
@@ -108,25 +107,36 @@ public class AboutResourceTest extends AbstractResourceTest {
      */
     @Test
     public void testFindByTest() throws Exception {
-    	createAndSaveAnnotation(userPublicUriOne);
-        String url = createAndSaveAnnotation(userPublicUriOne);
+        /**
+         * Create some test data by the normal means, to ensure it is added to index
+         */
+    	String data1 = "title=A%20Uniquey%20Title&description=Something%20in%20hereabouts&type=" +
+        "SimpleComment&annotates=http%3A%2F%2Fexample.org%2Fthing";
+    	String data2 = "title=Another%20Title&description=Something%20in%20hereabouts&type=" +
+        "SimpleComment&annotates=http%3A%2F%2Fexample.org%2Fthing";
+    	ClientResponse clientResponse = createPostClientResponse(usernameOne, passwordOne,
+                userPublicUriOne, MediaType.APPLICATION_FORM_URLENCODED, data1);
+        assertEquals("A 201 response should be returned", Response.Status.CREATED.getStatusCode(),
+                clientResponse.getStatus());
+        clientResponse = createPostClientResponse(usernameOne, passwordOne,
+                userPublicUriOne, MediaType.APPLICATION_FORM_URLENCODED, data2);
+        assertEquals("A 201 response should be returned", Response.Status.CREATED.getStatusCode(),
+                clientResponse.getStatus());
+        
         ClientResponse response = createGetClientResponse(null, null,
                 baseUri + "about/?search=foo",
                 RdfMediaType.APPLICATION_RDF_XML);
         assertEquals("Got nothing", Response.Status.NOT_FOUND.getStatusCode(),
                 response.getStatus());
         response = createGetClientResponse(null, null,
-                url,
-                RdfMediaType.APPLICATION_RDF_XML);
-        response = createGetClientResponse(null, null,
-                baseUri + "about/?search=title1",
+                baseUri + "about/?search=Uniquey",
                 RdfMediaType.APPLICATION_RDF_XML);
         assertEquals("Got something", Response.Status.OK.getStatusCode(),
                 response.getStatus());
         Model model = response.getEntity(Model.class);
         assertEquals("Got one annotation", 7, model.size());
         response = createGetClientResponse(null, null,
-                baseUri + "about/?search=description",
+                baseUri + "about/?search=hereabouts",
                 RdfMediaType.APPLICATION_RDF_XML);
         model = response.getEntity(Model.class);
         assertEquals("Got two annotations", 14, model.size());
