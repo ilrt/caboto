@@ -102,12 +102,6 @@ public class LarqIndexedDatabase implements Database {
 
 	public Model executeConstructQuery(Query query,
 			QuerySolution initialBindings) {
-		try {
-			reindex();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return database.executeConstructQuery(query, initialBindings);
 	}
 
