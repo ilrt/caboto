@@ -70,13 +70,18 @@ public class LarqIndexedDatabase implements Database {
 	private String indexDirectory;
 	private IndexBuilderModel ib;
 	
-	public LarqIndexedDatabase(final Database db, final String indexDirectory) throws IOException { this(db, indexDirectory, true); }
+	public LarqIndexedDatabase(final Database db, final String indexDirectory) { this(db, indexDirectory, true); }
 	
-	public LarqIndexedDatabase(final Database db, final String indexDirectory, final boolean createIndex) throws IOException {
+	public LarqIndexedDatabase(final Database db, final String indexDirectory, final boolean createIndex) {
 		this.database = db;
 		this.indexDirectory = indexDirectory;
-		FSDirectory fsd = FSDirectory.getDirectory(indexDirectory);
-		IndexWriter indexWriter = new IndexWriter(fsd, new StandardAnalyzer(), createIndex);
+		IndexWriter indexWriter;
+		try {
+			FSDirectory fsd = FSDirectory.getDirectory(indexDirectory);
+			indexWriter = new IndexWriter(fsd, new StandardAnalyzer(), createIndex);
+		} catch (IOException e) {
+			throw new RuntimeException("Error opening lucene index", e);
+		}
 		ib = new IndexBuilderSubject(indexWriter);
 		if (createIndex) reindex();
 	}
@@ -87,7 +92,9 @@ public class LarqIndexedDatabase implements Database {
 	}
 
 	public boolean deleteAll(String uri) {
-		return database.deleteAll(uri);
+		boolean result = database.deleteAll(uri);
+		reindex();
+		return result;
 	}
 
 	public boolean deleteModel(String uri, Model model) {
@@ -128,13 +135,18 @@ public class LarqIndexedDatabase implements Database {
 	 * 
 	 * @throws IOException
 	 */
-	public void reindex() throws IOException {
+	public void reindex() {
 		ib.closeWriter();
 		Results wrappedRes = 
 			database.executeSelectQuery("SELECT ?s ?p ?o {{ ?s ?p ?o } UNION { GRAPH ?g { ?s ?p ?o } }}", null);
 		ResultSet res = wrappedRes.getResults();
-		FSDirectory fsd = FSDirectory.getDirectory(indexDirectory);
-		IndexWriter indexWriter = new IndexWriter(fsd, new StandardAnalyzer(), true); // new index
+		IndexWriter indexWriter;
+		try {
+			FSDirectory fsd = FSDirectory.getDirectory(indexDirectory);
+			indexWriter = new IndexWriter(fsd, new StandardAnalyzer(), true); // new index
+		} catch (IOException e) {
+			throw new RuntimeException("Error opening new index", e);
+		}
 		IndexBuilderModel larqBuilder = new IndexBuilderSubject(indexWriter);
 		while (res.hasNext()) {
 			QuerySolution soln = res.nextSolution();
@@ -155,10 +167,16 @@ public class LarqIndexedDatabase implements Database {
 		LARQ.setDefaultIndex(larqBuilder.getIndex());
 	}
 	
+	/**
+	 * LARQ cannot un-index statements yet, so we are very inefficient here.
+	 * @param model
+	 */
 	private void unindex(Model model) {
-		IndexBuilderModel larqBuilder = getIndexBuilder();
-		larqBuilder.removedStatements(model.listStatements());
-		larqBuilder.flushWriter();
+		//IndexBuilderModel larqBuilder = getIndexBuilder();
+		//larqBuilder.removedStatements(model.listStatements());
+		//larqBuilder.flushWriter();
+		//This is too slow
+		//reindex();
 	}
 	
 	private IndexBuilderModel getIndexBuilder() {
