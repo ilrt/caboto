@@ -49,7 +49,12 @@ public class AnnotationFilterFactory {
             getFromParameters(Map<String, List<String>> parameters) {
         final List<AnnotationFilter> filters = new LinkedList();
         for (Entry<String, List<String>> attVal: parameters.entrySet()) {
-            if (attVal.getKey().contains(":")) {
+        	if (attVal.getKey().equalsIgnoreCase("search")) {
+        		for (String value: attVal.getValue()) {
+        			filters.add(new LarqAnnotationFilter(value));
+        		}
+        	}
+        	else if (attVal.getKey().contains(":")) {
                 for (String value: attVal.getValue()) {
                     filters.add(new PropValAnnotationFilter(attVal.getKey(),
                             value));
