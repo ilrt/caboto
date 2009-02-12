@@ -99,7 +99,7 @@ public class LarqIndexedDatabaseTest {
 		assertEquals("Files were indexed",ResourceFactory.createResource("http://example.com/foo/1"),find("tester"));
 		// reopen!
 		indexedDb.close();
-		indexedDb = new LarqIndexedDatabase(db,ldir.getAbsolutePath(),false);
+		indexedDb = new LarqIndexedDatabase(db,ldir.getAbsolutePath(),false,false);
 		assertEquals("Files were still indexed",ResourceFactory.createResource("http://example.com/foo/1"),find("tester"));
 	}
 	

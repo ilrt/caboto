@@ -35,7 +35,14 @@
 package org.caboto.jena.db.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.FSDirectory;
@@ -49,6 +56,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.larq.IndexBuilderModel;
 import com.hp.hpl.jena.query.larq.IndexBuilderSubject;
+import com.hp.hpl.jena.query.larq.IndexLARQ;
 import com.hp.hpl.jena.query.larq.LARQ;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -66,15 +74,19 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 public class LarqIndexedDatabase implements Database {
 	
+	static final Log log = LogFactory.getLog(LarqIndexedDatabase.class);
 	private Database database;
 	private String indexDirectory;
 	private IndexBuilderModel ib;
+	final private boolean cacheLARQ;
 	
-	public LarqIndexedDatabase(final Database db, final String indexDirectory) { this(db, indexDirectory, true); }
+	public LarqIndexedDatabase(final Database db, final String indexDirectory) { this(db, indexDirectory, true, false); }
 	
-	public LarqIndexedDatabase(final Database db, final String indexDirectory, final boolean createIndex) {
+	public LarqIndexedDatabase(final Database db, final String indexDirectory, final boolean createIndex, final boolean cacheLARQ) {
+		log.info(((createIndex)?"Creating":"Opening") + " free text index <" + indexDirectory + ">");
 		this.database = db;
 		this.indexDirectory = indexDirectory;
+		this.cacheLARQ = cacheLARQ;
 		IndexWriter indexWriter;
 		try {
 			FSDirectory fsd = FSDirectory.getDirectory(indexDirectory);
@@ -114,6 +126,7 @@ public class LarqIndexedDatabase implements Database {
 
 	public Results executeSelectQuery(String sparql,
 			QuerySolution initialBindings) {
+		log.info("Query is: \n" + sparql);
 		return database.executeSelectQuery(sparql, initialBindings);
 	}
 
@@ -127,6 +140,7 @@ public class LarqIndexedDatabase implements Database {
 
 	public boolean updateProperty(String uri, String resourceUri,
 			Property property, RDFNode value) {
+		log.warn("UpdateProperty called. Text index will need rebuilding");
 		return database.updateProperty(uri, resourceUri, property, value);
 	}
 	
@@ -136,6 +150,7 @@ public class LarqIndexedDatabase implements Database {
 	 * @throws IOException
 	 */
 	public void reindex() {
+		log.info("Reindexing free text");
 		ib.closeWriter();
 		Results wrappedRes = 
 			database.executeSelectQuery("SELECT ?s ?p ?o {{ ?s ?p ?o } UNION { GRAPH ?g { ?s ?p ?o } }}", null);
@@ -157,14 +172,15 @@ public class LarqIndexedDatabase implements Database {
 		}
 		larqBuilder.flushWriter();
 		ib = larqBuilder;
-		LARQ.setDefaultIndex(larqBuilder.getIndex());
+		LARQ.setDefaultIndex(cacheIfRequired(larqBuilder.getIndex()));
+		log.info("Finished indexing");
 	}
 	
 	private void index(Model model) {
 		IndexBuilderModel larqBuilder = getIndexBuilder();
 		larqBuilder.indexStatements(model.listStatements());
 		larqBuilder.flushWriter();
-		LARQ.setDefaultIndex(larqBuilder.getIndex());
+		LARQ.setDefaultIndex(cacheIfRequired(larqBuilder.getIndex()));
 	}
 	
 	/**
@@ -177,16 +193,42 @@ public class LarqIndexedDatabase implements Database {
 		//larqBuilder.flushWriter();
 		//This is too slow
 		//reindex();
+		log.warn("Unindex for text index not possible. Reindex is needed");
 	}
 	
 	private IndexBuilderModel getIndexBuilder() {
 		if (ib == null) {
 			ib = new IndexBuilderSubject(indexDirectory);
-			LARQ.setDefaultIndex(ib.getIndex());
+			LARQ.setDefaultIndex(cacheIfRequired(ib.getIndex()));
 		}
 		return ib;
 	}
-
+	
+	/** This is a hack, and a thoroughly bad idea, but it will have to do **/
+	public IndexLARQ cacheIfRequired(IndexLARQ index) {
+		if (!cacheLARQ) return index;
+		return new IndexLARQCacher(index);
+	}
+	
+	static class IndexLARQCacher extends IndexLARQ {
+		
+		private final IndexLARQ index;
+		@SuppressWarnings("unchecked")
+		private final Map<String, List> cache = new HashMap<String, List>();
+		public IndexLARQCacher(final IndexLARQ index) { super(null); this.index = index; }
+		
+		@SuppressWarnings("unchecked")
+		@Override public Iterator search(final String searchTerm) {
+			if (cache.containsKey(searchTerm)) return cache.get(searchTerm).iterator();
+			log.debug("Looking for unindexed term " + searchTerm);
+			final List resList = new LinkedList();
+			final Iterator res = index.search(searchTerm);
+			while (res.hasNext()) resList.add(res.next());
+			cache.put(searchTerm, resList);
+			return resList.iterator();
+		}
+	}
+	
 	public void close() {
 		getIndexBuilder().closeWriter();
 	}
