@@ -13,8 +13,19 @@
         <constructor-arg index="0" value="test-profiles.xml"/>
     </bean>
 
-    <bean id="database" class="org.caboto.jena.db.impl.SDBDatabase">
+    <!--<bean id="database" class="org.caboto.jena.db.impl.SDBDatabase">
         <constructor-arg index="0" value="/sdb.ttl"/>
+    </bean>-->
+    
+    <bean id="database" class="org.caboto.jena.db.impl.LarqIndexedDatabase">
+    	<constructor-arg index="0">
+    		<bean class="org.caboto.jena.db.impl.SDBDatabase">
+        		<constructor-arg index="0" value="/sdb-test.ttl"/>
+    		</bean>
+    	</constructor-arg>
+    	<constructor-arg index="1" value="target/LARQ"/>
+    	<constructor-arg index="2" value="true"/>
+    	<constructor-arg index="3" value="false"/>
     </bean>
 
     <bean id="annotationDao" class="org.caboto.dao.AnnotationDaoImpl" scope="prototype">

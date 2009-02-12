@@ -34,10 +34,20 @@
 
 package org.caboto.filters;
 
+import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -47,10 +57,36 @@ public class PropValAnnotationFilterTest {
 
     public PropValAnnotationFilterTest() {
     }
-
+    
+    /**
+     * Check factory creates prop val filters from params correctly
+     */
+    @Test
+    public final void checkPropValFactory() {
+    	Map<String,List<String>> params = 
+    		Collections.singletonMap("x:prop", Collections.singletonList("foo"));
+    	AnnotationFilter[] filters = AnnotationFilterFactory.getFromParameters(params);
+    	assertEquals("Got a filter", 1, filters.length);
+    	assertTrue("Got right kind of thing", PropValAnnotationFilter.class.isInstance(filters[0]));
+    	assertEquals("x:prop", ((PropValAnnotationFilter) filters[0]).propertyS);
+    	assertEquals(Node.createLiteral("foo", null, XSDDatatype.XSDstring), ((PropValAnnotationFilter) filters[0]).value);
+    }
+    
+    /**
+     * Check factory creates larq filters from params correctly
+     */
+    @Test
+    public final void checkLarqFactory() {
+    	Map<String,List<String>> params = 
+    		Collections.singletonMap("search", Collections.singletonList("foo"));
+    	AnnotationFilter[] filters = AnnotationFilterFactory.getFromParameters(params);
+    	assertEquals("Got a filter", 1, filters.length);
+    	assertTrue("Got right kind of thing", LarqAnnotationFilter.class.isInstance(filters[0]));
+    	assertEquals("foo", ((LarqAnnotationFilter) filters[0]).searchTerm);
+    }
+    
     /**
      * Test of visitQueryPattern method, of class PropValAnnotationFilter.
-     * TODO Test factory!
      */
     @Test
     public final void testAugmentQuery() {
@@ -70,6 +106,27 @@ public class PropValAnnotationFilterTest {
         query2 = QueryFactory.create("PREFIX x: <http://ex.com/> "
                 + "SELECT * { GRAPH ?g { ?s ?p ?o ; x:prop <http://ex.com/z> }}");
         assertEquals(query2, toChange);
+    }
+    
+    /**
+     * Check the larq basics
+     */
+    @Test
+    public final void testLarqQuery() {
+    	LarqAnnotationFilter filter;
+    	try {
+    		filter = new LarqAnnotationFilter("evil! \" . }");
+    		fail("Should have thrown illegal argument");
+    	} catch (IllegalArgumentException e) {}
+    	
+    	filter = new LarqAnnotationFilter("foo");
+    	Query query = QueryFactory.create("PREFIX x: <http://ex.com/> "
+                + "SELECT * { GRAPH ?g { ?s ?p ?o }}");
+    	Query toChange = query.cloneQuery();
+    	filter.augmentQuery(toChange, "s");
+    	Query query2 = QueryFactory.create("PREFIX x: <http://ex.com/> "
+                + "SELECT * { GRAPH ?g { ?s ?p ?o ; <http://jena.hpl.hp.com/ARQ/property#textMatch> \"foo\" }}");
+    	assertEquals(query2, toChange);
     }
 
 }
