@@ -152,9 +152,6 @@ public class LarqIndexedDatabase implements Database {
 	public void reindex() {
 		log.info("Reindexing free text");
 		ib.closeWriter();
-		Results wrappedRes = 
-			database.executeSelectQuery("SELECT ?s ?p ?o {{ ?s ?p ?o } UNION { GRAPH ?g { ?s ?p ?o } }}", null);
-		ResultSet res = wrappedRes.getResults();
 		IndexWriter indexWriter;
 		try {
 			FSDirectory fsd = FSDirectory.getDirectory(indexDirectory);
@@ -163,6 +160,9 @@ public class LarqIndexedDatabase implements Database {
 			throw new RuntimeException("Error opening new index", e);
 		}
 		IndexBuilderModel larqBuilder = new IndexBuilderSubject(indexWriter);
+		Results wrappedRes = 
+			database.executeSelectQuery("SELECT ?s ?p ?o {{ ?s ?p ?o } UNION { GRAPH ?g { ?s ?p ?o } }}", null);
+		ResultSet res = wrappedRes.getResults();
 		while (res.hasNext()) {
 			QuerySolution soln = res.nextSolution();
 			Statement s = ResourceFactory.createStatement(soln.getResource("s"),
@@ -170,6 +170,7 @@ public class LarqIndexedDatabase implements Database {
 					soln.get("o"));
 			larqBuilder.indexStatement(s);
 		}
+		wrappedRes.close();
 		larqBuilder.flushWriter();
 		ib = larqBuilder;
 		LARQ.setDefaultIndex(cacheIfRequired(larqBuilder.getIndex()));
