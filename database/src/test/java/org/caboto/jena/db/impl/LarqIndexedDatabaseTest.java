@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.caboto.jena.db.Data;
-import org.caboto.jena.db.DataException;
 import org.caboto.jena.db.Database;
 import org.caboto.jena.db.Results;
 import org.junit.After;
@@ -51,6 +50,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.hp.hpl.jena.query.DataSource;
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -176,7 +176,6 @@ public class LarqIndexedDatabaseTest {
 		}
 
 		public boolean deleteAll(String uri) {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
@@ -187,35 +186,34 @@ public class LarqIndexedDatabaseTest {
 
 		public Model executeConstructQuery(String sparql,
 				QuerySolution initialBindings) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public Model executeConstructQuery(Query query,
 				QuerySolution initialBindings) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public Results executeSelectQuery(String sparql,
 				QuerySolution initialBindings) {
 			QueryExecution qef = QueryExecutionFactory.create(sparql, dataset);
-			return new Results(qef.execSelect(), qef, null);
+			return new Results(qef.execSelect(), qef, getData());
 		}
 
-		public Data getData() throws DataException {
-			// TODO Auto-generated method stub
-			return null;
+		public Data getData() {
+			return new Data() {
+				public void close() {}
+				public Dataset getDataset() { return null; }
+				public Model getModel(String uri) { return null; }
+			};
 		}
 
 		public Model getUpdateModel() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public boolean updateProperty(String uri, String resourceUri,
 				Property property, RDFNode value) {
-			// TODO Auto-generated method stub
 			return false;
 		}
 		
