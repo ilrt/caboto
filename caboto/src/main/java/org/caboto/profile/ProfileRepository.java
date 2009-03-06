@@ -40,5 +40,7 @@ package org.caboto.profile;
 public interface ProfileRepository {
 
     Profile findProfile(String profileId) throws ProfileRepositoryException;
+    
+    Profile findProfileByUri(String profileUri) throws ProfileRepositoryException;
 
 }

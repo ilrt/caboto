@@ -108,7 +108,10 @@ public final class CabotoUtility {
     }
 
     public static Date parseDate (final String XsdDate) throws ParseException{
-    	Date date = new SimpleDateFormat(DATE_FORMAT_STRING).parse(XsdDate);
+    	String temp = XsdDate.substring(0, XsdDate.length() - 3)
+        + XsdDate.substring(XsdDate.length() - 2, XsdDate.length());
+
+    	Date date = new SimpleDateFormat(DATE_FORMAT_STRING).parse(temp);
     	return date;
     }
     

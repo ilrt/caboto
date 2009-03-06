@@ -49,6 +49,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
@@ -74,26 +75,45 @@ public final class Annotation {
     }
     
     public Annotation(Resource resource , ProfileRepository profileRepository) throws AnnotationException {
+    	Statement rtype = resource.getProperty(RDF.type);
+    	if (rtype==null){
+    		throw new AnnotationException("RDF type not set");
+    	}
+    	this.type = rtype.getResource().getURI();
+    	Profile profile;
+    	try {
+	        profile = profileRepository.findProfileByUri(type);
+        } catch (Exception e) {
+        	throw new AnnotationException(e);
+        }
+        if (profile==null){
+        	throw new AnnotationException("RDF type unknown in profile");
+        }
+        this.type=profile.getId();
     	Model model=ModelFactory.createDefaultModel();
     	this.id = resource.getURI().toString();
         this.graphId =CabotoUtility.getGraphId(id);
-        this.annotates = resource.getProperty(Annotea.annotates).getString();
-        this.author = resource.getProperty(Annotea.author).getString();
-        this.type = resource.getProperty(RDF.type).getString();
+        this.annotates = resource.getProperty(Annotea.annotates).getResource().getURI();
+        this.author = resource.getProperty(Annotea.author).getResource().getURI();
         Resource bodyResource = resource.getProperty(Annotea.body).getResource();        
-        try {
-        	this.created = CabotoUtility.parseDate(resource.getProperty(Annotea.created).getString());
-            Profile profile = profileRepository.findProfile(type);
-            ProfileEntry profileEntry=null;
-            String bodyValue="";
-            Iterator<ProfileEntry> profileIter = profile.getProfileEntries().iterator();
-            while (profileIter.hasNext()){
-            	profileEntry=profileIter.next();
-            	bodyValue=bodyResource.getProperty(model.createProperty(profileEntry.getPropertyType())).getString();
-            	body.put(profileEntry.getId(),bodyValue);
-            }
-        } catch (Exception e) {
-        	throw new AnnotationException(e);
+    	try {
+			this.created = CabotoUtility.parseDate(resource.getProperty(Annotea.created).getString());
+		} catch (ParseException e) {
+			throw new AnnotationException(e);
+		}
+        ProfileEntry profileEntry=null;
+        Statement bodyValue=null;
+        Iterator<ProfileEntry> profileIter = profile.getProfileEntries().iterator();
+        while (profileIter.hasNext()){
+        	profileEntry=profileIter.next();
+        	bodyValue=bodyResource.getProperty(model.createProperty(profileEntry.getPropertyType()));
+        	if (bodyValue!=null) {
+        		body.put(profileEntry.getId(),bodyValue.getString());
+        	} else {	
+        		if (profileEntry.isRequired()){
+        			throw new AnnotationException("Annotation needs:" + profileEntry.getId());
+        		}
+        	} 
         }
     }
 
