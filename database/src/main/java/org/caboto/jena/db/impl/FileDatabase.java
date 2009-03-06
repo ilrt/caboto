@@ -98,7 +98,7 @@ public class FileDatabase extends AbstractDatabase {
 
 
             // find the named graphs
-             File namedGraphsPath = new File(URLDecoder.decode(
+            File namedGraphsPath = new File(URLDecoder.decode(
                     getClass().getResource(namedGraphsDir).getPath(), "UTF-8"));
 
             if (!namedGraphsPath.exists() || !namedGraphsPath.isDirectory()) {
