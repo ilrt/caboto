@@ -44,6 +44,10 @@ import java.io.File;
  */
 public class RdfFileFilter implements FileFilter {
     public boolean accept(File file) {
-        return file.getName().toLowerCase().endsWith(".rdf");
+    	String normalName = file.getName().toLowerCase();
+        return normalName.endsWith(".rdf") || 
+        	normalName.endsWith(".n3") || 
+        	normalName.endsWith(".ttl") || 
+        	normalName.endsWith(".nt");
     }
 }

@@ -63,7 +63,7 @@ public class Results {
      * @param queryExecution The query execution
      * @param data The data queried
      */
-    protected Results(ResultSet resultSet, QueryExecution queryExecution,
+    public Results(ResultSet resultSet, QueryExecution queryExecution,
             Data data) {
         this.resultSet = resultSet;
         this.queryExecution = queryExecution;
