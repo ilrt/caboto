@@ -50,8 +50,8 @@ import com.hp.hpl.jena.vocabulary.XSD;
  */
 public class PropValAnnotationFilter extends AnnotationFilterBase {
 
-    private final String propertyS;
-    private final Node value;
+    public final String propertyS;
+    public final Node value;
 
     /**
      * 
