@@ -36,6 +36,8 @@ package org.caboto.jena.db.impl;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.util.Context;
+
 import org.caboto.jena.db.AbstractDatabase;
 import org.caboto.jena.db.Data;
 
@@ -59,7 +61,13 @@ public class FileDatabase extends AbstractDatabase {
 
     // A data implementation for the file dataset
     private class FileData implements Data {
+    	
+    	private Context context;
 
+		public FileData(Context context) {
+    		this.context = context;
+    	}
+    	
         public Dataset getDataset() {
             return dataset;
         }
@@ -71,6 +79,10 @@ public class FileDatabase extends AbstractDatabase {
         public void close() {
             // Does Nothing
         }
+
+		public Context getContext() {
+			return context;
+		}
     }
 
     /**
@@ -129,6 +141,6 @@ public class FileDatabase extends AbstractDatabase {
      * @see org.caboto.jena.db.AbstractDatabase#getData()
      */
     public Data getData() {
-        return new FileData();
+        return new FileData(getQueryContext());
     }
 }

@@ -35,6 +35,7 @@ package org.caboto.jena.db;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.util.Context;
 
 /**
  * Represents data that can be queried by the abstract database.
@@ -63,4 +64,10 @@ public interface Data {
      * Indicates that the data is finished with.
      */
     void close();
+    
+    /**
+     * 
+     * @return Current query context (if any)
+     */
+	public Context getContext();
 }
