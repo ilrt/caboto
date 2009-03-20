@@ -35,6 +35,8 @@ package org.caboto.jena.db;
 
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.*;
+import com.hp.hpl.jena.sparql.util.Context;
+import com.hp.hpl.jena.sparql.util.Symbol;
 
 /**
  * A useful database abstraction that implements the details of the queries,
@@ -45,7 +47,9 @@ import com.hp.hpl.jena.rdf.model.*;
  */
 public abstract class AbstractDatabase implements Database {
 
-    /**
+    private Context context;
+
+	/**
      * Gets the data object of the database for querying
      *
      * @return The data object
@@ -69,7 +73,8 @@ public abstract class AbstractDatabase implements Database {
             } else {
                 queryExec = QueryExecutionFactory.create(sparql, dataset);
             }
-
+            // Add context items, if there are any
+            if (getQueryContext() != null) queryExec.getContext().setAll(getQueryContext());
             return new Results(queryExec.execSelect(), queryExec, data);
         } catch (DataException e) {
             e.printStackTrace();
@@ -92,6 +97,8 @@ public abstract class AbstractDatabase implements Database {
             } else {
                 queryExec = QueryExecutionFactory.create(query, dataset);
             }
+            // Add context items, if there are any
+            if (getQueryContext() != null) queryExec.getContext().setAll(getQueryContext());
             Model model = queryExec.execConstruct();
             queryExec.close();
             data.close();
@@ -202,4 +209,14 @@ public abstract class AbstractDatabase implements Database {
             return false;
         }
     }
+    
+    /**
+     * Set context for queries
+     */
+    public void setQueryContext(Symbol symbol, Object object) {
+    	if (this.context == null) context = new Context();
+    	this.context.set(symbol, object);
+    }
+    
+    public Context getQueryContext() { return this.context; }
 }
