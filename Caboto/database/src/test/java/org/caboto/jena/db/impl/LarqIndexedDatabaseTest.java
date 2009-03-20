@@ -63,6 +63,8 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.core.DataSourceImpl;
+import com.hp.hpl.jena.sparql.util.Context;
+import com.hp.hpl.jena.sparql.util.Symbol;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class LarqIndexedDatabaseTest {
@@ -169,6 +171,7 @@ public class LarqIndexedDatabaseTest {
 	private static class SimpleDB implements Database {
 		
 		private DataSource dataset = new DataSourceImpl();
+		private Context context;
 		
 		public boolean addModel(String uri, Model model) {
 			dataset.addNamedModel(uri, model);
@@ -197,6 +200,7 @@ public class LarqIndexedDatabaseTest {
 		public Results executeSelectQuery(String sparql,
 				QuerySolution initialBindings) {
 			QueryExecution qef = QueryExecutionFactory.create(sparql, dataset);
+			if (context != null) qef.getContext().setAll(context);
 			return new Results(qef.execSelect(), qef, getData());
 		}
 
@@ -205,6 +209,7 @@ public class LarqIndexedDatabaseTest {
 				public void close() {}
 				public Dataset getDataset() { return null; }
 				public Model getModel(String uri) { return null; }
+				public Context getContext() { return null; }
 			};
 		}
 
@@ -215,6 +220,15 @@ public class LarqIndexedDatabaseTest {
 		public boolean updateProperty(String uri, String resourceUri,
 				Property property, RDFNode value) {
 			return false;
+		}
+
+		public void setQueryContext(Symbol indexKey, Object value) {
+			if (context == null) context = new Context();
+			context.set(indexKey, value);
+		}
+
+		public Context getQueryContext() {
+			return context;
 		}
 		
 	}
