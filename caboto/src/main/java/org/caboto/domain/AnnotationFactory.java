@@ -34,8 +34,20 @@
 package org.caboto.domain;
 
 import javax.ws.rs.core.MultivaluedMap;
+
+import org.caboto.CabotoUtility;
+import org.caboto.profile.ProfileRepository;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ResIterator;
+import com.hp.hpl.jena.rdf.model.Resource;
+
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * <p>A simple factory for creating Annotation objects.</p>
@@ -49,6 +61,31 @@ public final class AnnotationFactory {
      * <p>Private constructor - no public constructor since the class only has static methods.</p>
      */
     private AnnotationFactory() {
+    }
+    
+    
+    /**
+     * <p>Creates a List of annotation objects based on values received from a rdf Model</p>
+     *
+     * @param model  the RDF model containing AnnotoationsURI of the named graph that will hold the annotation.
+     * @param params the parameters from an HTTP POST.
+     * @return an annotation object based on the HTTP POST values.
+     */
+   
+    public static List<Annotation> annotationsFromModel(Model model, ProfileRepository profileRepository){
+		List<Annotation> annList = new Vector<Annotation>();
+    	ResIterator resIt = model.listSubjects();
+		while (resIt.hasNext()){
+			Resource annResource = resIt.nextResource();
+			Annotation annotation;
+			try {
+				annotation = new Annotation(annResource,profileRepository);
+				annList.add(annotation);
+			} catch (AnnotationException e) {
+				// resource is not an annotation
+			}			
+		}
+		return annList;
     }
 
     /**
@@ -85,6 +122,16 @@ public final class AnnotationFactory {
         if (params.get("type") != null) {
             annotation.setType(params.remove("type").get(0));
         }
+        
+    	Date date=new Date();
+        if (params.get("created") !=null) {
+			try {
+				date = CabotoUtility.parseDate(params.remove("created").get(0));
+			} catch (ParseException e) {
+				// do nothing
+			}
+        } 
+        annotation.setCreated(date);
 
         // copy the rest of map
         for (String key : params.keySet()) {

@@ -212,4 +212,11 @@ public class SDBDatabase extends SDBAbstractDatabase {
         }
     }
 
+    /**
+     * Removes everything from the database
+     * @throws SQLException
+     */
+    public void clean() throws SQLException {
+        getStore().getTableFormatter().format();
+    }
 }

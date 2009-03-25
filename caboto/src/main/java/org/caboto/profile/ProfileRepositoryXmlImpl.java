@@ -143,6 +143,68 @@ public final class ProfileRepositoryXmlImpl implements ProfileRepository {
         return profile;
     }
 
+    public Profile findProfileByUri(final String profileUri) throws ProfileRepositoryException {
+
+        Profile profile = null;
+
+        if (profileUri == null) {
+
+            // ????????????????????????
+        }
+
+        try {
+
+            // find the profile matching the id
+            XPathFactory xpathFactory = XPathFactory.newInstance();
+            XPath xpath = xpathFactory.newXPath();
+            XPathExpression expression =
+                    xpath.compile("//profile[@type=\"" + profileUri + "\"]");
+            Object result = expression.evaluate(document, XPathConstants.NODE);
+
+            // get the profile
+            Node node = (Node) result;
+
+            // find the rdf type
+            NamedNodeMap attributes = node.getAttributes();
+            String profileId = attributes.getNamedItem("id").getTextContent();
+
+            // get the child nodes
+            NodeList list = node.getChildNodes();
+
+            // temp container to hold profile entries
+            List<Node> profileEntryList = new ArrayList<Node>();
+
+            for (int i = 0; i < list.getLength(); i++) {
+
+                Node n = list.item(i);
+
+                if (n.getNodeName().equals("profileEntry")) {
+                    profileEntryList.add(n);
+                }
+
+            }
+
+            // create the profile object if we have entries
+            if (profileEntryList.size() > 0) {
+
+                // create the profile object
+                profile = new Profile();
+                profile.setId(profileId);
+                profile.setType(profileUri);
+
+                for (Node n : profileEntryList) {
+                    profile.getProfileEntries().add(getProfileEntry(n));
+                }
+            }
+
+
+        } catch (XPathExpressionException e) {
+            throw new ProfileRepositoryException(e.getMessage());
+        }
+
+        return profile;
+    }
+    
     private ProfileEntry getProfileEntry(final Node node) {
 
         ProfileEntry entry = new ProfileEntry();
