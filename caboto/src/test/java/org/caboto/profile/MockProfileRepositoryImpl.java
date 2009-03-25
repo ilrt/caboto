@@ -68,4 +68,34 @@ public class MockProfileRepositoryImpl implements ProfileRepository {
         return null;
     }
 
+    public Profile findProfileByUri(String profileUri)
+            throws ProfileRepositoryException {
+
+        if (profileUri.equals("http://caboto.org/schema/annotations#SimpleComment")) {
+
+            Profile profile = new Profile();
+            profile.setId("SimpleComment");
+            profile.setType("http://caboto.org/schema/annotations#SimpleComment");
+
+            ProfileEntry entry1 = new ProfileEntry();
+            entry1.setId("title");
+            entry1.setPropertyType("http://purl.org/dc/elements/1.1/title");
+            entry1.setObjectDatatype("String");
+            entry1.setRequired(true);
+
+            ProfileEntry entry2 = new ProfileEntry();
+            entry2.setId("description");
+            entry2.setPropertyType("http://purl.org/dc/elements/1.1/description");
+            entry2.setObjectDatatype("String");
+            entry2.setRequired(true);
+
+            profile.getProfileEntries().add(entry1);
+            profile.getProfileEntries().add(entry2);
+
+            return profile;
+        }
+
+        return null;
+    }
+
 }

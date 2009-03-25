@@ -33,9 +33,24 @@
  */
 package org.caboto.domain;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
+
+import org.caboto.CabotoUtility;
+import org.caboto.profile.Profile;
+import org.caboto.profile.ProfileEntry;
+import org.caboto.profile.ProfileRepository;
+import org.caboto.vocabulary.Annotea;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -57,6 +72,49 @@ public final class Annotation {
         this.created = created;
         this.body = body;
         this.type = type;
+    }
+    
+    public Annotation(Resource resource , ProfileRepository profileRepository) throws AnnotationException {
+    	Statement rtype = resource.getProperty(RDF.type);
+    	if (rtype==null){
+    		throw new AnnotationException("RDF type not set");
+    	}
+    	this.type = rtype.getResource().getURI();
+    	Profile profile;
+    	try {
+	        profile = profileRepository.findProfileByUri(type);
+        } catch (Exception e) {
+        	throw new AnnotationException(e);
+        }
+        if (profile==null){
+        	throw new AnnotationException("RDF type unknown in profile");
+        }
+        this.type=profile.getId();
+    	Model model=ModelFactory.createDefaultModel();
+    	this.id = resource.getURI().toString();
+        this.graphId =CabotoUtility.getGraphId(id);
+        this.annotates = resource.getProperty(Annotea.annotates).getResource().getURI();
+        this.author = resource.getProperty(Annotea.author).getResource().getURI();
+        Resource bodyResource = resource.getProperty(Annotea.body).getResource();        
+    	try {
+			this.created = CabotoUtility.parseDate(resource.getProperty(Annotea.created).getString());
+		} catch (ParseException e) {
+			throw new AnnotationException(e);
+		}
+        ProfileEntry profileEntry=null;
+        Statement bodyValue=null;
+        Iterator<ProfileEntry> profileIter = profile.getProfileEntries().iterator();
+        while (profileIter.hasNext()){
+        	profileEntry=profileIter.next();
+        	bodyValue=bodyResource.getProperty(model.createProperty(profileEntry.getPropertyType()));
+        	if (bodyValue!=null) {
+        		body.put(profileEntry.getId(),bodyValue.getString());
+        	} else {	
+        		if (profileEntry.isRequired()){
+        			throw new AnnotationException("Annotation needs:" + profileEntry.getId());
+        		}
+        	} 
+        }
     }
 
     public String getId() {
@@ -96,6 +154,7 @@ public final class Annotation {
     }
 
     public void setCreated(final Date created) {
+    	System.err.println("Date="+created);
         this.created = created;
     }
 

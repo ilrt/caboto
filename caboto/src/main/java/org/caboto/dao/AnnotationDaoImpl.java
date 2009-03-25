@@ -44,6 +44,8 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.vocabulary.RDF;
 import org.caboto.CabotoUtility;
 import org.caboto.domain.Annotation;
+import org.caboto.domain.AnnotationException;
+import org.caboto.domain.AnnotationFactory;
 import org.caboto.jena.db.Database;
 import org.caboto.jena.db.Utils;
 import org.caboto.profile.Profile;
@@ -53,6 +55,7 @@ import org.caboto.profile.ProfileRepositoryException;
 import org.caboto.vocabulary.Annotea;
 
 import java.util.Date;
+import java.util.List;
 import org.caboto.filters.AnnotationFilter;
 import org.caboto.filters.AnnotationFilterFactory;
 
@@ -69,6 +72,7 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         findAnnotationSparql = Utils.loadSparql(findAnnotation);
         this.database = database;
     }
+
 
     public void addAnnotation(final Annotation annotation) {
 
@@ -102,15 +106,15 @@ public final class AnnotationDaoImpl implements AnnotationDao {
             annotationResource.addProperty(Annotea.author,
                     model.createResource(annotation.getAuthor()));
 
-            Date created = new Date();
-
             // creation date
+            if (annotation.getCreated()==null){
+            	annotation.setCreated(new Date());
+            }
             annotationResource.addProperty(Annotea.created,
-                    model.createTypedLiteral(CabotoUtility.parseDate(created),
+                    model.createTypedLiteral(CabotoUtility.parseDate(annotation.getCreated()),
                             XSDDatatype.XSDdateTime));
 
             annotation.setId(uri);
-            annotation.setCreated(created);
 
             // --- CREATE THE BODY OF THE ANNOTATION ---
 
@@ -122,6 +126,9 @@ public final class AnnotationDaoImpl implements AnnotationDao {
             for (ProfileEntry entry : profile.getProfileEntries()) {
 
                 String val = annotation.getBody().get(entry.getId());
+                if ((val == null) && !entry.isRequired()){
+                	continue;
+                }
 
                 Property prop = model.createProperty(entry.getPropertyType());
 
@@ -203,8 +210,44 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         AnnotationFilterFactory.applyFilters(query, "body", filters);
         return database.executeConstructQuery(query,
                 initialBindings);
+    
+    }
+        
+    public Annotation getAnnotation(final String id){
+    	Annotation annotation=null;
+		try {
+			annotation=new Annotation(findAnnotation(id), profileRepository);
+		} catch (AnnotationException e) {
+			e.printStackTrace();
+		}
+    	return annotation;
+    }
+    
+    public  List<Annotation> getAnnotations(final String about){
+    	Model annModel = findAnnotations(about);
+    	return AnnotationFactory.annotationsFromModel(annModel,profileRepository);
     }
 
+    
+    public Model findAnnotationsByAuthor(final String author) {
+
+        // create bindings
+        QuerySolutionMap initialBindings = new QuerySolutionMap();
+        
+        initialBindings.add("author", ResourceFactory.createResource(author));
+
+        Model m = database.executeConstructQuery(findAnnotationSparql,
+                initialBindings);
+
+        return m;
+
+    }
+
+    public  List<Annotation> getAnnotationsByAuthor(final String author){
+    	Model annModel = findAnnotationsByAuthor(author);
+    	return AnnotationFactory.annotationsFromModel(annModel,profileRepository);
+    }
+    
     public void deleteAnnotation(final Resource resource) {
 
         String id = resource.getURI();
