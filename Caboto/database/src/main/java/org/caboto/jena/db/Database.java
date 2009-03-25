@@ -31,6 +31,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 package org.caboto.jena.db;
 
 import com.hp.hpl.jena.query.Query;
