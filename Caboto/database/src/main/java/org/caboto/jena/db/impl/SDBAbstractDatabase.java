@@ -33,12 +33,20 @@
  */
 package org.caboto.jena.db.impl;
 
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
 import com.hp.hpl.jena.sdb.sql.SDBConnection;
 import org.caboto.jena.db.AbstractDatabase;
+import org.caboto.jena.db.DataException;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -79,5 +87,19 @@ public abstract class SDBAbstractDatabase extends AbstractDatabase {
      */
     protected Store connectToStore(Connection conn) {
         return SDBFactory.connectStore(conn, storeDesc);
+    }
+
+    /**
+     * Imports a graph from file(s) in the classpath
+     * @param files The name(s) of the file to import
+     */
+    public void setLoadedFiles(String... files) {
+        for (String filename : files) {
+            Model model = getUpdateModel();
+            InputStream input = getClass().getResourceAsStream(filename);
+            model.read(input, "RDF/XML");
+            URL url = getClass().getResource(filename);
+            addModel(url.toString(), model);
+        }
     }
 }

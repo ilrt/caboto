@@ -33,6 +33,8 @@
  */
 package org.caboto.dao;
 
+import java.util.List;
+
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Model;
 import org.caboto.domain.Annotation;
@@ -53,8 +55,16 @@ public interface AnnotationDao {
     Model findAnnotations(AnnotationFilter[] filters);
 
     Model findAnnotationsByGraph(String graph, AnnotationFilter... filters);
+    
+    Annotation getAnnotation(String id);
 
     Model findAnnotations(String about, AnnotationFilter... filters);
+    
+    List<Annotation> getAnnotations(String about);
+    
+    Model findAnnotationsByAuthor(String author);
+    
+    List<Annotation> getAnnotationsByAuthor(String author);
 
     void deleteAnnotation(Resource resource);
 
