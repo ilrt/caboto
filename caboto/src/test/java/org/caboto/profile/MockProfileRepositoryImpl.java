@@ -68,10 +68,9 @@ public class MockProfileRepositoryImpl implements ProfileRepository {
         return null;
     }
 
-	@Override
-	public Profile findProfileByUri(String profileUri)
-			throws ProfileRepositoryException {
-		
+    public Profile findProfileByUri(String profileUri)
+            throws ProfileRepositoryException {
+
         if (profileUri.equals("http://caboto.org/schema/annotations#SimpleComment")) {
 
             Profile profile = new Profile();
@@ -97,6 +96,6 @@ public class MockProfileRepositoryImpl implements ProfileRepository {
         }
 
         return null;
-	}
+    }
 
 }
