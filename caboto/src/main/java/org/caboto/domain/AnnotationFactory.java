@@ -135,7 +135,7 @@ public final class AnnotationFactory {
 
         // copy the rest of map
         for (String key : params.keySet()) {
-            annotation.getBody().put(key, params.get(key).get(0));
+            annotation.getBody().put(key, params.get(key));
         }
 
         return annotation;
