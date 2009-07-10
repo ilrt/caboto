@@ -33,6 +33,7 @@
  */
 package org.caboto;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -47,6 +48,8 @@ import java.util.regex.Matcher;
  */
 public final class CabotoUtility {
 
+	private static String DATE_FORMAT_STRING="yyyy-MM-dd'T'HH:mm:ssZ";
+	
     /**
      * Private constructor.
      */
@@ -69,6 +72,26 @@ public final class CabotoUtility {
 
         return graphId + id;
     }
+    
+    
+    public static String getGraphId(final String id) {
+
+    	int index=id.lastIndexOf("/");
+    	if (index!=-1) {
+    		return id.substring(0,index+1);
+    		
+    	}
+        return null;
+    }
+    
+    public static String getId(final String uri) {
+
+    	int index=uri.lastIndexOf("/");
+    	if (index!=-1) {
+    		return uri.substring(index+1);
+    	}
+        return null;
+    }
 
     /**
      * <p>Parses a date to a format that is a valid XSD:dateTime.</p>
@@ -78,12 +101,21 @@ public final class CabotoUtility {
      */
     public static String parseDate(final Date date) {
 
-        String temp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
+        String temp = new SimpleDateFormat(DATE_FORMAT_STRING).format(date);
 
         return temp.substring(0, temp.length() - 2) + ":"
                 + temp.substring(temp.length() - 2, temp.length());
     }
 
+    public static Date parseDate (final String XsdDate) throws ParseException{
+    	String temp = XsdDate.substring(0, XsdDate.length() - 3)
+        + XsdDate.substring(XsdDate.length() - 2, XsdDate.length());
+
+    	Date date = new SimpleDateFormat(DATE_FORMAT_STRING).parse(temp);
+    	return date;
+    }
+    
+    
     /**
      * @param path the path details of a request.
      * @return whether or not its a public resource.

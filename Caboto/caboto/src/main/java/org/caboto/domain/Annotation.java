@@ -33,9 +33,26 @@
  */
 package org.caboto.domain;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.caboto.CabotoUtility;
+import org.caboto.profile.Profile;
+import org.caboto.profile.ProfileEntry;
+import org.caboto.profile.ProfileRepository;
+import org.caboto.vocabulary.Annotea;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -48,7 +65,7 @@ public final class Annotation {
     }
 
     public Annotation(final String id, final String graphId, final String annotates,
-                      final String author, final Date created, final Map<String, String> body,
+                      final String author, final Date created, final Map<String, List<String>> body,
                       final String type) {
         this.id = id;
         this.graphId = graphId;
@@ -57,6 +74,55 @@ public final class Annotation {
         this.created = created;
         this.body = body;
         this.type = type;
+    }
+    
+    public Annotation(Resource resource , ProfileRepository profileRepository) throws AnnotationException {
+    	Statement rtype = resource.getProperty(RDF.type);
+    	if (rtype==null){
+    		throw new AnnotationException("RDF type not set");
+    	}
+    	this.type = rtype.getResource().getURI();
+    	Profile profile;
+    	try {
+	        profile = profileRepository.findProfileByUri(type);
+        } catch (Exception e) {
+        	throw new AnnotationException(e);
+        }
+        if (profile==null){
+        	throw new AnnotationException("RDF type unknown in profile");
+        }
+        this.type=profile.getId();
+    	Model model=ModelFactory.createDefaultModel();
+    	this.id = resource.getURI().toString();
+        this.graphId =CabotoUtility.getGraphId(id);
+        this.annotates = resource.getProperty(Annotea.annotates).getResource().getURI();
+        this.author = resource.getProperty(Annotea.author).getResource().getURI();
+        Resource bodyResource = resource.getProperty(Annotea.body).getResource();        
+    	try {
+			this.created = CabotoUtility.parseDate(resource.getProperty(Annotea.created).getString());
+		} catch (ParseException e) {
+			throw new AnnotationException(e);
+		}
+        ProfileEntry profileEntry=null;
+        Statement bodyValue=null;
+        Iterator<ProfileEntry> profileIter = profile.getProfileEntries().iterator();
+        while (profileIter.hasNext()){
+        	profileEntry=profileIter.next();
+        	StmtIterator bodyValues = bodyResource.listProperties(model.createProperty(profileEntry.getPropertyType()));
+        	if(!bodyValues.hasNext()) {
+        		if (profileEntry.isRequired()){
+        			throw new AnnotationException("Annotation needs:" + profileEntry.getId());
+        		}
+        	} else {
+        		while(bodyValues.hasNext()) {
+        			bodyValue=bodyValues.nextStatement();
+        			if(!body.containsKey(profileEntry.getId())) {
+        				body.put(profileEntry.getId(),new ArrayList<String>());
+        			}
+            		body.get(profileEntry.getId()).add(bodyValue.getString());
+        		}
+        	}
+        }
     }
 
     public String getId() {
@@ -96,14 +162,15 @@ public final class Annotation {
     }
 
     public void setCreated(final Date created) {
+    	System.err.println("Date="+created);
         this.created = created;
     }
 
-    public Map<String, String> getBody() {
+    public Map<String, List<String>> getBody() {
         return body;
     }
 
-    public void setBody(final Map<String, String> body) {
+    public void setBody(final Map<String, List<String>> body) {
         this.body = body;
     }
 
@@ -132,6 +199,6 @@ public final class Annotation {
     private String annotates;
     private String author;
     private Date created;
-    private Map<String, String> body = new HashMap<String, String>();
+    private Map<String, List<String>> body = new HashMap<String, List<String>>();
     private String type = "";
 }
