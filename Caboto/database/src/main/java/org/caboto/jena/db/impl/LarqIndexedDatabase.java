@@ -63,6 +63,8 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.sparql.util.Context;
+import com.hp.hpl.jena.sparql.util.Symbol;
 
 /**
  * 
@@ -95,6 +97,7 @@ public class LarqIndexedDatabase implements Database {
 			throw new RuntimeException("Error opening lucene index", e);
 		}
 		ib = new IndexBuilderSubject(indexWriter);
+		setIndex(ib.getIndex());
 		if (createIndex) reindex();
 	}
 	
@@ -173,7 +176,7 @@ public class LarqIndexedDatabase implements Database {
 		wrappedRes.close();
 		larqBuilder.flushWriter();
 		ib = larqBuilder;
-		LARQ.setDefaultIndex(cacheIfRequired(larqBuilder.getIndex()));
+		setIndex(larqBuilder.getIndex());
 		log.info("Finished indexing");
 	}
 	
@@ -181,7 +184,7 @@ public class LarqIndexedDatabase implements Database {
 		IndexBuilderModel larqBuilder = getIndexBuilder();
 		larqBuilder.indexStatements(model.listStatements());
 		larqBuilder.flushWriter();
-		LARQ.setDefaultIndex(cacheIfRequired(larqBuilder.getIndex()));
+		setIndex(larqBuilder.getIndex());
 	}
 	
 	/**
@@ -200,7 +203,7 @@ public class LarqIndexedDatabase implements Database {
 	private IndexBuilderModel getIndexBuilder() {
 		if (ib == null) {
 			ib = new IndexBuilderSubject(indexDirectory);
-			LARQ.setDefaultIndex(cacheIfRequired(ib.getIndex()));
+			setIndex(ib.getIndex());
 		}
 		return ib;
 	}
@@ -209,6 +212,10 @@ public class LarqIndexedDatabase implements Database {
 	public IndexLARQ cacheIfRequired(IndexLARQ index) {
 		if (!cacheLARQ) return index;
 		return new IndexLARQCacher(index);
+	}
+	
+	private void setIndex(IndexLARQ index) {
+		database.setQueryContext(LARQ.indexKey, cacheIfRequired(index));
 	}
 	
 	static class IndexLARQCacher extends IndexLARQ {
@@ -232,5 +239,13 @@ public class LarqIndexedDatabase implements Database {
 	
 	public void close() {
 		getIndexBuilder().closeWriter();
+	}
+
+	public void setQueryContext(Symbol indexKey, Object value) {
+		database.setQueryContext(indexKey, value);
+	}
+
+	public Context getQueryContext() {
+		return database.getQueryContext();
 	}
 }

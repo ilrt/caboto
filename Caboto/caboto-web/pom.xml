@@ -3,14 +3,14 @@
     <parent>
         <artifactId>caboto-parent</artifactId>
         <groupId>org.caboto</groupId>
-        <version>0.6</version>
+        <version>0.9-STARS</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.caboto</groupId>
     <artifactId>caboto-web</artifactId>
     <packaging>war</packaging>
     <name>caboto-web Maven Webapp</name>
-    <version>0.6</version>
+    <version>0.9-STARS</version>
     <url>http://maven.apache.org</url>
     <build>
         <plugins>
