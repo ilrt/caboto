@@ -33,9 +33,6 @@
  */
 package org.caboto;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -78,6 +75,10 @@ public class CabotoJsonSupport {
     }
 
     public JSONObject generateJsonObject(Resource resource) throws JSONException {
+    	return generateJsonObject(resource, false);
+    }
+    
+    public JSONObject generateJsonObject(Resource resource, boolean multiValued) throws JSONException {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", resource.getURI());
@@ -106,14 +107,18 @@ public class CabotoJsonSupport {
                     }
 
                 } else {
-                    jsonObject.put(key, generateJsonObject((Resource) stmt.getObject()));
+                    jsonObject.put(key, generateJsonObject((Resource) stmt.getObject(), true));
                 }
 
             } else if (stmt.getObject().isLiteral()) {
-            	if(!jsonObject.has(key)) {
-            		jsonObject.put(key, new JSONArray());
+            	if(multiValued) {
+            		if(!jsonObject.has(key)) {
+            			jsonObject.put(key, new JSONArray());
+            		}
+            		jsonObject.getJSONArray(key).put(((Literal) stmt.getObject()).getLexicalForm());
+            	} else {
+            		jsonObject.put(key, ((Literal) stmt.getObject()).getLexicalForm());
             	}
-                jsonObject.getJSONArray(key).put(((Literal) stmt.getObject()).getLexicalForm());
             }
 
         }
