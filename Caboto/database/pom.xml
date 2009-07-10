@@ -5,13 +5,13 @@
     <parent>
         <artifactId>caboto-parent</artifactId>
         <groupId>org.caboto</groupId>
-        <version>0.6</version>
+        <version>0.9-STARS</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.caboto</groupId>
     <artifactId>database</artifactId>
     <name>database</name>
-    <version>0.6</version>
+    <version>0.9-STARS</version>
     <packaging>jar</packaging>
     <repositories>
         <repository>

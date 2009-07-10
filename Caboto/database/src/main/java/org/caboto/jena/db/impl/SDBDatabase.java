@@ -41,6 +41,8 @@ import com.hp.hpl.jena.sdb.StoreDesc;
 import com.hp.hpl.jena.sdb.sql.JDBC;
 import com.hp.hpl.jena.sdb.sql.SDBConnectionDesc;
 import com.hp.hpl.jena.sdb.store.DatabaseType;
+import com.hp.hpl.jena.sparql.util.Context;
+
 import org.caboto.jena.db.Data;
 import org.caboto.jena.db.DataException;
 
@@ -73,9 +75,11 @@ public class SDBDatabase extends SDBAbstractDatabase {
     private class SDBData implements Data {
 
         private Store store = null;
+		private Context context;
 
-        private SDBData(Store store) {
+        private SDBData(Store store, Context context) {
             this.store = store;
+            this.context = context;
         }
 
         public Dataset getDataset() {
@@ -93,6 +97,10 @@ public class SDBDatabase extends SDBAbstractDatabase {
             store.close();
             store.getConnection().close();
         }
+
+		public Context getContext() {
+			return context;
+		}
     }
 
     /**
@@ -198,10 +206,17 @@ public class SDBDatabase extends SDBAbstractDatabase {
      */
     public Data getData() throws DataException {
         try {
-            return new SDBData(getStore());
+            return new SDBData(getStore(), getQueryContext());
         } catch (SQLException e) {
             throw new DataException(e);
         }
     }
 
+    /**
+     * Removes everything from the database
+     * @throws SQLException
+     */
+    public void clean() throws SQLException {
+        getStore().getTableFormatter().format();
+    }
 }

@@ -7,7 +7,7 @@
     <groupId>org.caboto</groupId>
     <artifactId>caboto-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.6</version>
+    <version>0.9-STARS</version>
     <name>Caboto Parent</name>
     <url>http://maven.apache.org</url>
     <modules>
@@ -22,7 +22,7 @@
         <sdb.version>1.3-SNAPSHOT</sdb.version>
         <arq.version>2.6.0</arq.version>
         <jersey.version>1.0</jersey.version>
-        <caboto.version>0.6</caboto.version>
+        <caboto.version>0.9-STARS</caboto.version>
     </properties>
     <build>
 

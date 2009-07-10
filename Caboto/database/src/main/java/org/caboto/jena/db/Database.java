@@ -31,6 +31,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 package org.caboto.jena.db;
 
 import com.hp.hpl.jena.query.Query;
@@ -38,6 +39,8 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.sparql.util.Context;
+import com.hp.hpl.jena.sparql.util.Symbol;
 
 /**
  * Hides access to the database (in case we change it later)
@@ -128,4 +131,17 @@ public interface Database {
      * @return true if the data was deleted
      */
     boolean deleteAll(String uri);
+    
+    /**
+     * Set query context for later executions
+     * @param indexKey
+     * @param value
+     */
+	void setQueryContext(Symbol indexKey, Object value);
+	
+	/**
+	 * Retrieve the context for this database
+	 * @return
+	 */
+	Context getQueryContext();
 }
