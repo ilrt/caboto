@@ -34,9 +34,13 @@
 package org.caboto.dao;
 
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
+import com.hp.hpl.jena.sdb.StoreDesc;
+import com.hp.hpl.jena.sdb.sql.JDBC;
+
 import junit.framework.TestCase;
 import org.caboto.domain.Annotation;
 import org.caboto.jena.db.Database;
@@ -46,7 +50,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.caboto.filters.AnnotationFilter;
 import org.caboto.filters.PropValAnnotationFilter;
@@ -61,15 +69,24 @@ public class AnnotationDaoImplTest extends TestCase {
     @Override
     public void setUp() throws Exception {
 
-        store = SDBFactory.connectStore(this.getClass().getResource("/sdb.ttl").getPath());
-        store.getTableFormatter().format();
 
         Database database = new SDBDatabase("/sdb.ttl");
 
         annotationDao = new AnnotationDaoImpl(new MockProfileRepositoryImpl(),
                 database);
-    }
 
+        Model ttl = ModelFactory.createDefaultModel();
+        ttl.read(getClass().getResourceAsStream("/sdb.ttl"), null, "TTL");
+        StoreDesc storeDesc = StoreDesc.read(ttl);
+        String driver = JDBC.getDriver(storeDesc.getDbType());
+        JDBC.loadDriver(driver);
+        Connection sqlConn = DriverManager.getConnection(
+                storeDesc.connDesc.getJdbcURL(),
+                storeDesc.connDesc.getUser(),
+                storeDesc.connDesc.getPassword());
+        store = SDBFactory.connectStore(sqlConn, storeDesc);
+        store.getTableFormatter().format();
+    }
 
     @Test
     public void testAddAnnotation() {
@@ -80,9 +97,11 @@ public class AnnotationDaoImplTest extends TestCase {
         annotation.setAuthor("http://caboto.org/person/mikej/");
         annotation.setType("SimpleComment");
 
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("title", "A title to the annotation");
-        map.put("description", "Some description of the annotation");
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        map.put("title", new ArrayList<String>());
+        map.get("title").add("A title to the annotation");
+        map.put("description", new ArrayList<String>());
+        map.get("description").add("Some description of the annotation");
 
         annotation.setBody(map);
 

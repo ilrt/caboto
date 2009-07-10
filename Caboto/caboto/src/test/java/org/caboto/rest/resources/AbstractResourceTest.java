@@ -33,19 +33,17 @@
  */
 package org.caboto.rest.resources;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sdb.SDBFactory;
-import com.hp.hpl.jena.sdb.Store;
-import com.hp.hpl.jena.sdb.StoreDesc;
-import com.hp.hpl.jena.sdb.sql.JDBC;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import junit.framework.TestCase;
+
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoImpl;
 import org.caboto.domain.Annotation;
@@ -62,12 +60,18 @@ import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.springframework.web.context.ContextLoaderServlet;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.HashMap;
-import java.util.Map;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sdb.SDBFactory;
+import com.hp.hpl.jena.sdb.Store;
+import com.hp.hpl.jena.sdb.StoreDesc;
+import com.hp.hpl.jena.sdb.sql.JDBC;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.core.PackagesResourceConfig;
+import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -238,9 +242,11 @@ public abstract class AbstractResourceTest extends TestCase {
     Annotation createTestAnnotation(String graphUri) {
 
         // body of the annotation
-        Map<String, String> body = new HashMap<String, String>();
-        body.put("title", "A title");
-        body.put("description", "A description");
+        Map<String, List<String>> body = new HashMap<String, List<String>>();
+        body.put("title", new ArrayList<String>());
+        body.get("title").add("A title");
+        body.put("description", new ArrayList<String>());
+        body.get("description").add("A description");
 
         // main bits of the annotation
         Annotation annotation = new Annotation();

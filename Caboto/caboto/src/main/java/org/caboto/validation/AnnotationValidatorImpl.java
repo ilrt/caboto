@@ -160,11 +160,23 @@ public final class AnnotationValidatorImpl implements Validator {
                     // (3) check that we have required values where specified in the profile entries
                     for (ProfileEntry entry : profiles) {
 
-                        String bodyValue = annotation.getBody().get(entry.getId());
+                        List<String> bodyValues = annotation.getBody().get(entry.getId());
 
                         if (entry.isRequired()) {
 
-                            if (bodyValue == null || bodyValue.length() == 0) {
+                            if (bodyValues == null || bodyValues.size() == 0) {
+                                errors.rejectValue("body", "annotation.body.missingRequiredVal",
+                                        new String[]{entry.getId()}, "");
+                            }
+                            // also check that there is at least one value
+                            boolean passed = false;
+                            for(String val: bodyValues) {
+                            	if(val != null && val.length() > 0) {
+                            		passed = true;
+                            		continue;
+                            	}
+                            }
+                            if(!passed) {
                                 errors.rejectValue("body", "annotation.body.missingRequiredVal",
                                         new String[]{entry.getId()}, "");
                             }

@@ -34,18 +34,21 @@
 
 package org.caboto.rest.resources;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.sun.jersey.api.client.ClientResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.caboto.RdfMediaType;
 import org.caboto.domain.Annotation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import com.hp.hpl.jena.rdf.model.Model;
+import com.sun.jersey.api.client.ClientResponse;
 
 /**
  *
@@ -70,8 +73,9 @@ public class AboutResourceTest extends AbstractResourceTest {
     @Override
     public Annotation createTestAnnotation(String graphUri) {
         Annotation annotation = super.createTestAnnotation(graphUri);
-        Map<String, String> body = annotation.getBody();
-        body.put("title", "title" + count);
+        Map<String, List<String>> body = annotation.getBody();
+        body.put("title", new ArrayList());
+        body.get("title").add("title" + count);
         count++;
         return annotation;
     }

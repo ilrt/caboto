@@ -33,19 +33,21 @@
  */
 package org.caboto.validation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import junit.framework.TestCase;
+
 import org.caboto.domain.Annotation;
 import org.caboto.profile.MockProfileRepositoryImpl;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -67,9 +69,11 @@ public class AnnotationValidationTest extends TestCase {
         annotation.setGraphId("http://caboto.org/person/MikeJ/public/");
 
         // the body of the annotation
-        Map<String, String> body = new HashMap<String, String>();
-        body.put("title", "This is a test annotation");
-        body.put("description", "Lorem ipsum dolor sit amet, consectetur adipisicing elit, " +
+        Map<String, List<String>> body = new HashMap<String, List<String>>();
+        body.put("title", new ArrayList<String>());
+        body.get("title").add("This is a test annotation");
+        body.put("description", new ArrayList<String>());
+        body.get("description").add("Lorem ipsum dolor sit amet, consectetur adipisicing elit, " +
                 "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
         annotation.setBody(body);
 
@@ -170,7 +174,8 @@ public class AnnotationValidationTest extends TestCase {
     @Test
     public void testIncorrectBody() {
 
-        annotation.getBody().put("extraField", "Some value or other");
+    	annotation.getBody().put("extraField", new ArrayList<String>());
+        annotation.getBody().get("extraField").add("Some value or other");
 
         validator.validate(annotation, errors);
 
@@ -196,7 +201,8 @@ public class AnnotationValidationTest extends TestCase {
     @Test
     public void testMissingBodyValue() {
 
-        annotation.getBody().put("title", "");
+    	annotation.getBody().put("title", new ArrayList<String>());
+        annotation.getBody().get("title").add("");
 
         validator.validate(annotation, errors);
 
