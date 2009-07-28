@@ -217,6 +217,10 @@ public class LarqIndexedDatabase implements Database {
 	private void setIndex(IndexLARQ index) {
 		database.setQueryContext(LARQ.indexKey, cacheIfRequired(index));
 	}
+
+    public void setRules(String rulesFile) {
+        database.setRules(rulesFile);
+    }
 	
 	static class IndexLARQCacher extends IndexLARQ {
 		

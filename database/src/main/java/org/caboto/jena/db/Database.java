@@ -144,4 +144,11 @@ public interface Database {
 	 * @return
 	 */
 	Context getQueryContext();
+
+     /**
+      * Set rules to be run over database
+      *
+      * @param rulesFile Rules file to load
+      */
+     void setRules(String rulesFile);
 }
