@@ -10,7 +10,6 @@
     <artifactId>caboto-web</artifactId>
     <packaging>war</packaging>
     <name>caboto-web Maven Webapp</name>
-    <version>0.9-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
     <build>
         <plugins>
@@ -32,7 +31,7 @@
         <dependency>
             <groupId>org.caboto</groupId>
             <artifactId>caboto</artifactId>
-            <version>${project.caboto.version}</version>
+            <version>${caboto.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
