@@ -9,7 +9,6 @@
     <groupId>org.caboto</groupId>
     <artifactId>caboto</artifactId>
     <name>caboto</name>
-    <version>0.9-SNAPSHOT</version>
     <url>http://maven.apache.org</url>
     <build>
         <filters>
@@ -73,11 +72,6 @@
     </build>
 
     <repositories>
-        <!-- HP Labs jena repo -->
-        <repository>
-            <id>jena.dev</id>
-            <url>http://jena.hpl.hp.com/repo</url>
-        </repository>
         <!-- java.net repo -->
         <repository>
             <id>maven2-repository.dev.java.net</id>
@@ -108,13 +102,13 @@
         <dependency>
             <groupId>org.caboto</groupId>
             <artifactId>database</artifactId>
-            <version>${project.caboto.version}</version>
+            <version>${caboto.version}</version>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${project.junit.version}</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -132,45 +126,41 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-            <version>6.1.3</version>
+            <groupId>com.hp.hpl.jena</groupId>
+            <artifactId>sdb</artifactId>
+            <version>${sdb.version}</version>
             <scope>test</scope>
         </dependency>
 
-
-        <!-- Jena dependencies -->
-        <dependency>
-            <groupId>com.hp.hpl.jena</groupId>
-            <artifactId>jena</artifactId>
-            <version>${project.jena.version}</version>
-        </dependency>
 
         <!-- jersey dependencies -->
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>${project.jersey.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>${project.jersey.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>${project.jersey.version}</version>
+            <version>${jersey.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>${jersey.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- spring dependencies -->
+
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-spring</artifactId>
-            <version>${project.jersey.version}</version>
+            <version>${jersey.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -192,40 +182,28 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>${project.jersey.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- spring dependencies -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${project.spring.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>${project.spring.version}</version>
+            <version>${spring.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>${project.spring.version}</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>${project.spring.version}</version>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -235,18 +213,6 @@
             <version>2.0.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>${project.spring.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.3</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
 </project>
