@@ -85,10 +85,15 @@ function findType(aUri) {
 
 function formatAnnotation(annotation, uid, admin) {
 
-    var date = parseDate(annotation.created);
+	var date = parseDate(annotation.created);
     var author = parseAuthor(annotation.author);
-    var body = annotation.body.description.replace(/\n|\r/g, "<br />\n");
+//    var body = annotation.body.description.replace(/\n|\r/g, "<br />\n");
     var type = findType(annotation.id);
+    
+    var body = "";
+    for(i=0; i<annotation.body.description.length; i++) {
+    	body += annotation.body.description[i] + "<br/>";
+    }
 
     var output = "<div class='annotation-entry'>";
 
@@ -121,9 +126,10 @@ function clearForm() {
     if (document.getElementById('annotation-comment-form')) {
         Form.Element.enable('annotation-submit');
         Form.Element.clear('annotation-title');
-        Form.Element.clear('annotation-body');
+        Form.Element.clear('annotation-description1');
+        Form.Element.clear('annotation-description2');
     }
-
+    document.getElementById("annotation-messages").innerHTML = "";
 }
 
 /*
@@ -216,17 +222,19 @@ function processForm(username) {
         message += "You need to provide a title.";
     }
 
-    if (!Form.Element.present("annotation-body")) {
-        message += "You need to provide a body.";
+    if (!Form.Element.present("annotation-description1") && !Form.Element.present("annotation-description2")) {
+        message += "You need to provide at least one description.";
     } else {
 
-        var body = Form.Element.getValue("annotation-body");
+    	for(i=1;i<3;i++) {
+    		var desc = Form.Element.getValue("annotation-description" + i);
 
-        // <http://haacked.com/archive/2004/10/25/usingregularexpressionstomatchhtml.aspx>
-        var matches = body.match(/<\/?\w+((\s+\w+(\s*=\s*(?:\".*?\"|\'.*?\'|[^\'\">\s]+))?)+\s*|\s*)\/?>/);
+    		// <http://haacked.com/archive/2004/10/25/usingregularexpressionstomatchhtml.aspx>
+    		var matches = desc.match(/<\/?\w+((\s+\w+(\s*=\s*(?:\".*?\"|\'.*?\'|[^\'\">\s]+))?)+\s*|\s*)\/?>/);
 
-        if (matches !== null) {
-            message += "It looks like you have markup in your comment - not supported, sorry!";
+    		if (matches !== null) {
+    			message += "It looks like you have markup in your comment #"+i+" - not supported, sorry!";
+    		}
         }
     }
 
