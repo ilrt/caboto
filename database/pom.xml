@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>caboto-parent</artifactId>
         <groupId>org.caboto</groupId>
@@ -9,43 +12,32 @@
     <groupId>org.caboto</groupId>
     <artifactId>database</artifactId>
     <name>database</name>
-    <version>0.9-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <repositories>
-        <repository>
-            <id>ilrt</id>
-            <url>http://maven.ilrt.bris.ac.uk</url>
-        </repository>
-        <repository>
-            <id>jena.dev</id>
-            <url>http://jena.hpl.hp.com/repo</url>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>sdb</artifactId>
-            <version>${project.sdb.version}</version>
+            <version>${sdb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>arq</artifactId>
-            <version>${project.arq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.hp.hpl.jena</groupId>
-            <artifactId>arq-extra</artifactId>
-            <version>${project.arq.version}</version>
+            <version>${arq.version}</version>
         </dependency>
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>jena</artifactId>
-            <version>${project.jena.version}</version>
+            <version>${jena.version}</version>
         </dependency>
         <dependency>
-        	<groupId>junit</groupId>
-        	<artifactId>junit</artifactId>
-        	<version>${project.junit.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
         </dependency>
     </dependencies>
 </project>
