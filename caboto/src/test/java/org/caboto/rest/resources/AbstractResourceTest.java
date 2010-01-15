@@ -274,19 +274,6 @@ public abstract class AbstractResourceTest extends TestCase {
 
     }
 
-    // ---------- Handling credentials in the client
-
-    void setCredentials(final String username, final String password) {
-        Authenticator.setDefault(new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password.toCharArray());
-            }
-        });
-    }
-
-    void clearCredentials() {
-        Authenticator.setDefault(null);
-    }
 
     // ---------- Jetty server configuration
 
