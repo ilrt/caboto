@@ -51,8 +51,11 @@
                 <p>
                     <label><strong>Title:</strong></label><br/>
                     <input id="annotation-title" type="text" name="title" size="50"/><br/>
-                    <label><strong>Body:</strong></label><br/>
-                    <textarea id="annotation-body" rows="5" cols="50"
+                    <label><strong>Description:</strong></label><br/>
+                    <textarea id="annotation-description1" rows="5" cols="50"
+                              name="description"></textarea><br/>
+                    <label><strong>Description (repeated field):</strong></label><br/>
+                    <textarea id="annotation-description2" rows="5" cols="50"
                               name="description"></textarea><br/>
                     <input type="radio" name="privacy" value="public" checked="checked"> Public
                     <input type="radio" name="privacy" value="private"> Private
