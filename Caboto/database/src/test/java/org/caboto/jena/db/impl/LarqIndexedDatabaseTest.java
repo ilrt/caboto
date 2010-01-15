@@ -230,6 +230,10 @@ public class LarqIndexedDatabaseTest {
 		public Context getQueryContext() {
 			return context;
 		}
+
+                public void setRules(String rulesFile) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
 		
 	}
 }
