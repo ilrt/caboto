@@ -52,7 +52,9 @@ import org.junit.Test;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.caboto.filters.AnnotationFilter;
 import org.caboto.filters.PropValAnnotationFilter;
@@ -95,9 +97,11 @@ public class AnnotationDaoImplTest extends TestCase {
         annotation.setAuthor("http://caboto.org/person/mikej/");
         annotation.setType("SimpleComment");
 
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("title", "A title to the annotation");
-        map.put("description", "Some description of the annotation");
+        Map<String, List<String>> map = new HashMap<String, List<String>>();
+        map.put("title", new ArrayList<String>());
+        map.get("title").add("A title to the annotation");
+        map.put("description", new ArrayList<String>());
+        map.get("description").add("Some description of the annotation");
 
         annotation.setBody(map);
 
