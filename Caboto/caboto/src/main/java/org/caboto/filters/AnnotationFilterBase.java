@@ -6,21 +6,8 @@
 package org.caboto.filters;
 
 import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementAssign;
-import com.hp.hpl.jena.sparql.syntax.ElementDataset;
-import com.hp.hpl.jena.sparql.syntax.ElementFetch;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementNamedGraph;
-import com.hp.hpl.jena.sparql.syntax.ElementOptional;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementService;
-import com.hp.hpl.jena.sparql.syntax.ElementSubQuery;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementUnion;
-import com.hp.hpl.jena.sparql.syntax.ElementUnsaid;
-import com.hp.hpl.jena.sparql.syntax.ElementVisitor;
+import com.hp.hpl.jena.sparql.syntax.*;
+
 import java.util.List;
 
 /**
@@ -83,10 +70,6 @@ public abstract class AnnotationFilterBase
         graphLevel--;
     }
 
-    public void visit(ElementUnsaid arg0) {
-        arg0.getElement().visit(this);
-    }
-
     public void visit(ElementService arg0) {
         arg0.getElement().visit(this);
     }
@@ -94,7 +77,7 @@ public abstract class AnnotationFilterBase
     public void visit(ElementSubQuery arg0) {
         arg0.getQuery().getQueryPattern().visit(this);
     }
-    
+
     public void visit(ElementPathBlock arg0) {
         /* Got me there! What's in this? */
     }
@@ -102,4 +85,12 @@ public abstract class AnnotationFilterBase
 	public void visit(ElementFetch arg0) {
 		/* See above */
 	}
+
+    public void visit(ElementExists elementExists) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void visit(ElementNotExists elementNotExists) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
