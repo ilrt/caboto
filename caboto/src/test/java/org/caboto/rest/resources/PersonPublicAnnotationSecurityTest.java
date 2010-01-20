@@ -43,6 +43,8 @@ import org.caboto.profile.ProfileRepositoryException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id$
@@ -103,6 +105,7 @@ public class PersonPublicAnnotationSecurityTest extends AbstractResourceTest {
                 clientResponse.getStatus());
     }
 
+    
     public void testGetAnnotationsByGraphUnauthenticated() throws ProfileRepositoryException {
 
         createAndSaveAnnotation(userPublicUriOne);

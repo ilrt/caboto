@@ -33,17 +33,18 @@
  */
 package org.caboto.rest.resources;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sdb.SDBFactory;
+import com.hp.hpl.jena.sdb.Store;
+import com.hp.hpl.jena.sdb.StoreDesc;
+import com.hp.hpl.jena.sdb.sql.JDBC;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.core.PackagesResourceConfig;
+import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
 import org.caboto.dao.AnnotationDao;
 import org.caboto.dao.AnnotationDaoImpl;
 import org.caboto.domain.Annotation;
@@ -60,24 +61,18 @@ import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.springframework.web.context.ContextLoaderServlet;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.sdb.SDBFactory;
-import com.hp.hpl.jena.sdb.Store;
-import com.hp.hpl.jena.sdb.StoreDesc;
-import com.hp.hpl.jena.sdb.sql.JDBC;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.spi.spring.container.servlet.SpringServlet;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id$
  */
-public abstract class AbstractResourceTest extends TestCase {
+public abstract class AbstractResourceTest {
 
     // ---------- Helper methods for starting and stopping jetty
 
