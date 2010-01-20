@@ -50,20 +50,21 @@ import org.junit.Test;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.sun.jersey.api.client.ClientResponse;
 
+import static junit.framework.Assert.assertEquals;
+
 /**
  *
  * @author pldms
  */
 public class AboutResourceTest extends AbstractResourceTest {
+    
     @Before
-    @Override
     public void setUp() {
         formatDataStore();
         startJettyWithSecurity();
     }
 
     @After
-    @Override
     public void tearDown() {
         stopJetty();
     }
