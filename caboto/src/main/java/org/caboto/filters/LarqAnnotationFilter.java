@@ -3,6 +3,8 @@ package org.caboto.filters;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.syntax.ElementExists;
+import com.hp.hpl.jena.sparql.syntax.ElementNotExists;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 
 public class LarqAnnotationFilter extends AnnotationFilterBase implements
@@ -21,5 +23,6 @@ public class LarqAnnotationFilter extends AnnotationFilterBase implements
 		// This assumes subject indexing
 		arg0.addTriple(Triple.create(Var.alloc(annotationBodyVar), TEXTMATCH, Node.createLiteral(searchTerm)));
 	}
+
 
 }
