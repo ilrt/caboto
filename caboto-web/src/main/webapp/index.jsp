@@ -13,9 +13,11 @@
 </head>
 <body onload="initializeAnnotations();">
 
+<%--
 <security:authorize ifAnyGranted="ROLE_USER,ROLE_ADMIN">
     <h3 class="logout"><a href="./logout.jsp">Logout</a></h3>
 </security:authorize>
+--%>
 
 <%
     Cookie uid = new Cookie("uid", null);
@@ -71,8 +73,7 @@
         <security:authorize ifNotGranted="ROLE_USER,ROLE_ADMIN">
             <p>You must be <a href="secured/">logged in</a> to add an annotation.</p>
 
-            <p>The test accounts are mike/potato, damian/carrot, jasper/turnip, nikki/pea,
-                simon/radish and admin/boss</p>
+            <p>Authentication uses a CAS Single Sign-on Service</p>
 
         </security:authorize>
 

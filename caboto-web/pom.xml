@@ -3,7 +3,7 @@
     <parent>
         <artifactId>caboto-parent</artifactId>
         <groupId>org.caboto</groupId>
-        <version>0.10-SNAPSHOT</version>
+        <version>0.10-CAS-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.caboto</groupId>
@@ -11,6 +11,11 @@
     <packaging>war</packaging>
     <name>caboto-web Maven Webapp</name>
     <url>http://maven.apache.org</url>
+    <profiles>
+        <profile>
+            <id>development</id>
+        </profile>
+    </profiles>
     <build>
         <plugins>
             <plugin>
@@ -36,6 +41,11 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-cas-client</artifactId>
             <version>${spring.version}</version>
         </dependency>
         <dependency>
