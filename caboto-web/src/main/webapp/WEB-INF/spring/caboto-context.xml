@@ -10,6 +10,14 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:cas.properties</value>
+            </list>
+        </property>
+    </bean>
+
     <context:component-scan base-package="org.caboto"/>
 
     <!-- repository gives access to the profile of allowed annotations -->
@@ -54,11 +62,12 @@
         <property name="target" ref="annotationDao"/>
     </bean>
 
-    <!-- HTTP restrictions -->
+    <!-- cas configurations -->
 
-    <security:http access-decision-manager-ref="decisionManager" path-type="regex"
+    <bean id="userDetails" class="org.caboto.security.cas.UserDetailsServiceImpl"/>
+
+    <security:http entry-point-ref="casAuthenticationEntryPoint" auto-config="true" path-type="regex"
                    lowercase-comparisons="false">
-        <security:http-basic/>
         <security:anonymous username="anonymous" granted-authority="ROLE_ANONYMOUS"/>
         <security:intercept-url pattern="^.*/public/.*$" method="POST" access="IS_AUTHENTICATED_FULLY"/>
         <security:intercept-url pattern="^.*/public/.*$" method="DELETE" access="IS_AUTHENTICATED_FULLY"/>
@@ -67,23 +76,39 @@
         <security:intercept-url pattern="^.*/private/.*$" method="DELETE" access="IS_AUTHENTICATED_FULLY"/>
         <security:intercept-url pattern="^.*/secured/.*$" method="GET" access="IS_AUTHENTICATED_FULLY"/>
         <security:intercept-url pattern=".*" method="GET" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <security:custom-filter position="CAS_FILTER" ref="casAuthenticationFilter"/>
     </security:http>
 
-    <!-- default authentication provider -->
+    <bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">
+        <property name="service" value="${cas.service}"/>
+        <property name="sendRenew" value="false"/>
+    </bean>
 
-    <security:authentication-manager>
-        <security:authentication-provider>
-            <security:user-service>
-                <security:user name="mike" password="potato" authorities="ROLE_USER"/>
-                <security:user name="damian" password="carrot" authorities="ROLE_USER"/>
-                <security:user name="jasper" password="turnip" authorities="ROLE_USER"/>
-                <security:user name="nikki" password="pea" authorities="ROLE_USER"/>
-                <security:user name="simon" password="radish" authorities="ROLE_USER"/>
-                <security:user name="andrew" password="onion" authorities="ROLE_USER"/>
-                <security:user name="admin" password="boss" authorities="ROLE_USER,ROLE_ADMIN"/>
-            </security:user-service>
-        </security:authentication-provider>
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider ref="casAuthenticationProvider"/>
     </security:authentication-manager>
+
+    <bean id="casAuthenticationFilter" class="org.springframework.security.cas.web.CasAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+    </bean>
+
+    <bean id="casAuthenticationEntryPoint" class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
+        <property name="loginUrl" value="${cas.login}"/>
+        <property name="serviceProperties" ref="serviceProperties"/>
+        <property name="encodeServiceUrlWithSessionId" value="false"/>
+    </bean>
+
+    <bean id="casAuthenticationProvider"
+          class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
+        <property name="userDetailsService" ref="userDetails"/>
+        <property name="serviceProperties" ref="serviceProperties"/>
+        <property name="ticketValidator">
+            <bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
+                <constructor-arg index="0" value="${cas.ticket}"/>
+            </bean>
+        </property>
+        <property name="key" value="cas"/>
+    </bean>
 
     <!-- voter for resources -->
 

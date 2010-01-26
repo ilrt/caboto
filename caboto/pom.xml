@@ -3,7 +3,7 @@
     <parent>
         <artifactId>caboto-parent</artifactId>
         <groupId>org.caboto</groupId>
-        <version>0.10-SNAPSHOT</version>
+        <version>0.10-CAS-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.caboto</groupId>
