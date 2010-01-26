@@ -3,9 +3,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
                            http://www.springframework.org/schema/context
-                           http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+                           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <context:component-scan base-package="org.caboto"/>
 
@@ -16,16 +16,16 @@
     <!--<bean id="database" class="org.caboto.jena.db.impl.SDBDatabase">
         <constructor-arg index="0" value="/sdb.ttl"/>
     </bean>-->
-    
+
     <bean id="database" class="org.caboto.jena.db.impl.LarqIndexedDatabase">
-    	<constructor-arg index="0">
-    		<bean class="org.caboto.jena.db.impl.SDBDatabase">
-        		<constructor-arg index="0" value="/sdb-test.ttl"/>
-    		</bean>
-    	</constructor-arg>
-    	<constructor-arg index="1" value="target/LARQ"/>
-    	<constructor-arg index="2" value="true"/>
-    	<constructor-arg index="3" value="false"/>
+        <constructor-arg index="0">
+            <bean class="org.caboto.jena.db.impl.SDBDatabase">
+                <constructor-arg index="0" value="/sdb-test.ttl"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg index="1" value="target/LARQ"/>
+        <constructor-arg index="2" value="true"/>
+        <constructor-arg index="3" value="false"/>
     </bean>
 
     <bean id="annotationDao" class="org.caboto.dao.AnnotationDaoImpl" scope="prototype">

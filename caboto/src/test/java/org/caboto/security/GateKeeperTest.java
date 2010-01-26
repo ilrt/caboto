@@ -33,25 +33,29 @@
  */
 package org.caboto.security;
 
-import junit.framework.TestCase;
 import org.caboto.security.spring.GateKeeperImpl;
 import org.junit.Before;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.providers.TestingAuthenticationToken;
+import org.junit.Test;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id$
  */
-public class GateKeeperTest extends TestCase {
+public class GateKeeperTest {
 
     @Before
     public void setUp() {
         gateKeeper = new GateKeeperImpl("ADMIN");
     }
 
+    @Test
     public void testPublicResourcesRead() {
 
         assertTrue("Access should be granted.", gateKeeper.userHasPermissionFor(testUserOne,
@@ -64,6 +68,7 @@ public class GateKeeperTest extends TestCase {
                 GateKeeper.Permission.READ, publicUriOne));
     }
 
+    @Test
     public void testPublicResourcesWrite() {
 
         assertTrue("Access should be granted.", gateKeeper.userHasPermissionFor(testUserOne,
@@ -76,6 +81,7 @@ public class GateKeeperTest extends TestCase {
                 GateKeeper.Permission.WRITE, publicUriOne));
     }
 
+    @Test
     public void testPublicResourcesDelete() {
 
         assertTrue("Access should be granted.", gateKeeper.userHasPermissionFor(testUserOne,
@@ -88,6 +94,7 @@ public class GateKeeperTest extends TestCase {
                 GateKeeper.Permission.DELETE, publicUriOne));
     }
 
+    @Test
     public void testPrivateResourcesRead() {
 
         assertTrue("Access should be granted.", gateKeeper.userHasPermissionFor(testUserOne,
@@ -100,6 +107,7 @@ public class GateKeeperTest extends TestCase {
                 GateKeeper.Permission.READ, privateUriOne));
     }
 
+    @Test
     public void testPrivateResourcesWrite() {
 
         assertTrue("Access should be granted.", gateKeeper.userHasPermissionFor(testUserOne,
@@ -112,6 +120,7 @@ public class GateKeeperTest extends TestCase {
                 GateKeeper.Permission.WRITE, privateUriOne));
     }
 
+    @Test
     public void testPrivateResourcesDelete() {
 
         assertTrue("Access should be granted.", gateKeeper.userHasPermissionFor(testUserOne,
