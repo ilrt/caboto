@@ -4,11 +4,11 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
                            http://www.springframework.org/schema/security
-                           http://www.springframework.org/schema/security/spring-security-2.0.xsd
+                           http://www.springframework.org/schema/security/spring-security-3.0.xsd
                            http://www.springframework.org/schema/context
-                           http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+                           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
     <context:component-scan base-package="org.caboto"/>
 
@@ -71,17 +71,19 @@
 
     <!-- default authentication provider -->
 
-    <security:authentication-provider>
-        <security:user-service>
-            <security:user name="mike" password="potato" authorities="ROLE_USER"/>
-            <security:user name="damian" password="carrot" authorities="ROLE_USER"/>
-            <security:user name="jasper" password="turnip" authorities="ROLE_USER"/>
-            <security:user name="nikki" password="pea" authorities="ROLE_USER"/>
-            <security:user name="simon" password="radish" authorities="ROLE_USER"/>
-            <security:user name="andrew" password="onion" authorities="ROLE_USER"/>
-            <security:user name="admin" password="boss" authorities="ROLE_USER,ROLE_ADMIN"/>
-        </security:user-service>
-    </security:authentication-provider>
+    <security:authentication-manager>
+        <security:authentication-provider>
+            <security:user-service>
+                <security:user name="mike" password="potato" authorities="ROLE_USER"/>
+                <security:user name="damian" password="carrot" authorities="ROLE_USER"/>
+                <security:user name="jasper" password="turnip" authorities="ROLE_USER"/>
+                <security:user name="nikki" password="pea" authorities="ROLE_USER"/>
+                <security:user name="simon" password="radish" authorities="ROLE_USER"/>
+                <security:user name="andrew" password="onion" authorities="ROLE_USER"/>
+                <security:user name="admin" password="boss" authorities="ROLE_USER,ROLE_ADMIN"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
 
     <!-- voter for resources -->
 
@@ -90,13 +92,13 @@
         <constructor-arg index="1" value="annotation"/>
     </bean>
 
-    <bean id="roleVoter" class="org.springframework.security.vote.RoleVoter"/>
+    <bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter"/>
 
-    <bean id="authenticatedVoter" class="org.springframework.security.vote.AuthenticatedVoter"/>
+    <bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter"/>
 
     <!-- custom decision manager -->
 
-    <bean id="decisionManager" class="org.springframework.security.vote.UnanimousBased">
+    <bean id="decisionManager" class="org.springframework.security.access.vote.UnanimousBased">
         <property name="allowIfAllAbstainDecisions" value="true"/>
         <property name="decisionVoters">
             <list>
