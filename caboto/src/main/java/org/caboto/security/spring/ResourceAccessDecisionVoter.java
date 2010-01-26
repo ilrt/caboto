@@ -34,13 +34,13 @@
 package org.caboto.security.spring;
 
 import org.caboto.security.GateKeeper;
-import org.springframework.security.Authentication;
-import org.springframework.security.ConfigAttribute;
-import org.springframework.security.ConfigAttributeDefinition;
-import org.springframework.security.intercept.web.FilterInvocation;
-import org.springframework.security.vote.AccessDecisionVoter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.web.FilterInvocation;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 /**
@@ -62,8 +62,7 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
         return (FilterInvocation.class.isAssignableFrom(aClass));
     }
 
-    public int vote(Authentication authentication, Object o,
-                    ConfigAttributeDefinition configAttributeDefinition) {
+    public int vote(Authentication authentication, Object o, Collection<ConfigAttribute> attributes) {
 
         HttpServletRequest request =
                 ((FilterInvocation) o).getHttpRequest();
@@ -76,7 +75,7 @@ public class ResourceAccessDecisionVoter implements AccessDecisionVoter {
             return ACCESS_ABSTAIN;
         }
 
-        if(annotationContextPattern.matcher(path).find()) {
+        if (annotationContextPattern.matcher(path).find()) {
 
             if (method.equalsIgnoreCase("GET")) {
                 if (gateKeeper.userHasPermissionFor(authentication, GateKeeper.Permission.READ,

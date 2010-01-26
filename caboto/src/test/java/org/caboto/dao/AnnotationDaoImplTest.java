@@ -40,9 +40,9 @@ import com.hp.hpl.jena.sdb.SDBFactory;
 import com.hp.hpl.jena.sdb.Store;
 import com.hp.hpl.jena.sdb.StoreDesc;
 import com.hp.hpl.jena.sdb.sql.JDBC;
-
-import junit.framework.TestCase;
 import org.caboto.domain.Annotation;
+import org.caboto.filters.AnnotationFilter;
+import org.caboto.filters.PropValAnnotationFilter;
 import org.caboto.jena.db.Database;
 import org.caboto.jena.db.impl.SDBDatabase;
 import org.caboto.profile.MockProfileRepositoryImpl;
@@ -56,17 +56,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.caboto.filters.AnnotationFilter;
-import org.caboto.filters.PropValAnnotationFilter;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id: AnnotationDaoImplTest.java 183 2008-05-30 14:24:23Z mike.a.jones $
  */
-public class AnnotationDaoImplTest extends TestCase {
+public class AnnotationDaoImplTest {
 
     @Before
-    @Override
     public void setUp() throws Exception {
 
 
@@ -134,6 +135,7 @@ public class AnnotationDaoImplTest extends TestCase {
                 r.getModel().size());
     }
 
+
     @Test
     public void testFindAnnotations() {
 
@@ -173,7 +175,7 @@ public class AnnotationDaoImplTest extends TestCase {
         results = annotationDao.findAnnotationsByGraph("http://caboto.org/person/mikej/private/");
 
         // results should just hold the public
-        assertEquals("Unexpeccted results size", 7, results.size());        
+        assertEquals("Unexpeccted results size", 7, results.size());
 
 
     }
