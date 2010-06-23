@@ -28,6 +28,24 @@
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>arq</artifactId>
             <version>${arq.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jmxri</artifactId>
+                    <groupId>com.sun.jmx</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jms</artifactId>
+                    <groupId>javax.jms</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jmxtools</artifactId>
+                    <groupId>com.sun.jdmk</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>mail</artifactId>
+                    <groupId>javax.mail</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.hp.hpl.jena</groupId>
@@ -41,3 +59,4 @@
         </dependency>
     </dependencies>
 </project>
+
