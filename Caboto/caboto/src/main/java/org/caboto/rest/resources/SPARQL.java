@@ -36,7 +36,7 @@ import org.springframework.security.context.SecurityContextHolder;
  * @author pldms
  */
 
-@Path("query")
+@Path("/query")
 public class SPARQL {
     @Context
     private UriInfo context;
