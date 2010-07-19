@@ -26,9 +26,14 @@ import org.caboto.security.GateKeeper;
 import org.caboto.security.sparql.GateKeeperEnforcer;
 import org.caboto.security.sparql.GateKeeperFilter;
 import org.caboto.security.sparql.GateKeeperFilterFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.Authentication;
 import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 /**
  * REST Web Service
@@ -37,11 +42,17 @@ import org.springframework.security.context.SecurityContextHolder;
  */
 
 @Path("/query")
+@Component
+@Scope("singleton")
 public class SPARQL {
+
+    static final Logger log = LoggerFactory.getLogger(SPARQL.class);
+
     @Context
     private UriInfo context;
 
     @Autowired
+    @Qualifier("database")
     private Database database = null;
 
     @Autowired

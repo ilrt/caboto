@@ -52,4 +52,6 @@ public class RdfMediaType {
     public final static String TEXT_RDF_N3 = "text/rdf+n3";
 
     public final static MediaType TEXT_RDF_N3_TYPE = new MediaType("text", "rdf+n3");
+
+    public final static String APPLICATION_XML = "application/xml";
 }
