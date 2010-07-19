@@ -20,17 +20,15 @@ public class GateKeeperFilter extends FunctionBase1 {
 
     public final static Symbol GATEKEEPER = Symbol.create("org.caboto.security.GK");
     public final static Symbol USER = Symbol.create("org.caboto.security.USER");
-    private final GateKeeper gatekeeper;
-    private final Object user;
-
+    
     public GateKeeperFilter() {
         super();
-        gatekeeper = (GateKeeper) this.getContext().get(GATEKEEPER);
-        user = this.getContext().get(USER);
     }
 
     @Override
     public NodeValue exec(NodeValue graphVal) {
+        GateKeeper gatekeeper = (GateKeeper) this.getContext().get(GATEKEEPER);
+        Object user = this.getContext().get(USER);
         if (!graphVal.asNode().isURI())
             throw new ExprEvalException("Graph must be a URI: " +
                     graphVal);
