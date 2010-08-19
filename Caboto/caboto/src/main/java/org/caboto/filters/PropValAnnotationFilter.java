@@ -40,6 +40,7 @@ import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.sparql.syntax.ElementMinus;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.vocabulary.XSD;
 
@@ -86,5 +87,9 @@ public class PropValAnnotationFilter extends AnnotationFilterBase {
                 Var.alloc(annotationBodyVar),
                 Node.createURI(expandedProp),
                 value));
+    }
+
+    public void visit(ElementMinus em) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -187,7 +187,7 @@ public class CabotoUtilityTest extends TestCase {
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PUBLIC_URI_TEN));
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_NINE));
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_TEN));
-	
+
 	// openid
         assertEquals("Incorrect name", USER_SIX, CabotoUtility.extractUsername(PUBLIC_URI_ELEVEN));
         assertEquals("Incorrect name", USER_SIX, CabotoUtility.extractUsername(PRIVATE_URI_ELEVEN));
@@ -233,15 +233,15 @@ public class CabotoUtilityTest extends TestCase {
     private final String PUBLIC_URI_SIX =
             "/annotations/person/jasper/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PUBLIC_URI_SEVEN =
-            "/annotations/person/gŽrard/public/";
+            "/annotations/person/gï¿½rard/public/";
     private final String PUBLIC_URI_EIGHT =
-            "/annotations/person/gŽrard/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+            "/annotations/person/gï¿½rard/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PUBLIC_URI_NINE =
             "/annotations/person/???/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PUBLIC_URI_TEN =
             "/annotations/person/???/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PUBLIC_URI_ELEVEN =
-            "/annotations/person/http://someone.openid.org/id//public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+            "/annotations/person/http%3A%2F%2Fsomeone.openid.org%2Fid%2F/public/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
 
     // private URIs
     private final String PRIVATE_URI_ONE = "/person/mike/private/";
@@ -255,15 +255,15 @@ public class CabotoUtilityTest extends TestCase {
     private final String PRIVATE_URI_SIX =
             "/annotations/person/jasper/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_SEVEN =
-            "/annotations/person/gŽrard/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+            "/annotations/person/gï¿½rard/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_EIGHT =
-            "/annotations/person/gŽrard/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+            "/annotations/person/gï¿½rard/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_NINE =
             "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_TEN =
             "/annotations/person/???/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
     private final String PRIVATE_URI_ELEVEN =
-            "/annotations/person/http://someone.openid.org/id//private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
+            "/annotations/person/http%3A%2F%2Fsomeone.openid.org%2Fid%2F/private/bcd6dbe7-fbd4-44a9-816e-57697720f2b9";
 
 
     // public graphs
@@ -287,7 +287,7 @@ public class CabotoUtilityTest extends TestCase {
     private final String USER_ONE = "mike";
     private final String USER_TWO = "damian";
     private final String USER_THREE = "jasper";
-    private final String USER_FOUR = "gŽrard";
+    private final String USER_FOUR = "gï¿½rard";
     private final String USER_FIVE = "???";
     private final String USER_SIX = "http://someone.openid.org/id/";
 

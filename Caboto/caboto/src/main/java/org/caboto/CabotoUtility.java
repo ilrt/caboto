@@ -33,6 +33,8 @@
  */
 package org.caboto;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -156,10 +158,13 @@ public final class CabotoUtility {
     public static String extractUsername(String path) {
 	Matcher m = usernamePattern.matcher(path);
 	if(m.matches()) {
-	        return m.group(1);
+            try {
+                return URLDecoder.decode(m.group(1), "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                return m.group(1);
+            }
 	}
 	// can't recover from this!
-	//return null;
 	throw new RuntimeException("No username found in the path.");
     }
 
