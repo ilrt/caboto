@@ -186,7 +186,7 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("graph", ResourceFactory.createResource(graph));
         Query query = QueryFactory.create(findAnnotationSparql);
-        AnnotationFilterFactory.applyFilters(query, "body", filters);
+        AnnotationFilterFactory.applyFilters(query, "body", "id", filters);
         return database.executeConstructQuery(query,
                 initialBindings);
     }
@@ -199,7 +199,7 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         initialBindings.add("annotates", ResourceFactory.createResource(about));
         Query query = QueryFactory.create(findAnnotationSparql);
-        AnnotationFilterFactory.applyFilters(query, "body", filters);
+        AnnotationFilterFactory.applyFilters(query, "body", "id", filters);
         return database.executeConstructQuery(query,
                 initialBindings);
     }
@@ -209,7 +209,7 @@ public final class AnnotationDaoImpl implements AnnotationDao {
         // create bindings
         QuerySolutionMap initialBindings = new QuerySolutionMap();
         Query query = QueryFactory.create(findAnnotationSparql);
-        AnnotationFilterFactory.applyFilters(query, "body", filters);
+        AnnotationFilterFactory.applyFilters(query, "body", "id", filters);
         return database.executeConstructQuery(query,
                 initialBindings);
     

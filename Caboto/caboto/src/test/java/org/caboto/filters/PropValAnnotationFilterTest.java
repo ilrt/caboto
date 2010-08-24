@@ -95,14 +95,14 @@ public class PropValAnnotationFilterTest {
         PropValAnnotationFilter filter =
                 new PropValAnnotationFilter("x:prop", "bar");
         Query toChange = query.cloneQuery();
-        filter.augmentQuery(toChange, "s");
+        filter.augmentQuery(toChange, "s", null);
         Query query2 = QueryFactory.create("PREFIX x: <http://ex.com/> "
                 + "SELECT * { GRAPH ?g { ?s ?p ?o ; x:prop \"bar\"^^<http://www.w3.org/2001/XMLSchema#string> }}");
         assertEquals(query2, toChange);
 
         filter = new PropValAnnotationFilter("x:prop", "U:http://ex.com/z");
         toChange = query.cloneQuery();
-        filter.augmentQuery(toChange, "s");
+        filter.augmentQuery(toChange, "s", null);
         query2 = QueryFactory.create("PREFIX x: <http://ex.com/> "
                 + "SELECT * { GRAPH ?g { ?s ?p ?o ; x:prop <http://ex.com/z> }}");
         assertEquals(query2, toChange);
@@ -123,10 +123,25 @@ public class PropValAnnotationFilterTest {
     	Query query = QueryFactory.create("PREFIX x: <http://ex.com/> "
                 + "SELECT * { GRAPH ?g { ?s ?p ?o }}");
     	Query toChange = query.cloneQuery();
-    	filter.augmentQuery(toChange, "s");
+    	filter.augmentQuery(toChange, "s", null);
     	Query query2 = QueryFactory.create("PREFIX x: <http://ex.com/> "
                 + "SELECT * { GRAPH ?g { ?s ?p ?o ; <http://jena.hpl.hp.com/ARQ/property#textMatch> \"foo\" }}");
     	assertEquals(query2, toChange);
     }
 
+    /**
+     * Check class TypeAnnotationFilter.
+     */
+    @Test
+    public final void testTypeQuery() {
+        Query query = QueryFactory.create("PREFIX x: <http://ex.com/> "
+                + "SELECT * { GRAPH ?g { ?s ?p ?o }}");
+        TypeAnnotationFilter filter =
+                new TypeAnnotationFilter("x:aType");
+        Query toChange = query.cloneQuery();
+        filter.augmentQuery(toChange, null, "s");
+        Query query2 = QueryFactory.create("PREFIX x: <http://ex.com/> "
+                + "SELECT * { GRAPH ?g { ?s ?p ?o ; <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> x:aType }}");
+        assertEquals(query2, toChange);
+    }
 }

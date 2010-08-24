@@ -42,6 +42,6 @@ import com.hp.hpl.jena.query.Query;
  */
 public interface AnnotationFilter {
     
-    public void augmentQuery(Query query, String annotationBodyVar);
+    public void augmentQuery(Query query, String annotationBodyVar, String annotationHeadVar);
 
 }

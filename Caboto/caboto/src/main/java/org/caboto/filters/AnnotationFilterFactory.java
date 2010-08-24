@@ -54,6 +54,11 @@ public class AnnotationFilterFactory {
         			filters.add(new LarqAnnotationFilter(value));
         		}
         	}
+                else if (attVal.getKey().equalsIgnoreCase("type")) {
+        		for (String value: attVal.getValue()) {
+        			filters.add(new TypeAnnotationFilter(value));
+        		}
+        	}
         	else if (attVal.getKey().contains(":")) {
                 for (String value: attVal.getValue()) {
                     filters.add(new PropValAnnotationFilter(attVal.getKey(),
@@ -66,8 +71,8 @@ public class AnnotationFilterFactory {
     }
 
     public static void applyFilters(Query original,
-            String annotationBodyVar, AnnotationFilter... filters) {
+            String annotationBodyVar, String annotationHeadVar, AnnotationFilter... filters) {
         for (AnnotationFilter filter: filters)
-            filter.augmentQuery(original, annotationBodyVar);
+            filter.augmentQuery(original, annotationBodyVar, annotationHeadVar);
     }
 }

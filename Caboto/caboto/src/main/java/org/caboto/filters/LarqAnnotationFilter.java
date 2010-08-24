@@ -20,7 +20,7 @@ public class LarqAnnotationFilter extends AnnotationFilterBase implements
 	}
 	
 	@Override
-	public void augmentBlock(ElementTriplesBlock arg0, String annotationBodyVar) {
+	public void augmentBlock(ElementTriplesBlock arg0, String annotationBodyVar, String annotationHeadVar) {
 		// This assumes subject indexing
 		arg0.addTriple(Triple.create(Var.alloc(annotationBodyVar), TEXTMATCH, Node.createLiteral(searchTerm)));
 	}

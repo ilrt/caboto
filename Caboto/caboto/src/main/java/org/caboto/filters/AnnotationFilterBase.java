@@ -18,19 +18,22 @@ public abstract class AnnotationFilterBase
         implements AnnotationFilter, ElementVisitor {
 
     private String annotationBodyVar;
+    private String annotationHeadVar;
     private Query query;
     private int graphLevel = 0;
 
     public abstract void augmentBlock(ElementTriplesBlock arg0,
-            String annotationBodyVar);
+            String annotationBodyVar, String annotationHeadVar);
 
-    public void augmentQuery(Query query, String annotationBodyVar) {
+    public void augmentQuery(Query query, String annotationBodyVar, String annotationHeadVar) {
         this.annotationBodyVar = annotationBodyVar;
+        this.annotationHeadVar = annotationHeadVar;
         this.query = query;
         query.getQueryPattern().visit(this);
     }
 
     public final String getAnnotationBodyVar() { return annotationBodyVar; }
+    public final String getAnnotationHeadVar() { return annotationHeadVar; }
     public final Query getQuery() { return query; }
     public final boolean inDefaultGraph() { return (graphLevel == 0); }
 
@@ -41,7 +44,7 @@ public abstract class AnnotationFilterBase
     }
 
     public void visit(ElementTriplesBlock arg0) {
-        if (!inDefaultGraph()) augmentBlock(arg0, getAnnotationBodyVar());
+        if (!inDefaultGraph()) augmentBlock(arg0, getAnnotationBodyVar(), getAnnotationHeadVar());
     }
 
     public void visit(ElementFilter arg0) {}
