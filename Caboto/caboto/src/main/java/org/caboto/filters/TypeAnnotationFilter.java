@@ -42,51 +42,32 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.syntax.ElementMinus;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
  * Prime annoyance: namespaces. what to do about them?
  *
  * @author pldms
+ * @author ecjet
  */
-public class PropValAnnotationFilter extends AnnotationFilterBase {
+public class TypeAnnotationFilter extends AnnotationFilterBase {
 
-    public final String propertyS;
-    public final Node value;
+    final static Node TYPE = Node.createURI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+    public final String valueS;
 
-    /**
-     * 
-     * @param propertyS
-     * @param valueS
-     */
-    public PropValAnnotationFilter(final String propertyS,
-            final String valueS) {
-        this(propertyS, toValue(valueS));
-    }
 
-    public PropValAnnotationFilter(String propertyS, Node value) {
-        this.propertyS = propertyS;
-        this.value = value;
+    public TypeAnnotationFilter(String valueS) {
+        this.valueS = valueS;
     }
     
-    private static Node toValue(String valueS) {
-        // Do we want number support?
-        if (valueS.startsWith("U:"))
-            return Node.createURI(valueS.substring(2));
-        //return Node.createLiteral(valueS);
-        return Node.createLiteral(valueS, null, XSDDatatype.XSDstring);
-    }
-
     public void augmentBlock(ElementTriplesBlock arg0,
             String annotationBodyVar, String annotationHeadVar) {
-        String expandedProp = getQuery().expandPrefixedName(propertyS);
+        String expandedValue = getQuery().expandPrefixedName(valueS);
         // TODO Caboto exception policy?
-        if (expandedProp == null)
-            throw new RuntimeException("Cannot expand property: " + propertyS);
-        arg0.addTriple(Triple.create(
-                Var.alloc(annotationBodyVar),
-                Node.createURI(expandedProp),
-                value));
+        if (expandedValue == null)
+            throw new RuntimeException("Cannot expand type: " + valueS);
+	arg0.addTriple(Triple.create(Var.alloc(annotationHeadVar), TYPE, Node.createURI(expandedValue)));
     }
 
     public void visit(ElementMinus em) {
