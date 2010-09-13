@@ -166,6 +166,7 @@ public final class AnnotationValidatorImpl implements Validator {
                             if (bodyValues == null || bodyValues.size() == 0) {
                                 errors.rejectValue("body", "annotation.body.missingRequiredVal",
                                         new String[]{entry.getId()}, "");
+                                return;
                             }
                             // also check that there is at least one value
                             boolean passed = false;
