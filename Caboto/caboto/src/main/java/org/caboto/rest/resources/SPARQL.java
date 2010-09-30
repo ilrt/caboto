@@ -18,11 +18,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import org.caboto.jena.db.Database;
 import org.caboto.jena.db.Results;
 import org.caboto.security.GateKeeper;
+import org.caboto.security.sparql.Dereifier;
 import org.caboto.security.sparql.GateKeeperEnforcer;
 import org.caboto.security.sparql.GateKeeperFilter;
 import org.caboto.security.sparql.GateKeeperFilterFactory;
@@ -41,7 +43,7 @@ import org.springframework.stereotype.Component;
  * @author pldms
  */
 
-@Path("/query")
+@Path("/query/{type}")
 @Component
 @Scope("singleton")
 public class SPARQL {
@@ -71,9 +73,12 @@ public class SPARQL {
      */
     @GET
     @Produces("application/xml")
-    public String getXml(@QueryParam("query") String queryString) {
+    public String getXml(@PathParam("type") QueryType type,
+            @QueryParam("query") String queryString) {
         Query query = QueryFactory.create(queryString);
         Op opQuery = Algebra.compile(query);
+        // Flatten annotations for this endpoint
+        if (type == QueryType.relations) opQuery = Dereifier.apply(opQuery);
         Op enforcedOpQuery = GateKeeperEnforcer.apply(opQuery);
         Query enforcedQuery = OpAsQuery.asQuery(enforcedOpQuery);
 
@@ -105,4 +110,6 @@ public class SPARQL {
 
         return rep;
     }
+
+    public static enum QueryType { annotations, relations }
 }
