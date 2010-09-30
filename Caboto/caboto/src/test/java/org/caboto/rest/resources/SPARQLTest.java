@@ -36,7 +36,7 @@ public class SPARQLTest extends AbstractResourceTest {
         formatDataStore();
         startJettyWithSecurity();
 
-        requestUri = baseUri + "query?query=" + URLEncoder.encode(QUERY_TYPE, "UTF-8");
+        requestUri = baseUri + "query/annotations?query=" + URLEncoder.encode(QUERY_TYPE, "UTF-8");
 
         String publicAnnotationUrlOne = createAndSaveAnnotation(userPublicUriOne);
         String publicAnnotationUrlTwo = createAndSaveAnnotation(userPublicUriOne);
