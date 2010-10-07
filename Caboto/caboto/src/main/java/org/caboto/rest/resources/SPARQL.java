@@ -79,6 +79,7 @@ public class SPARQL {
         Op opQuery = Algebra.compile(query);
         // Flatten annotations for this endpoint
         if (type == QueryType.relations) opQuery = Dereifier.apply(opQuery);
+
         Op enforcedOpQuery = GateKeeperEnforcer.apply(opQuery);
         Query enforcedQuery = OpAsQuery.asQuery(enforcedOpQuery);
 
@@ -96,12 +97,12 @@ public class SPARQL {
 
         String rep = null;
 
-        if (query.isSelectType()) {
+        if (enforcedQuery.isSelectType()) {
             Results result = database.executeSelectQuery(enforcedQuery.toString(), null);
             rep = ResultSetFormatter.asXMLString(result.getResults());
             result.close();
-        } else if (query.isConstructType()) {
-            Model result = database.executeConstructQuery(query, null);
+        } else if (enforcedQuery.isConstructType()) {
+            Model result = database.executeConstructQuery(enforcedQuery, null);
             StringWriter sw = new StringWriter();
             result.write(sw, "RDF/XML-ABBREV");
             rep = sw.toString();
