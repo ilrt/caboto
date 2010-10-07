@@ -38,7 +38,8 @@ import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
 
-import org.apache.commons.codec.binary.Base64;
+//import org.apache.commons.codec.binary.Base64;
+import org.springframework.security.core.codec.Base64;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class BasicAuthenticationClientFilter extends ClientFilter {
     public ClientResponse handle(ClientRequest clientRequest) throws ClientHandlerException {
 
         // encode the password
-        byte[] encoded = Base64.encodeBase64((username + ":" + password).getBytes());
+        byte[] encoded = Base64.encode((username + ":" + password).getBytes());
 
         // add the header
         List<Object> headerValue = new ArrayList<Object>();

@@ -33,7 +33,6 @@
  */
 package org.caboto;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -41,11 +40,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id$
  */
-public class CabotoUtilityTest extends TestCase {
+public class CabotoUtilityTest {
 
     @Test
     public void testGenerateUuid() {
@@ -187,8 +190,8 @@ public class CabotoUtilityTest extends TestCase {
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PUBLIC_URI_TEN));
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_NINE));
         assertEquals("Incorrect name", USER_FIVE, CabotoUtility.extractUsername(PRIVATE_URI_TEN));
-	
-	// openid
+
+        // openid
         assertEquals("Incorrect name", USER_SIX, CabotoUtility.extractUsername(PUBLIC_URI_ELEVEN));
         assertEquals("Incorrect name", USER_SIX, CabotoUtility.extractUsername(PRIVATE_URI_ELEVEN));
     }

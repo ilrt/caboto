@@ -28,13 +28,13 @@ import org.caboto.security.sparql.Dereifier;
 import org.caboto.security.sparql.GateKeeperEnforcer;
 import org.caboto.security.sparql.GateKeeperFilter;
 import org.caboto.security.sparql.GateKeeperFilterFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.Authentication;
-import org.springframework.security.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -48,7 +48,7 @@ import org.springframework.stereotype.Component;
 @Scope("singleton")
 public class SPARQL {
 
-    static final Logger log = LoggerFactory.getLogger(SPARQL.class);
+    //static final Logger log = LoggerFactory.getLogger(SPARQL.class);
 
     @Context
     private UriInfo context;

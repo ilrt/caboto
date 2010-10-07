@@ -38,10 +38,10 @@ import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import org.caboto.security.GateKeeper;
 import org.springframework.aop.AfterReturningAdvice;
-import org.springframework.security.Authentication;
-import org.springframework.security.context.SecurityContextHolder;
 
 import java.lang.reflect.Method;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)

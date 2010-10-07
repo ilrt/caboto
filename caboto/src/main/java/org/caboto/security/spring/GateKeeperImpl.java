@@ -35,9 +35,11 @@ package org.caboto.security.spring;
 
 import org.caboto.CabotoUtility;
 import org.caboto.security.GateKeeper;
-import org.springframework.security.Authentication;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -120,7 +122,7 @@ public class GateKeeperImpl implements GateKeeper {
      * @param authorities the list of Spring Security authorities the user owns.
      * @return true if the user is in the specified role.
      */
-    private boolean inRole(final String role, final GrantedAuthority[] authorities) {
+    private boolean inRole(final String role, final Collection<GrantedAuthority> authorities) {
         for (GrantedAuthority authority : authorities) {
             if (authority.getAuthority().equals(role)) {
                 return true;
