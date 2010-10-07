@@ -33,13 +33,6 @@
  */
 package org.caboto.validation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import junit.framework.TestCase;
-
 import org.caboto.domain.Annotation;
 import org.caboto.profile.MockProfileRepositoryImpl;
 import org.junit.Before;
@@ -49,11 +42,19 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
  * @version $Id: AnnotationValidationTest.java 122 2008-05-19 14:32:05Z mike.a.jones $
  */
-public class AnnotationValidationTest extends TestCase {
+public class AnnotationValidationTest {
 
     @Before
     public void setUp() {
@@ -98,7 +99,7 @@ public class AnnotationValidationTest extends TestCase {
 
     @Test
     public void testPrivateGraph() {
-        
+
         validator.validate(annotation, errors);
 
         assertEquals("There should be no errors", 0, errors.getFieldErrorCount());
@@ -174,7 +175,7 @@ public class AnnotationValidationTest extends TestCase {
     @Test
     public void testIncorrectBody() {
 
-    	annotation.getBody().put("extraField", new ArrayList<String>());
+        annotation.getBody().put("extraField", new ArrayList<String>());
         annotation.getBody().get("extraField").add("Some value or other");
 
         validator.validate(annotation, errors);
@@ -199,7 +200,7 @@ public class AnnotationValidationTest extends TestCase {
     @Test
     public void testMissingBodyValue() {
 
-    	annotation.getBody().put("title", new ArrayList<String>());
+        annotation.getBody().put("title", new ArrayList<String>());
         annotation.getBody().get("title").add("");
 
         validator.validate(annotation, errors);

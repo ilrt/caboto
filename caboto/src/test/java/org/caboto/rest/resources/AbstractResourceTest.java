@@ -59,14 +59,11 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.FilterHolder;
 import org.mortbay.jetty.servlet.ServletHolder;
-import org.springframework.web.context.ContextLoaderServlet;
+import org.springframework.web.context.ContextLoaderListener;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -136,9 +133,13 @@ public abstract class AbstractResourceTest {
         context.setInitParams(params);
 
         // establish the Context loader servlet
-        ServletHolder contextServletHolder = new ServletHolder(ContextLoaderServlet.class);
-        contextServletHolder.setInitOrder(1);
-        context.addServlet(contextServletHolder, "/*");
+        //ServletHolder contextServletHolder = new ServletHolder(ContextLoader.class);
+
+        EventListener springContextListener = new ContextLoaderListener();
+        context.addEventListener(springContextListener);
+
+//        contextServletHolder.setInitOrder(1);
+//        context.addServlet(contextServletHolder, "/*");
 
     }
 
