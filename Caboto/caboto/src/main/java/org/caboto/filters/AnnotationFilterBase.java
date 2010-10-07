@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author pldms
  */
-public abstract class AnnotationFilterBase
+public abstract class AnnotationFilterBase extends ElementVisitorBase
         implements AnnotationFilter, ElementVisitor {
 
     private String annotationBodyVar;

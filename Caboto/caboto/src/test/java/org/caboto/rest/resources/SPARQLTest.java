@@ -25,8 +25,11 @@ import static org.junit.Assert.*;
 public class SPARQLTest extends AbstractResourceTest {
 
     private final static String QUERY_TYPE = "select * { graph ?g { ?s a ?o } }";
+    private final static String QUERY_ALL = "select * { graph ?g { ?s ?p ?o } }";
 
-    private String requestUri;
+    private String typeFullURI;
+    private String allFullURI;
+    private String allRelURI;
 
     public SPARQLTest() {
     }
@@ -36,7 +39,9 @@ public class SPARQLTest extends AbstractResourceTest {
         formatDataStore();
         startJettyWithSecurity();
 
-        requestUri = baseUri + "query/annotations?query=" + URLEncoder.encode(QUERY_TYPE, "UTF-8");
+        typeFullURI = baseUri + "query/annotations?query=" + URLEncoder.encode(QUERY_TYPE, "UTF-8");
+        allFullURI  = baseUri + "query/annotations?query=" + URLEncoder.encode(QUERY_ALL, "UTF-8");
+        allRelURI  = baseUri + "query/relations?query=" + URLEncoder.encode(QUERY_ALL, "UTF-8");
 
         String publicAnnotationUrlOne = createAndSaveAnnotation(userPublicUriOne);
         String publicAnnotationUrlTwo = createAndSaveAnnotation(userPublicUriOne);
@@ -51,7 +56,7 @@ public class SPARQLTest extends AbstractResourceTest {
     @Test
     public void testQueryUnauthenticated() {
 
-        ClientResponse clientResponse = createGetClientResponse(null, null, requestUri,
+        ClientResponse clientResponse = createGetClientResponse(null, null, typeFullURI,
                 RdfMediaType.APPLICATION_XML);
 
         assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
@@ -69,7 +74,7 @@ public class SPARQLTest extends AbstractResourceTest {
     public void testQueryAuthenticated() {
 
         ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
-                requestUri, RdfMediaType.APPLICATION_XML);
+                typeFullURI, RdfMediaType.APPLICATION_XML);
 
         assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
                 clientResponse.getStatus());
@@ -80,5 +85,43 @@ public class SPARQLTest extends AbstractResourceTest {
         ResultSetRewindable resrw = ResultSetFactory.makeRewindable(res);
 
         assertEquals(3, resrw.size()); // got the two public and one private type
+    }
+
+    @Test
+    public void testDereiQueryAuthenticated() {
+
+        ClientResponse clientResponse = createGetClientResponse(usernameOne, passwordOne,
+                allRelURI, RdfMediaType.APPLICATION_XML);
+
+        assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+
+        ResultSet res =
+                ResultSetFactory.fromXML(clientResponse.getEntityInputStream());
+
+        ResultSetRewindable resrw = ResultSetFactory.makeRewindable(res);
+
+        //ResultSetFormatter.out(System.err, resrw);
+
+        assertEquals(6, resrw.size()); // got the two public and one private type
+    }
+
+    @Test
+    public void testDereiQueryUnauthenticated() {
+
+        ClientResponse clientResponse = createGetClientResponse(null, null,
+                allRelURI, RdfMediaType.APPLICATION_XML);
+
+        assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+
+        ResultSet res =
+                ResultSetFactory.fromXML(clientResponse.getEntityInputStream());
+
+        ResultSetRewindable resrw = ResultSetFactory.makeRewindable(res);
+
+        //ResultSetFormatter.out(System.err, resrw);
+
+        assertEquals(4, resrw.size()); // got the two public and one private type
     }
 }
