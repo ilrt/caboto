@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <context:component-scan base-package="org.caboto"/>
+
+    <bean id="profileRepository" class="org.caboto.profile.ProfileRepositoryXmlImpl">
+        <constructor-arg index="0" value="test-profiles.xml"/>
+    </bean>
+
+    <!--<bean id="database" class="org.caboto.jena.db.impl.SDBDatabase">
+        <constructor-arg index="0" value="/sdb.ttl"/>
+    </bean>-->
+
+    <bean id="database" class="org.caboto.jena.db.impl.LarqIndexedDatabase">
+        <constructor-arg index="0">
+            <bean class="org.caboto.jena.db.impl.SDBDatabase">
+                <constructor-arg index="0" value="/sdb-test.ttl"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg index="1" value="target/LARQ"/>
+        <constructor-arg index="2" value="true"/>
+        <constructor-arg index="3" value="false"/>
+    </bean>
+
+    <bean id="annotationDao" class="org.caboto.dao.AnnotationDaoImpl" scope="prototype">
+        <constructor-arg index="0" ref="profileRepository"/>
+        <constructor-arg index="1" ref="database"/>
+    </bean>
+
+    <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport"/>
+
+    <bean id="gatekeeper" class="org.caboto.security.spring.GateKeeperImpl">
+        <constructor-arg index="0" value="ROLE_ADMIN"/>
+    </bean>
+
+    <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">
+        <constructor-arg index="0" ref="gatekeeper"/>
+    </bean>
+
+    <bean id="annotationDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces" value="org.caboto.dao.AnnotationDao"/>
+        <property name="interceptorNames" value="exitGuard"/>
+        <property name="target" ref="annotationDao"/>
+    </bean>
+
+</beans>
