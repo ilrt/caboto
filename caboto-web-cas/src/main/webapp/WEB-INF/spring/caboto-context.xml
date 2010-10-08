@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/security
+                           http://www.springframework.org/schema/security/spring-security-3.0.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:cas.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <context:component-scan base-package="org.caboto"/>
+
+    <!-- repository gives access to the profile of allowed annotations -->
+    <bean id="profileRepository" class="org.caboto.profile.ProfileRepositoryXmlImpl">
+        <constructor-arg index="0" value="profiles.xml"/>
+    </bean>
+
+    <!-- factory creates SDB stores: provides access to the RDF store -->
+
+    <bean id="database" class="org.caboto.jena.db.impl.SDBDatabase">
+        <constructor-arg index="0" value="/sdb.ttl"/>
+    </bean>
+
+    <!-- DAO class for creating and retrieving annotations -->
+
+    <bean id="annotationDao" class="org.caboto.dao.AnnotationDaoImpl" scope="prototype">
+        <constructor-arg index="0" ref="profileRepository"/>
+        <constructor-arg index="1" ref="database"/>
+    </bean>
+
+    <!-- utility class for converting RDF annotations to JSON -->
+
+    <bean id="jsonSupport" class="org.caboto.CabotoJsonSupport"/>
+
+    <!-- SECURITY -->
+
+    <!-- gate keeper : authority on who can see what -->
+
+    <bean id="gatekeeper" class="org.caboto.security.spring.GateKeeperImpl">
+        <constructor-arg index="0" value="ROLE_ADMIN"/>
+    </bean>
+
+    <!-- aop implementation to filter results -->
+
+    <bean id="exitGuard" class="org.caboto.security.spring.ExitGuard">
+        <constructor-arg index="0" ref="gatekeeper"/>
+    </bean>
+
+    <bean id="annotationDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="proxyInterfaces" value="org.caboto.dao.AnnotationDao"/>
+        <property name="interceptorNames" value="exitGuard"/>
+        <property name="target" ref="annotationDao"/>
+    </bean>
+
+    <!-- cas configurations -->
+
+    <bean id="userDetails" class="org.caboto.security.cas.UserDetailsServiceImpl"/>
+
+    <security:http entry-point-ref="casAuthenticationEntryPoint" auto-config="true" path-type="regex"
+                   lowercase-comparisons="false">
+        <security:anonymous username="anonymous" granted-authority="ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="^.*/public/.*$" method="POST" access="IS_AUTHENTICATED_FULLY"/>
+        <security:intercept-url pattern="^.*/public/.*$" method="DELETE" access="IS_AUTHENTICATED_FULLY"/>
+        <security:intercept-url pattern="^.*/private/.*$" method="GET" access="IS_AUTHENTICATED_FULLY"/>
+        <security:intercept-url pattern="^.*/private/.*$" method="POST" access="IS_AUTHENTICATED_FULLY"/>
+        <security:intercept-url pattern="^.*/private/.*$" method="DELETE" access="IS_AUTHENTICATED_FULLY"/>
+        <security:intercept-url pattern="^.*/secured/.*$" method="GET" access="IS_AUTHENTICATED_FULLY"/>
+        <security:intercept-url pattern=".*" method="GET" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <security:custom-filter position="CAS_FILTER" ref="casAuthenticationFilter"/>
+    </security:http>
+
+    <bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">
+        <property name="service" value="${cas.service}"/>
+        <property name="sendRenew" value="false"/>
+    </bean>
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider ref="casAuthenticationProvider"/>
+    </security:authentication-manager>
+
+    <bean id="casAuthenticationFilter" class="org.springframework.security.cas.web.CasAuthenticationFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+    </bean>
+
+    <bean id="casAuthenticationEntryPoint" class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
+        <property name="loginUrl" value="${cas.login}"/>
+        <property name="serviceProperties" ref="serviceProperties"/>
+        <property name="encodeServiceUrlWithSessionId" value="false"/>
+    </bean>
+
+    <bean id="casAuthenticationProvider"
+          class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
+        <property name="userDetailsService" ref="userDetails"/>
+        <property name="serviceProperties" ref="serviceProperties"/>
+        <property name="ticketValidator">
+            <bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
+                <constructor-arg index="0" value="${cas.ticket}"/>
+            </bean>
+        </property>
+        <property name="key" value="cas"/>
+    </bean>
+
+    <!-- voter for resources -->
+
+    <bean id="resourceVoter" class="org.caboto.security.spring.ResourceAccessDecisionVoter">
+        <constructor-arg index="0" ref="gatekeeper"/>
+        <constructor-arg index="1" value="annotation"/>
+    </bean>
+
+    <bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter"/>
+
+    <bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter"/>
+
+    <!-- custom decision manager -->
+
+    <bean id="decisionManager" class="org.springframework.security.access.vote.UnanimousBased">
+        <property name="allowIfAllAbstainDecisions" value="true"/>
+        <property name="decisionVoters">
+            <list>
+                <ref local="roleVoter"/>
+                <ref local="authenticatedVoter"/>
+                <ref local="resourceVoter"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>
