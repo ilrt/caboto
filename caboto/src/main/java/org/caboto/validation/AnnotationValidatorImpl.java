@@ -162,18 +162,15 @@ public final class AnnotationValidatorImpl implements Validator {
                         List<String> bodyValues = annotation.getBody().get(entry.getId());
 
                         if (entry.isRequired()) {
-
-                            if (bodyValues == null || bodyValues.size() == 0) {
-                                errors.rejectValue("body", "annotation.body.missingRequiredVal",
-                                        new String[]{entry.getId()}, "");
-                            }
-                            // also check that there is at least one value
                             boolean passed = false;
-                            for(String val: bodyValues) {
-                            	if(val != null && val.length() > 0) {
-                            		passed = true;
-                            		continue;
-                            	}
+                            if (bodyValues != null && bodyValues.size() != 0) {
+                                // also check that there is at least one value
+                                for(String val: bodyValues) {
+                            	      if(val != null && val.length() > 0) {
+                            		        passed = true;
+                            		        continue;
+                            	      }
+                            	  }
                             }
                             if(!passed) {
                                 errors.rejectValue("body", "annotation.body.missingRequiredVal",
