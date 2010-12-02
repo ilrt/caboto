@@ -234,6 +234,14 @@ public class LarqIndexedDatabaseTest {
                 public void setRules(String rulesFile) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
+
+                public Boolean executeAskQuery(String sparql, QuerySolution initialBindings) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                public Model executeDescribeQuery(String sparql, QuerySolution initialBindings) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
 		
 	}
 }

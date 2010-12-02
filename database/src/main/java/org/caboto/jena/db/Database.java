@@ -59,6 +59,25 @@ public interface Database {
      */
     Results executeSelectQuery(final String sparql,
                                final QuerySolution initialBindings);
+    
+    /**
+     * Execute an ASK query
+     * 
+     * @param sparql          The query
+     * @param initialBindings Values for the variables in the query
+     * @return 
+     */
+    Boolean executeAskQuery(final String sparql,
+                            final QuerySolution initialBindings);
+    
+    /**
+     * Execute a DESCRIBE query
+     * @param sparql          The query
+     * @param initialBindings Values for the variables in the query
+     * @return 
+     */
+    Model executeDescribeQuery(final String sparql,
+                               final QuerySolution initialBindings);
 
     /**
      * Executes the given SPARQL construct query on the database
