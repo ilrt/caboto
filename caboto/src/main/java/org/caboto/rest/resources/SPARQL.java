@@ -7,22 +7,17 @@ package org.caboto.rest.resources;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSetFormatter;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.algebra.Algebra;
 import com.hp.hpl.jena.sparql.algebra.Op;
 import com.hp.hpl.jena.sparql.algebra.OpAsQuery;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
-import java.io.StringWriter;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import org.caboto.jena.db.Database;
-import org.caboto.jena.db.Results;
 import org.caboto.security.GateKeeper;
 import org.caboto.security.sparql.Dereifier;
 import org.caboto.security.sparql.GateKeeperEnforcer;
@@ -66,14 +61,16 @@ public class SPARQL {
         FunctionRegistry.get().put(GateKeeperFilterFactory.GKURI,
                 new GateKeeperFilterFactory());
     }
-
+    
     /**
-     * Retrieves representation of an instance of org.caboto.resources.SPARQL
-     * @return an instance of java.lang.String
+     * Present caboto store as a sparql endpoint
+     * 
+     * @param type Raw or dereified
+     * @param queryString
+     * @return Model, Result or Boolean (depending on query form)
      */
     @GET
-    @Produces("application/xml")
-    public String getXml(@PathParam("type") QueryType type,
+    public Object performQuery(@PathParam("type") QueryType type,
             @QueryParam("query") String queryString) {
         Query query = QueryFactory.create(queryString);
         Op opQuery = Algebra.compile(query);
@@ -94,22 +91,16 @@ public class SPARQL {
         // THIS IS HORRIBLE. WHAT WAS SPRING THINKING?
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         database.setQueryContext(GateKeeperFilter.USER, auth);
-
-        String rep = null;
-
+                
         if (enforcedQuery.isSelectType()) {
-            Results result = database.executeSelectQuery(enforcedQuery.toString(), null);
-            rep = ResultSetFormatter.asXMLString(result.getResults());
-            result.close();
+            return database.executeSelectQuery(enforcedQuery.toString(), null);
         } else if (enforcedQuery.isConstructType()) {
-            Model result = database.executeConstructQuery(enforcedQuery, null);
-            StringWriter sw = new StringWriter();
-            result.write(sw, "RDF/XML-ABBREV");
-            rep = sw.toString();
-            result.close();
-        }
-
-        return rep;
+            return database.executeConstructQuery(enforcedQuery, null);
+        } else if (enforcedQuery.isDescribeType()) {
+            return database.executeDescribeQuery(enforcedQuery.toString(), null);
+        } else {// ASK
+            return database.executeAskQuery(enforcedQuery.toString(), null);
+        }        
     }
 
     public static enum QueryType { annotations, relations }
