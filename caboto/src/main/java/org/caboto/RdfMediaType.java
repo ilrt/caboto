@@ -54,4 +54,12 @@ public class RdfMediaType {
     public final static MediaType TEXT_RDF_N3_TYPE = new MediaType("text", "rdf+n3");
 
     public final static String APPLICATION_XML = "application/xml";
+    
+    public final static String APPLICATION_JSON = "application/json";
+    
+    public final static MediaType APPLICATION_JSON_TYPE = new MediaType("application", "json");
+    
+    public final static String APPLICATION_SPARQL = "application/sparql-results+xml";
+    
+    public final static MediaType APPLICATION_SPARQL_TYPE = new MediaType("application", "sparql-results+xml");
 }
