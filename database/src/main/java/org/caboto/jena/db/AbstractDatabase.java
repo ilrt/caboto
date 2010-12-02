@@ -109,6 +109,63 @@ public abstract class AbstractDatabase implements Database {
             return null;
         }
     }
+    
+    /**
+     * @see org.caboto.jena.db.Database#executeAskQuery(java.lang.String,
+     *      com.hp.hpl.jena.query.QuerySolution)
+     */
+    public Boolean executeAskQuery(String sparql,
+                                      QuerySolution initialBindings) {
+        try {
+            Data data = getData();
+            Dataset dataset = data.getDataset();
+            QueryExecution queryExec;
+            if (initialBindings != null) {
+                queryExec = QueryExecutionFactory.create(sparql, dataset,
+                        initialBindings);
+            } else {
+                queryExec = QueryExecutionFactory.create(sparql, dataset);
+            }
+            // Add context items, if there are any
+            if (getQueryContext() != null) queryExec.getContext().setAll(getQueryContext());
+            boolean result = queryExec.execAsk();
+            queryExec.close();
+            data.close();
+            return result;
+        } catch (DataException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
+     * @see org.caboto.jena.db.Database#executeDescribeQuery(java.lang.String,
+     *      com.hp.hpl.jena.query.QuerySolution)
+     */
+    public Model executeDescribeQuery(String sparql,
+                                      QuerySolution initialBindings) {
+        try {
+            Data data = getData();
+            Dataset dataset = data.getDataset();
+            QueryExecution queryExec;
+            if (initialBindings != null) {
+                queryExec = QueryExecutionFactory.create(sparql, dataset,
+                        initialBindings);
+            } else {
+                queryExec = QueryExecutionFactory.create(sparql, dataset);
+            }
+            // Add context items, if there are any
+            if (getQueryContext() != null) queryExec.getContext().setAll(getQueryContext());
+            Model result = queryExec.execDescribe();
+            queryExec.close();
+            data.close();
+            return result;
+        } catch (DataException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
     /**
      * @see org.caboto.jena.db.Database#executeConstructQuery(com.hp.hpl.jena.query.Query,
      *      com.hp.hpl.jena.query.QuerySolution)
