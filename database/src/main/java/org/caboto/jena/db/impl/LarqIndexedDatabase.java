@@ -132,6 +132,16 @@ public class LarqIndexedDatabase implements Database {
 		log.info("Query is: \n" + sparql);
 		return database.executeSelectQuery(sparql, initialBindings);
 	}
+        
+        public Boolean executeAskQuery(String sparql, QuerySolution initialBindings) {
+            log.info("Query is: \n" + sparql);
+		return database.executeAskQuery(sparql, initialBindings);
+        }
+
+        public Model executeDescribeQuery(String sparql, QuerySolution initialBindings) {
+            log.info("Query is: \n" + sparql);
+		return database.executeDescribeQuery(sparql, initialBindings);
+        }
 
 	public Data getData() throws DataException {
 		return database.getData();
