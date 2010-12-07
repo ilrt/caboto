@@ -40,6 +40,7 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -56,10 +57,6 @@ import com.hp.hpl.jena.util.FileManager;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -84,7 +81,30 @@ public abstract class AbstractDatabase implements Database {
      * @throws DataException If there is an error getting the data
      */
     public abstract Data getData() throws DataException;
-
+    
+    private QueryExecution getQueryExecution(String sparql, QuerySolution bindings, Data data)
+            throws DataException {
+        Query query = QueryFactory.create(sparql, Syntax.syntaxARQ);
+        return getQueryExecution(query, bindings, data);
+    }
+    
+    private QueryExecution getQueryExecution(Query query, QuerySolution bindings, Data data)
+            throws DataException {
+        Dataset dataset = data.getDataset();
+        QueryExecution queryExec;
+        if (bindings != null) {
+            queryExec = QueryExecutionFactory.create(query, dataset,
+                    bindings);
+        } else {
+            queryExec = QueryExecutionFactory.create(query, dataset);
+        }
+        // Add context items, if there are any
+        if (getQueryContext() != null) {
+            queryExec.getContext().setAll(getQueryContext());
+        }
+        return queryExec;
+    }
+    
     /**
      * @see org.caboto.jena.db.Database#executeSelectQuery(java.lang.String,
      *      com.hp.hpl.jena.query.QuerySolution)
@@ -93,16 +113,7 @@ public abstract class AbstractDatabase implements Database {
                                       QuerySolution initialBindings) {
         try {
             Data data = getData();
-            Dataset dataset = data.getDataset();
-            QueryExecution queryExec;
-            if (initialBindings != null) {
-                queryExec = QueryExecutionFactory.create(sparql, dataset,
-                        initialBindings);
-            } else {
-                queryExec = QueryExecutionFactory.create(sparql, dataset);
-            }
-            // Add context items, if there are any
-            if (getQueryContext() != null) queryExec.getContext().setAll(getQueryContext());
+            QueryExecution queryExec = getQueryExecution(sparql, initialBindings, data);
             return new Results(queryExec.execSelect(), queryExec, data);
         } catch (DataException e) {
             e.printStackTrace();
@@ -118,16 +129,7 @@ public abstract class AbstractDatabase implements Database {
                                       QuerySolution initialBindings) {
         try {
             Data data = getData();
-            Dataset dataset = data.getDataset();
-            QueryExecution queryExec;
-            if (initialBindings != null) {
-                queryExec = QueryExecutionFactory.create(sparql, dataset,
-                        initialBindings);
-            } else {
-                queryExec = QueryExecutionFactory.create(sparql, dataset);
-            }
-            // Add context items, if there are any
-            if (getQueryContext() != null) queryExec.getContext().setAll(getQueryContext());
+            QueryExecution queryExec = getQueryExecution(sparql, initialBindings, data);
             boolean result = queryExec.execAsk();
             queryExec.close();
             data.close();
@@ -146,17 +148,7 @@ public abstract class AbstractDatabase implements Database {
                                       QuerySolution initialBindings) {
         try {
             Data data = getData();
-            Dataset dataset = data.getDataset();
-            QueryExecution queryExec;
-            if (initialBindings != null) {
-                queryExec = QueryExecutionFactory.create(sparql, dataset,
-                        initialBindings);
-            } else {
-                queryExec = QueryExecutionFactory.create(sparql, dataset);
-            }
-            // Add context items, if there are any
-            if (getQueryContext() != null) queryExec.getContext().setAll(getQueryContext());
-            Model result = queryExec.execDescribe();
+            QueryExecution queryExec = getQueryExecution(sparql, initialBindings, data);Model result = queryExec.execDescribe();
             queryExec.close();
             data.close();
             return result;
@@ -174,17 +166,7 @@ public abstract class AbstractDatabase implements Database {
                                        QuerySolution initialBindings) {
         try {
             Data data = getData();
-            Dataset dataset = data.getDataset();
-            QueryExecution queryExec;
-            if (initialBindings != null) {
-                queryExec = QueryExecutionFactory.create(query, dataset,
-                        initialBindings);
-            } else {
-                queryExec = QueryExecutionFactory.create(query, dataset);
-            }
-            // Add context items, if there are any
-            if (getQueryContext() != null) queryExec.getContext().setAll(getQueryContext());
-            Model model = queryExec.execConstruct();
+            QueryExecution queryExec = getQueryExecution(query, initialBindings, data);Model model = queryExec.execConstruct();
             queryExec.close();
             data.close();
             return model;
@@ -199,7 +181,7 @@ public abstract class AbstractDatabase implements Database {
      */
     public Model executeConstructQuery(String sparql,
                                        QuerySolution initialBindings) {
-        Query query = QueryFactory.create(sparql);
+        Query query = QueryFactory.create(sparql, Syntax.syntaxARQ);
         return executeConstructQuery(query, initialBindings);
     }
 
