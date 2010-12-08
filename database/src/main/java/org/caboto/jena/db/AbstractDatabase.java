@@ -82,10 +82,8 @@ public abstract class AbstractDatabase implements Database {
      */
     public abstract Data getData() throws DataException;
     
-    private QueryExecution getQueryExecution(String sparql, QuerySolution bindings, Data data)
-            throws DataException {
-        Query query = QueryFactory.create(sparql, Syntax.syntaxARQ);
-        return getQueryExecution(query, bindings, data);
+    private Query getQuery(String sparql) {
+        return QueryFactory.create(sparql, Syntax.syntaxARQ);
     }
     
     private QueryExecution getQueryExecution(Query query, QuerySolution bindings, Data data)
@@ -111,6 +109,11 @@ public abstract class AbstractDatabase implements Database {
      */
     public Results executeSelectQuery(String sparql,
                                       QuerySolution initialBindings) {
+        return executeSelectQuery(getQuery(sparql), initialBindings);
+    }
+    
+    public Results executeSelectQuery(Query sparql,
+                                      QuerySolution initialBindings) {
         try {
             Data data = getData();
             QueryExecution queryExec = getQueryExecution(sparql, initialBindings, data);
@@ -126,6 +129,11 @@ public abstract class AbstractDatabase implements Database {
      *      com.hp.hpl.jena.query.QuerySolution)
      */
     public Boolean executeAskQuery(String sparql,
+                                      QuerySolution initialBindings) {
+        return executeAskQuery(getQuery(sparql), initialBindings);
+    }
+    
+    public Boolean executeAskQuery(Query sparql,
                                       QuerySolution initialBindings) {
         try {
             Data data = getData();
@@ -145,6 +153,11 @@ public abstract class AbstractDatabase implements Database {
      *      com.hp.hpl.jena.query.QuerySolution)
      */
     public Model executeDescribeQuery(String sparql,
+                                      QuerySolution initialBindings) {
+        return executeDescribeQuery(getQuery(sparql), initialBindings);
+    }
+    
+    public Model executeDescribeQuery(Query sparql,
                                       QuerySolution initialBindings) {
         try {
             Data data = getData();
@@ -181,8 +194,7 @@ public abstract class AbstractDatabase implements Database {
      */
     public Model executeConstructQuery(String sparql,
                                        QuerySolution initialBindings) {
-        Query query = QueryFactory.create(sparql, Syntax.syntaxARQ);
-        return executeConstructQuery(query, initialBindings);
+        return executeConstructQuery(getQuery(sparql), initialBindings);
     }
 
     /**

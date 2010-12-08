@@ -231,6 +231,18 @@ public class LarqIndexedDatabase implements Database {
     public void setRules(String rulesFile) {
         database.setRules(rulesFile);
     }
+
+    public Results executeSelectQuery(Query sparql, QuerySolution initialBindings) {
+        return database.executeSelectQuery(sparql, initialBindings);
+    }
+
+    public Boolean executeAskQuery(Query sparql, QuerySolution initialBindings) {
+        return database.executeAskQuery(sparql, initialBindings);
+    }
+
+    public Model executeDescribeQuery(Query sparql, QuerySolution initialBindings) {
+        return database.executeDescribeQuery(sparql, initialBindings);
+    }
 	
 	static class IndexLARQCacher extends IndexLARQ {
 		

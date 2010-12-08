@@ -242,6 +242,18 @@ public class LarqIndexedDatabaseTest {
                 public Model executeDescribeQuery(String sparql, QuerySolution initialBindings) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
+
+        public Results executeSelectQuery(Query sparql, QuerySolution initialBindings) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public Boolean executeAskQuery(Query sparql, QuerySolution initialBindings) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public Model executeDescribeQuery(Query sparql, QuerySolution initialBindings) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
 		
 	}
 }
