@@ -7,6 +7,7 @@ package org.caboto.rest.resources;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.sparql.algebra.Algebra;
 import com.hp.hpl.jena.sparql.algebra.Op;
 import com.hp.hpl.jena.sparql.algebra.OpAsQuery;
@@ -72,7 +73,7 @@ public class SPARQL {
     @GET
     public Object performQuery(@PathParam("type") QueryType type,
             @QueryParam("query") String queryString) {
-        Query query = QueryFactory.create(queryString);
+        Query query = QueryFactory.create(queryString, Syntax.syntaxARQ);
         Op opQuery = Algebra.compile(query);
         // Flatten annotations for this endpoint
         if (type == QueryType.relations) opQuery = Dereifier.apply(opQuery);
