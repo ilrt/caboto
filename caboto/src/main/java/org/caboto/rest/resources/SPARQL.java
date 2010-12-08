@@ -94,13 +94,13 @@ public class SPARQL {
         database.setQueryContext(GateKeeperFilter.USER, auth);
                 
         if (enforcedQuery.isSelectType()) {
-            return database.executeSelectQuery(enforcedQuery.toString(), null);
+            return database.executeSelectQuery(enforcedQuery, null);
         } else if (enforcedQuery.isConstructType()) {
             return database.executeConstructQuery(enforcedQuery, null);
         } else if (enforcedQuery.isDescribeType()) {
-            return database.executeDescribeQuery(enforcedQuery.toString(), null);
+            return database.executeDescribeQuery(enforcedQuery, null);
         } else {// ASK
-            return database.executeAskQuery(enforcedQuery.toString(), null);
+            return database.executeAskQuery(enforcedQuery, null);
         }        
     }
 

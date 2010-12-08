@@ -61,6 +61,26 @@ public interface Database {
                                final QuerySolution initialBindings);
     
     /**
+     * Executes the given SPARQL select query on the database
+     *
+     * @param sparql          The query
+     * @param initialBindings The values for the variables in the query
+     * @return The results of the query
+     */
+    Results executeSelectQuery(final Query sparql,
+                               final QuerySolution initialBindings);
+    
+    /**
+     * Execute an ASK query
+     * 
+     * @param sparql          The query
+     * @param initialBindings Values for the variables in the query
+     * @return 
+     */
+    Boolean executeAskQuery(final Query sparql,
+                            final QuerySolution initialBindings);
+    
+    /**
      * Execute an ASK query
      * 
      * @param sparql          The query
@@ -77,6 +97,15 @@ public interface Database {
      * @return 
      */
     Model executeDescribeQuery(final String sparql,
+                               final QuerySolution initialBindings);
+    
+    /**
+     * Execute a DESCRIBE query
+     * @param sparql          The query
+     * @param initialBindings Values for the variables in the query
+     * @return 
+     */
+    Model executeDescribeQuery(final Query sparql,
                                final QuerySolution initialBindings);
 
     /**
