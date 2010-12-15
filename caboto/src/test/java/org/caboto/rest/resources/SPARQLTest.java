@@ -4,6 +4,8 @@
  */
 package org.caboto.rest.resources;
 
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -33,7 +35,11 @@ public class SPARQLTest extends AbstractResourceTest {
 
     public SPARQLTest() {
     }
-
+    
+    private final String makeQueryAnno(final String sparql) throws UnsupportedEncodingException {
+        return baseUri + "query/annotations?query=" + URLEncoder.encode(sparql, "UTF-8");
+    }
+    
     @Before
     public void setUp() throws ProfileRepositoryException, UnsupportedEncodingException {
         formatDataStore();
@@ -123,5 +129,30 @@ public class SPARQLTest extends AbstractResourceTest {
         //ResultSetFormatter.out(System.err, resrw);
 
         assertEquals(4, resrw.size()); // got the two public and one private type
+    }
+    
+    @Test
+    public void testQueryTypes() throws UnsupportedEncodingException {
+
+        ClientResponse clientResponse = createGetClientResponse(null, null,
+                makeQueryAnno("select (count(*) as ?c) { graph ?g { ?s ?p ?o } }"), 
+                RdfMediaType.APPLICATION_XML);
+
+        assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+
+        ResultSet res =
+                ResultSetFactory.fromXML(clientResponse.getEntityInputStream());
+
+        ResultSetRewindable resrw = ResultSetFactory.makeRewindable(res);
+        
+        RDFNode count = resrw.next().get("c");
+        
+        assertNotNull(count);
+        assertTrue(count.isLiteral());
+        
+        ResultSetFormatter.out(System.err, resrw);
+        
+        //assertEquals(4, resrw.size()); // got the two public and one private type
     }
 }
