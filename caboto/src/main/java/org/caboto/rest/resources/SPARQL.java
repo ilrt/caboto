@@ -80,13 +80,13 @@ public class SPARQL {
 
         Op enforcedOpQuery = GateKeeperEnforcer.apply(opQuery);
         Query enforcedQuery = OpAsQuery.asQuery(enforcedOpQuery);
-
+        
         // Copy over type. Not part of algebra.
         if (query.isAskType()) enforcedQuery.setQueryAskType();
         else if (query.isConstructType()) enforcedQuery.setQueryConstructType();
         else if (query.isDescribeType()) enforcedQuery.setQueryDescribeType();
         // default is SELECT
-
+               
         // Set up the context...
         database.setQueryContext(GateKeeperFilter.GATEKEEPER, gatekeeper);
         // THIS IS HORRIBLE. WHAT WAS SPRING THINKING?
