@@ -26,6 +26,9 @@ import com.hp.hpl.jena.sparql.core.Var ;
 import com.hp.hpl.jena.sparql.expr.Expr ;
 import com.hp.hpl.jena.sparql.expr.ExprList ;
 import com.hp.hpl.jena.sparql.syntax.* ;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Convert an Op expression in SPARQL syntax, that is, the reverse of algebra generation */   
 public class OpAsQuery
@@ -285,6 +288,23 @@ public class OpAsQuery
 
         public void visit(OpAssign opAssign)
         { 
+            /**
+             * Special case: group involves and internal assignment
+             * e.g.  (assign ((?.1 ?.0)) (group () ((?.0 (count)))
+             * We attempt to intercept that here.
+             */
+            if (opAssign.getSubOp() instanceof OpGroup) {
+                Map<Var, Var> subs = new HashMap<Var, Var>();
+                Expr exp;
+                for (Var v: opAssign.getVarExprList().getVars()) {
+                    exp = opAssign.getVarExprList().getExpr(v);
+                    if (exp.isVariable()) subs.put(exp.asVar(), v);
+                    else throw new ARQNotImplemented("Expected simple assignment for group");
+                }
+                visit((OpGroup) opAssign.getSubOp(), subs);
+                return;
+            }
+            
             for ( Var v : opAssign.getVarExprList().getVars() )
             {
                 Element elt = new ElementAssign(v, opAssign.getVarExprList().getExpr(v)) ;
@@ -336,19 +356,28 @@ public class OpAsQuery
                 query.setLimit(opSlice.getLength()) ;
             opSlice.getSubOp().visit(this) ;
         }
-
-        public void visit(OpGroup opGroup)
+        
+        public void visit(OpGroup opGroup) {
+            visit(opGroup, Collections.EMPTY_MAP);
+        }
+        
+        public void visit(OpGroup opGroup, Map<Var, Var> subs)
         { 
             List<E_Aggregator> a = opGroup.getAggregators();
             
             for (E_Aggregator ea: a) {
-                query.addResultVar(ea.asVar(), ea);
+                Var realVar = (subs.containsKey(ea.asVar())) ? subs.get(ea.asVar()) : ea.asVar();
+                // Copy aggregator across (?)
+                E_Aggregator myAggr = query.allocAggregate(ea.getAggregator());
+                query.addResultVar(realVar, myAggr);
             }
             
             VarExprList b = opGroup.getGroupVars();
             for (Var v: b.getVars()) {
                 Expr e = b.getExpr(v);
-                query.addGroupBy(v, e);
+                
+                if (e != null) query.addGroupBy(v, e);
+                else query.addGroupBy(v);
             }
             opGroup.getSubOp().visit(this);
         }
