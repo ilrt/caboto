@@ -5,6 +5,7 @@
 
 package org.caboto.rest.resources;
 
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
@@ -83,8 +84,17 @@ public class SPARQL {
         
         // Copy over type. Not part of algebra.
         if (query.isAskType()) enforcedQuery.setQueryAskType();
-        else if (query.isConstructType()) enforcedQuery.setQueryConstructType();
-        else if (query.isDescribeType()) enforcedQuery.setQueryDescribeType();
+        else if (query.isConstructType()) {
+            enforcedQuery.setQueryConstructType();
+            enforcedQuery.setConstructTemplate(query.getConstructTemplate());
+            enforcedQuery.setQueryResultStar(false);
+        }
+        else if (query.isDescribeType()) {
+            enforcedQuery.setQueryDescribeType();
+            enforcedQuery.setQueryResultStar(false);
+            for (Node n : query.getResultURIs()) enforcedQuery.addDescribeNode(n);
+            System.err.println("Query is now: " + enforcedQuery);
+        }
         // default is SELECT
                
         // Set up the context...

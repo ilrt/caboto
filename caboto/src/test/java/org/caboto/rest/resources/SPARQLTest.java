@@ -4,6 +4,8 @@
  */
 package org.caboto.rest.resources;
 
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.query.ResultSetFormatter;
 import com.hp.hpl.jena.query.ResultSetRewindable;
@@ -154,5 +156,60 @@ public class SPARQLTest extends AbstractResourceTest {
         ResultSetFormatter.out(System.err, resrw);
         
         //assertEquals(4, resrw.size()); // got the two public and one private type
+    }
+    
+    @Test
+    public void testConstructType() throws UnsupportedEncodingException {
+
+        ClientResponse clientResponse = createGetClientResponse(null, null,
+                makeQueryAnno("construct { ?s ?p ?o } { graph ?g { ?s ?p ?o } }"), 
+                RdfMediaType.APPLICATION_RDF_XML);
+        
+        assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+        
+        Model m = ModelFactory.createDefaultModel();
+        
+        m.read(clientResponse.getEntityInputStream(), "RDF/XML");
+        
+        assertEquals(14, m.size());
+    }
+    
+    @Test
+    public void testDescribeType() throws UnsupportedEncodingException {
+
+        ClientResponse clientResponse = createGetClientResponse(null, null,
+                makeQueryAnno("describe ?s { graph ?g { ?s ?p ?o } }"), 
+                RdfMediaType.APPLICATION_RDF_XML);
+        
+        assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+        
+        Model m = ModelFactory.createDefaultModel();
+        
+        m.read(clientResponse.getEntityInputStream(), "RDF/XML");
+        
+        //m.write(System.err, "TURTLE");
+        
+        assertEquals(21, m.size());
+    }
+    
+    @Test
+    public void testDescribeTypeLit() throws UnsupportedEncodingException {
+
+        ClientResponse clientResponse = createGetClientResponse(null, null,
+                makeQueryAnno("describe <urn:x-foo:notthere>"), 
+                RdfMediaType.APPLICATION_RDF_XML);
+        
+        assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+        
+        Model m = ModelFactory.createDefaultModel();
+        
+        m.read(clientResponse.getEntityInputStream(), "RDF/XML");
+        
+        //m.write(System.err, "TURTLE");
+        
+        assertEquals(0, m.size());
     }
 }

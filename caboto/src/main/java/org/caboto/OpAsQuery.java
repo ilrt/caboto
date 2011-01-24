@@ -281,7 +281,7 @@ public class OpAsQuery
         }
 
         public void visit(OpNull opNull)
-        { throw new ARQNotImplemented("OpNull") ; }
+        { /*throw new ARQNotImplemented("OpNull") ;*/ }
 
         public void visit(OpLabel opLabel)
         { /* No action */ }
