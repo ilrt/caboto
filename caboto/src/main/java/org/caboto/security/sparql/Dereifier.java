@@ -13,6 +13,7 @@ import com.hp.hpl.jena.sparql.algebra.Transformer;
 import com.hp.hpl.jena.sparql.algebra.op.OpBGP;
 import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.Var;
+import com.hp.hpl.jena.vocabulary.RDF;
 import org.caboto.vocabulary.Annotea;
 
 /**
@@ -21,7 +22,6 @@ import org.caboto.vocabulary.Annotea;
  */
 public class Dereifier extends TransformCopy {
 
-    final static Dereifier instance = new Dereifier();
     final static Node ANNOTATES = Annotea.annotates.asNode();
     final static Node BODY = Annotea.body.asNode();
 
@@ -35,6 +35,12 @@ public class Dereifier extends TransformCopy {
         BasicPattern derei = new BasicPattern();
 
         for (Triple t: pattern.getList()) {
+            // Don't mess with collections
+            if (RDF.Nodes.first.equals(t.getPredicate()) ||
+                RDF.Nodes.rest.equals(t.getPredicate())) {
+                derei.add(t);
+                continue;
+            }
             varnum++;
             Var v = Var.alloc("vanno" + varnum);
             Var b = Var.alloc("vbody" + varnum);
@@ -54,6 +60,6 @@ public class Dereifier extends TransformCopy {
      * @return dereified query
      */
     public static Op apply(Op op) {
-        return Transformer.transform(instance, op);
+        return Transformer.transform(new Dereifier(), op);
     }
 }
