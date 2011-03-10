@@ -102,7 +102,13 @@ public class SPARQL {
         // THIS IS HORRIBLE. WHAT WAS SPRING THINKING?
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         database.setQueryContext(GateKeeperFilter.USER, auth);
-                
+        
+        // ISSUE: Work around issue with SDB
+        if (enforcedQuery.hasLimit() || enforcedQuery.hasOffset()) {
+            enforcedQuery.setLimit(Query.NOLIMIT);
+            enforcedQuery.setOffset(Query.NOLIMIT);
+        }
+        
         if (enforcedQuery.isSelectType()) {
             return database.executeSelectQuery(enforcedQuery, null);
         } else if (enforcedQuery.isConstructType()) {
