@@ -170,7 +170,7 @@ public class LarqIndexedDatabaseTest {
 	
 	private static class SimpleDB implements Database {
 		
-		private DataSource dataset = new DataSourceImpl();
+		private DataSource dataset = DataSourceImpl.createMem();
 		private Context context;
 		
 		public boolean addModel(String uri, Model model) {
@@ -200,7 +200,7 @@ public class LarqIndexedDatabaseTest {
 		public Results executeSelectQuery(String sparql,
 				QuerySolution initialBindings) {
 			QueryExecution qef = QueryExecutionFactory.create(sparql, dataset);
-			if (context != null) qef.getContext().setAll(context);
+			if (context != null) qef.getContext().putAll(context);
 			return new Results(qef.execSelect(), qef, getData());
 		}
 

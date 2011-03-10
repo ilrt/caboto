@@ -22,7 +22,7 @@ public abstract class AnnotationFilterBase extends ElementVisitorBase
     private Query query;
     private int graphLevel = 0;
 
-    public abstract void augmentBlock(ElementTriplesBlock arg0,
+    public abstract void augmentBlock(TripleCollector arg0,
             String annotationBodyVar, String annotationHeadVar);
 
     public void augmentQuery(Query query, String annotationBodyVar, String annotationHeadVar) {
@@ -39,10 +39,11 @@ public abstract class AnnotationFilterBase extends ElementVisitorBase
 
     private void visitList(List<Element> elements) {
         for (Element e: elements) {
+            System.err.println("Visit: " + e.getClass());
             e.visit(this);
         }
     }
-
+    
     public void visit(ElementTriplesBlock arg0) {
         if (!inDefaultGraph()) augmentBlock(arg0, getAnnotationBodyVar(), getAnnotationHeadVar());
     }
@@ -68,6 +69,7 @@ public abstract class AnnotationFilterBase extends ElementVisitorBase
     }
 
     public void visit(ElementNamedGraph arg0) {
+        System.err.println("Named graph! " + arg0.getElement().getClass());
         graphLevel++;
         arg0.getElement().visit(this);
         graphLevel--;
@@ -82,7 +84,7 @@ public abstract class AnnotationFilterBase extends ElementVisitorBase
     }
 
     public void visit(ElementPathBlock arg0) {
-        /* Got me there! What's in this? */
+        if (!inDefaultGraph()) augmentBlock(arg0, getAnnotationBodyVar(), getAnnotationHeadVar());
     }
 
 	public void visit(ElementFetch arg0) {

@@ -98,7 +98,7 @@ public abstract class AbstractDatabase implements Database {
         }
         // Add context items, if there are any
         if (getQueryContext() != null) {
-            queryExec.getContext().setAll(getQueryContext());
+            queryExec.getContext().putAll(getQueryContext());
         }
         return queryExec;
     }

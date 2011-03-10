@@ -34,16 +34,10 @@
 
 package org.caboto.filters;
 
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.syntax.ElementMinus;
-import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.XSD;
+import com.hp.hpl.jena.sparql.syntax.TripleCollector;
 
 /**
  * Prime annoyance: namespaces. what to do about them?
@@ -61,7 +55,7 @@ public class TypeAnnotationFilter extends AnnotationFilterBase {
         this.valueS = valueS;
     }
     
-    public void augmentBlock(ElementTriplesBlock arg0,
+    public void augmentBlock(TripleCollector arg0,
             String annotationBodyVar, String annotationHeadVar) {
         String expandedValue = getQuery().expandPrefixedName(valueS);
         // TODO Caboto exception policy?
@@ -70,7 +64,4 @@ public class TypeAnnotationFilter extends AnnotationFilterBase {
 	arg0.addTriple(Triple.create(Var.alloc(annotationHeadVar), TYPE, Node.createURI(expandedValue)));
     }
 
-    public void visit(ElementMinus em) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }
