@@ -1,0 +1,13 @@
+To build caboto:
+
+   mvn install
+
+To run the test web application:
+
+   cd crew-web
+   mvn jetty:run
+
+Point your web browser at <http://localhost:9090/caboto-web/>. The displayed web page includes
+the details of a number of test accounts that you can use to create annotations.
+
+See <http://code.google.com/p/caboto/wiki/CompileAndRun> for more details.

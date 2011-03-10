@@ -1,0 +1,32 @@
+<rdf:RDF
+    xmlns:caboto="http://caboto.org/schema/annotations#"
+    xmlns:annotea="http://www.w3.org/2000/10/annotation-ns#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <caboto:SimpleComment rdf:about="http://caboto.org/person/mikej/public/e609962d-47ee-4248-9fcc-2c9f6256c330">
+    <annotea:author rdf:resource="http://caboto.org/person/mikej/"/>
+    <annotea:body>
+      <rdf:Description rdf:about="http://caboto.org/person/mikej/public/e609962d-47ee-4248-9fcc-2c9f6256c330#body">
+        <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A title</dc:title>
+        <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lorem ipsum dolor
+            sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua.</dc:description>
+      </rdf:Description>
+    </annotea:body>
+    <annotea:annotates rdf:resource="http://chillyinside.com/blog/?p=45"/>
+    <annotea:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-05-27T14:44:41+01:00</annotea:created>
+  </caboto:SimpleComment>
+  <caboto:SimpleComment rdf:about="http://caboto.org/person/mikej/public/e609962d-47ee-4248-9fcc-2c9f6256c399">
+    <annotea:author rdf:resource="http://caboto.org/person/mikej/"/>
+    <annotea:body>
+      <rdf:Description rdf:about="http://caboto.org/person/mikej/public/e609962d-47ee-4248-9fcc-2c9f6256c399#body">
+        <dc:title rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A different title</dc:title>
+        <dc:description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lorem ipsum dolor
+            sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua.</dc:description>
+      </rdf:Description>
+    </annotea:body>
+    <annotea:annotates rdf:resource="http://chillyinside.com/blog/?p=47"/>
+    <annotea:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-05-27T14:44:41+01:00</annotea:created>
+  </caboto:SimpleComment>
+</rdf:RDF>
