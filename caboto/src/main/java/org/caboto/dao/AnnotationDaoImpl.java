@@ -33,6 +33,7 @@
  */
 package org.caboto.dao;
 
+import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
@@ -139,7 +140,12 @@ public final class AnnotationDaoImpl implements AnnotationDao {
 
                 		if (dataType.equals("String")) {
                 			bodyResource.addProperty(prop, val, XSDDatatype.XSDstring);
-                		}
+                		} else if (dataType.equals("Resource")) {
+                                    bodyResource.addProperty(prop, model.createResource(val));
+                                } else {
+                                    bodyResource.addProperty(prop, val,
+                                            TypeMapper.getInstance().getSafeTypeByName(dataType));
+                                }
 
                 	} else {
                 		bodyResource.addProperty(prop, val);
