@@ -38,10 +38,7 @@ public abstract class AnnotationFilterBase extends ElementVisitorBase
     public final boolean inDefaultGraph() { return (graphLevel == 0); }
 
     private void visitList(List<Element> elements) {
-        for (Element e: elements) {
-            System.err.println("Visit: " + e.getClass());
-            e.visit(this);
-        }
+        for (Element e: elements) e.visit(this);
     }
     
     public void visit(ElementTriplesBlock arg0) {
@@ -69,7 +66,6 @@ public abstract class AnnotationFilterBase extends ElementVisitorBase
     }
 
     public void visit(ElementNamedGraph arg0) {
-        System.err.println("Named graph! " + arg0.getElement().getClass());
         graphLevel++;
         arg0.getElement().visit(this);
         graphLevel--;
