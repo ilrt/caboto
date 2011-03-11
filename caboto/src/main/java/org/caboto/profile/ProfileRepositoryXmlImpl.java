@@ -98,10 +98,12 @@ public final class ProfileRepositoryXmlImpl implements ProfileRepository {
             XPathExpression expression =
                     xpath.compile("//profile[@id=\"" + profileId + "\"]");
             Object result = expression.evaluate(document, XPathConstants.NODE);
-
+            
             // get the profile
             Node node = (Node) result;
-
+            
+            if (node == null) throw new RuntimeException("Profile not found: " + profileId);
+            
             // find the rdf type
             NamedNodeMap attributes = node.getAttributes();
             String rdfType = attributes.getNamedItem("type").getTextContent();
@@ -213,8 +215,8 @@ public final class ProfileRepositoryXmlImpl implements ProfileRepository {
 
         entry.setId(nodeAttributes.getNamedItem("id").getTextContent());
         entry.setPropertyType(nodeAttributes.getNamedItem("propertyType").getTextContent());
-        entry.setObjectDatatype(nodeAttributes.getNamedItem("objectDatatype")
-                .getTextContent());
+        Node dt = nodeAttributes.getNamedItem("objectDatatype");
+        if (dt != null) entry.setObjectDatatype(dt.getTextContent());
 
         if (nodeAttributes.getNamedItem("required").getTextContent().equals("true")) {
             entry.setRequired(true);
