@@ -35,6 +35,8 @@ package org.caboto.dao;
 
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.iri.IRI;
+import com.hp.hpl.jena.iri.IRIFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolutionMap;
@@ -65,7 +67,9 @@ import org.caboto.filters.AnnotationFilterFactory;
  * @version $Id: AnnotationDaoImpl.java 177 2008-05-30 13:50:59Z mike.a.jones $
  */
 public final class AnnotationDaoImpl implements AnnotationDao {
-
+    
+    static final IRIFactory IRIFac = IRIFactory.iriImplementation();
+    
     public AnnotationDaoImpl(final ProfileRepository profileRepository,
                              final Database database) {
         this.profileRepository = profileRepository;
@@ -76,6 +80,7 @@ public final class AnnotationDaoImpl implements AnnotationDao {
 
 
     public void addAnnotation(final Annotation annotation) {
+        IRI iri;
 
         try {
 
@@ -132,24 +137,26 @@ public final class AnnotationDaoImpl implements AnnotationDao {
                 }
 
                 for(String val: values) {
-                	Property prop = model.createProperty(entry.getPropertyType());
 
-                	String dataType = entry.getObjectDatatype();
+                    Property prop = model.createProperty(entry.getPropertyType());
 
-                	if (dataType != null) {
+                    String dataType = entry.getObjectDatatype();
 
-                		if (dataType.equals("String")) {
-                			bodyResource.addProperty(prop, val, XSDDatatype.XSDstring);
-                		} else if (dataType.equals("Resource")) {
-                                    bodyResource.addProperty(prop, model.createResource(val));
-                                } else {
-                                    bodyResource.addProperty(prop, val,
-                                            TypeMapper.getInstance().getSafeTypeByName(dataType));
-                                }
-
-                	} else {
-                		bodyResource.addProperty(prop, val);
-                	}
+                    if (dataType != null) {
+                        if (dataType.equals("String")) {
+                            bodyResource.addProperty(prop, val, XSDDatatype.XSDstring);
+                        } else if (dataType.equals("Resource")) {
+                            if (val.isEmpty()) continue;
+                            iri = IRIFac.construct(val);
+                            if (iri.isAbsolute())
+                              bodyResource.addProperty(prop, model.createResource(val));
+                        } else {
+                            bodyResource.addProperty(prop, val,
+                                    TypeMapper.getInstance().getSafeTypeByName(dataType));
+                        }
+                    } else {
+                        bodyResource.addProperty(prop, val);
+                    }
                 }
 
             }

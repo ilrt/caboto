@@ -75,7 +75,7 @@ public final class AnnotationValidatorImpl implements Validator {
                 // have we found the profile
                 if (profile == null) {
 
-                    errors.reject("annotation.type.unkown", new String[]{annotation.getType()}, "");
+                    errors.reject("annotation.type.unknown", new String[]{annotation.getType()}, "");
 
                 } else if (!expectedGraphType(annotation.getGraphId())) { // not public or private?
 
