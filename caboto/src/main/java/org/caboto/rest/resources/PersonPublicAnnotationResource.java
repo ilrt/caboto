@@ -67,6 +67,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.net.URISyntaxException;
+import org.springframework.validation.ObjectError;
 
 /**
  * @author Mike Jones (mike.a.jones@bristol.ac.uk)
@@ -103,9 +104,15 @@ public final class PersonPublicAnnotationResource {
 
 
         if (errors.hasErrors()) {
-
+            
+            StringBuilder errorMessage = new StringBuilder();
+            for (ObjectError error: errors.getAllErrors()) {
+                errorMessage.append(error.toString());
+                errorMessage.append("\n");
+            }
+            
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Oops, there are validation errors!\n").build();
+                    .entity("Oops, there are validation errors!\n" + errorMessage).build();
         }
 
         // add what is sent to the RDF store
