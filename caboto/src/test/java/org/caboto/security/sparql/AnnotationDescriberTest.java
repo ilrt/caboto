@@ -12,13 +12,9 @@ import com.hp.hpl.jena.sparql.ARQConstants;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.query.DataSource;
 import com.hp.hpl.jena.sparql.core.DataSourceImpl;
-import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.sparql.core.describe.DescribeHandler;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.rdf.model.Model;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
