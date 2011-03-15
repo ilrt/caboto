@@ -132,7 +132,7 @@ public class AnnotationValidationTest {
 
         ObjectError error = errors.getGlobalError();
 
-        assertEquals("Unexpected error code returned", "annotation.type.unkown", error.getCode());
+        assertEquals("Unexpected error code returned", "annotation.type.unknown", error.getCode());
 
     }
 
