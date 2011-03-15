@@ -21,6 +21,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.ARQConstants;
 import com.hp.hpl.jena.sparql.core.QuerySolutionBase;
 import com.hp.hpl.jena.sparql.core.describe.DescribeHandler;
+import com.hp.hpl.jena.sparql.core.describe.DescribeHandlerFactory;
 import com.hp.hpl.jena.sparql.util.Context;
 import java.util.Collections;
 import java.util.Iterator;
@@ -90,6 +91,15 @@ public class AnnotationDescriber implements DescribeHandler {
     }
     
     public void finish() {}
+    
+    public static class AnnotationDescriberFactory 
+        implements DescribeHandlerFactory {
+
+        public DescribeHandler create() {
+            return new AnnotationDescriber();
+        }
+    
+    }
     
     /* Bit silly, but I really don't need a full map */
     public static class SingletonBinding extends QuerySolutionBase {

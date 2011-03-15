@@ -11,6 +11,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.sparql.algebra.Algebra;
 import com.hp.hpl.jena.sparql.algebra.Op;
+import com.hp.hpl.jena.sparql.core.describe.DescribeHandlerRegistry;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -21,6 +22,7 @@ import javax.ws.rs.QueryParam;
 import org.caboto.OpAsQuery; // Use our own patched version
 import org.caboto.jena.db.Database;
 import org.caboto.security.GateKeeper;
+import org.caboto.security.sparql.AnnotationDescriber.AnnotationDescriberFactory;
 import org.caboto.security.sparql.Dereifier;
 import org.caboto.security.sparql.GateKeeperEnforcer;
 import org.caboto.security.sparql.GateKeeperFilter;
@@ -62,6 +64,11 @@ public class SPARQL {
         // Register our function
         FunctionRegistry.get().put(GateKeeperFilterFactory.GKURI,
                 new GateKeeperFilterFactory());
+        
+        // Register our describe handler
+        DescribeHandlerRegistry reg = DescribeHandlerRegistry.get();
+        reg.clear();
+        reg.add(new AnnotationDescriberFactory());
     }
     
     /**
