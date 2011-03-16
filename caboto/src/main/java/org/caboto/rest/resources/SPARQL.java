@@ -9,6 +9,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.Syntax;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.sparql.algebra.Algebra;
 import com.hp.hpl.jena.sparql.algebra.Op;
 import com.hp.hpl.jena.sparql.core.describe.DescribeHandlerRegistry;
@@ -100,7 +101,6 @@ public class SPARQL {
             enforcedQuery.setQueryDescribeType();
             enforcedQuery.setQueryResultStar(false);
             for (Node n : query.getResultURIs()) enforcedQuery.addDescribeNode(n);
-            System.err.println("Query is now: " + enforcedQuery);
         }
         // default is SELECT
                
@@ -121,7 +121,9 @@ public class SPARQL {
         } else if (enforcedQuery.isConstructType()) {
             return database.executeConstructQuery(enforcedQuery, null);
         } else if (enforcedQuery.isDescribeType()) {
-            return database.executeDescribeQuery(enforcedQuery, null);
+            Model result = database.executeDescribeQuery(enforcedQuery, null);
+            if (type == QueryType.relations) result = Dereifier.dereify(result);
+            return result;
         } else {// ASK
             return database.executeAskQuery(enforcedQuery, null);
         }        
