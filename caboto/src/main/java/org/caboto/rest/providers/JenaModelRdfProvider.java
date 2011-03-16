@@ -56,7 +56,7 @@ import java.lang.reflect.Type;
  * @version $Id: JenaModelRdfProvider.java 177 2008-05-30 13:50:59Z mike.a.jones $
  */
 @Provider
-@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
+@Produces({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3, MediaType.WILDCARD})
 @Consumes({RdfMediaType.APPLICATION_RDF_XML, RdfMediaType.TEXT_RDF_N3})
 public final class JenaModelRdfProvider implements MessageBodyWriter<Object>,
         MessageBodyReader<Object> {
