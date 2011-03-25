@@ -14,10 +14,13 @@ import com.hp.hpl.jena.sparql.algebra.Algebra;
 import com.hp.hpl.jena.sparql.algebra.Op;
 import com.hp.hpl.jena.sparql.core.describe.DescribeHandlerRegistry;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import org.caboto.OpAsQuery; // Use our own patched version
@@ -70,6 +73,13 @@ public class SPARQL {
         DescribeHandlerRegistry reg = DescribeHandlerRegistry.get();
         reg.clear();
         reg.add(new AnnotationDescriberFactory());
+    }
+    
+    
+    @POST
+    public Object performPostedQuery(@PathParam("type") QueryType type,
+            @FormParam("query") String queryString) {
+        return performQuery(type, queryString);
     }
     
     /**

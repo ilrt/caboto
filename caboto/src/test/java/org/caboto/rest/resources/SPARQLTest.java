@@ -212,4 +212,23 @@ public class SPARQLTest extends AbstractResourceTest {
         
         assertEquals(0, m.size());
     }
+    
+    @Test
+    public void testQueryPOST() throws UnsupportedEncodingException {
+
+        ClientResponse clientResponse = createPostClientResponse(null, null,
+                baseUri + "query/annotations",
+                RdfMediaType.APPLICATION_XML,
+                "query=" + URLEncoder.encode(QUERY_TYPE, "UTF-8"));
+
+        assertEquals("A 200 response should be returned", Response.Status.OK.getStatusCode(),
+                clientResponse.getStatus());
+
+        ResultSet res =
+                ResultSetFactory.fromXML(clientResponse.getEntityInputStream());
+
+        ResultSetRewindable resrw = ResultSetFactory.makeRewindable(res);
+
+        assertEquals(2, resrw.size()); // got the two public types
+    }
 }
