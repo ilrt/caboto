@@ -55,20 +55,47 @@ public class CabotoJsonSupportTest {
      * Test of generateJsonObject method, of class CabotoJsonSupport.
      */
     @Test
-    public void testGenerateJsonObject_Resource() throws Exception {
+    public void testGenerateJsonObject_Literal() throws Exception {
         body.addProperty(DC.subject, "subj1");
         
         CabotoJsonSupport instance = new CabotoJsonSupport();
         String expResult = 
                 "{\"body\":{\"subject\":[\"subj1\"]},\"annotates\":\"http:\\/\\/example.com\\/annotated\",\"type\":\"TheType\"}";
         JSONObject result = instance.generateJsonObject(resource);
-        System.err.print(result.toString());
+        
         assertEquals(expResult, result.toString());
         
         body.addProperty(DC.subject, "subj2");
         
         expResult = 
-                "{\"body\":{\"subject\":[\"subj1\"]},\"annotates\":\"http:\\/\\/example.com\\/annotated\",\"type\":\"TheType\"}";
+                "{\"body\":{\"subject\":[\"subj2\",\"subj1\"]},\"annotates\":\"http:\\/\\/example.com\\/annotated\",\"type\":\"TheType\"}";
+        
+        result = instance.generateJsonObject(resource);
+        
+        assertEquals(expResult, result.toString());
     }
-
+    
+    /**
+     * Test of generateJsonObject method, of class CabotoJsonSupport.
+     */
+    @Test
+    public void testGenerateJsonObject_Resource() throws Exception {
+        body.addProperty(DCTerms.provenance, body.getModel().createResource("http://example.com/doc/1"));
+        
+        CabotoJsonSupport instance = new CabotoJsonSupport();
+        String expResult = 
+                "{\"body\":{\"provenance\":[\"http:\\/\\/example.com\\/doc\\/1\"]},\"annotates\":\"http:\\/\\/example.com\\/annotated\",\"type\":\"TheType\"}";
+        JSONObject result = instance.generateJsonObject(resource);
+        
+        assertEquals(expResult, result.toString());
+        
+        body.addProperty(DCTerms.provenance, body.getModel().createResource("http://example.com/doc/2"));
+        
+        expResult = 
+                "{\"body\":{\"provenance\":[\"http:\\/\\/example.com\\/doc\\/2\",\"http:\\/\\/example.com\\/doc\\/1\"]},\"annotates\":\"http:\\/\\/example.com\\/annotated\",\"type\":\"TheType\"}";
+        
+        result = instance.generateJsonObject(resource);
+        
+        assertEquals(expResult, result.toString());
+    }
 }

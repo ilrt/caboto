@@ -39,6 +39,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -92,39 +93,29 @@ public class CabotoJsonSupport {
             Statement stmt = (Statement) stmtIter.next();
 
             String key = getlocalName(stmt.getPredicate());
-
-            // get the values ...
-            if (stmt.getObject().isResource()) {
-
-                Resource r = (Resource) stmt.getObject();
-
-                if (!r.listProperties().hasNext()) {
-
-                    if (key.equals("type")) {
-                        jsonObject.put(key, getlocalName(r));
-                    } else {
-                        jsonObject.put(key, r.getURI());
-                    }
-
-                } else {
-                    jsonObject.put(key, generateJsonObject((Resource) stmt.getObject(), true));
-                }
-
-            } else if (stmt.getObject().isLiteral()) {
-            	if(multiValued) {
-            		if(!jsonObject.has(key)) {
-            			jsonObject.put(key, new JSONArray());
-            		}
-            		jsonObject.getJSONArray(key).put(((Literal) stmt.getObject()).getLexicalForm());
-            	} else {
-            		jsonObject.put(key, ((Literal) stmt.getObject()).getLexicalForm());
-            	}
+            
+            if (multiValued) {
+                if(!jsonObject.has(key)) jsonObject.put(key, new JSONArray());
+                jsonObject.getJSONArray(key).put(getValue(key, stmt.getObject()));
+            } else {
+                jsonObject.put(key, getValue(key, stmt.getObject()));
             }
 
         }
         return jsonObject;
     }
-
+    
+    private Object getValue(String key, RDFNode node) throws JSONException {
+        if (node.isLiteral()) return node.asLiteral().getLexicalForm();
+        
+        Resource res = node.asResource();
+        if (res.hasProperty(null)) return generateJsonObject(res, true); // body is multivalued
+        else {
+            if (key.equals("type")) return getlocalName(res);
+            else return res.getURI();
+        }
+    }
+    
     private String getlocalName(Resource resource) {
 
         // use the local name as the key if possible
