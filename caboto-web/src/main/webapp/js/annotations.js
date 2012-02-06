@@ -91,11 +91,10 @@ function formatAnnotation(annotation, uid, admin) {
     var type = findType(annotation.id);
     
     var body = "";
-    for(var key in annotation.body) {
-    	if(key == 'id') continue;
-    	body += key + ": " + annotation.body[key] + "<br/>";
+    for(i=0; i<annotation.body.description.length; i++) {
+    	body += annotation.body.description[i] + "<br/>";
     }
-    
+
     var output = "<div class='annotation-entry'>";
 
     if (type == "private") {
@@ -104,9 +103,7 @@ function formatAnnotation(annotation, uid, admin) {
         output += "<div class='annotation-entry-title-public'>"
     }
 
-    output += "<a href='" + getVCLink(annotation.annotates) + "'>" + 
-    			getVCLink(annotation.annotates) + "</a><br/>" + annotation.type +
-    			"</div>" +
+    output += annotation.body.title + "</div>" +
               "<div class='annotation-entry-description'>" + body + "</div>" +
               "<div><div class='annotation-entry-created'>" +
               "Created on " + date.toLocaleString() + " by " + author + "</div>";
@@ -123,22 +120,14 @@ function formatAnnotation(annotation, uid, admin) {
     return output;
 }
 
-function getVCLink(uri) {
-	regex = /\/([^\/]*)#(.*)$/;
-	matches = regex.exec(uri);
-	return 'http://visualisingchina.net/#' + matches[1] + "-" + matches[2];
-}
 
 function clearForm() {
 
-    if (document.getElementById('search-query-form')) {
-        Form.Element.enable('search-query-submit');
-        Form.Element.clear('search-term');
-    }
-    if (document.getElementById('date-query-form')) {
-        Form.Element.enable('date-query-submit');
-        Form.Element.clear('start-date');
-        Form.Element.clear('end-date');
+    if (document.getElementById('annotation-comment-form')) {
+        Form.Element.enable('annotation-submit');
+        Form.Element.clear('annotation-title');
+        Form.Element.clear('annotation-description1');
+        Form.Element.clear('annotation-description2');
     }
     document.getElementById("annotation-messages").innerHTML = "";
 }
@@ -168,8 +157,9 @@ function displayAnnotations(transport) {
         output = "<p>There are no annotations.</p>";
     }
 
+
     displayMessage(output);
-//    clearForm();
+    clearForm();
 }
 
 
@@ -209,15 +199,45 @@ function findAnnotations() {
 
 }
 
-function processDateForm() {
+function processForm(username) {
 
-    var uri = "./annotation/about/";
+    var uri = "./annotation/person/" + username + "/";
 
     var message = "";
 
-    if (!Form.Element.present("start-date") && !Form.Element.present("end-date")) {
-        message += "You need to provide at least one of start date and end date.";
+    // http://rexchung.com/2007/02/22/getting-radio-buttons-value-with-prototypejs/
+    var privacy = Form.getInputs('annotation-comment-form', 'radio', 'privacy').find(function(radio)
+    {
+        return radio.checked;
+    }).value;
+
+    // default to public
+    if (privacy == null) {
+        privacy = "public";
     }
+
+    uri += privacy + "/";
+
+    if (!Form.Element.present("annotation-title")) {
+        message += "You need to provide a title.";
+    }
+
+    if (!Form.Element.present("annotation-description1") && !Form.Element.present("annotation-description2")) {
+        message += "You need to provide at least one description.";
+    } else {
+
+    	for(i=1;i<3;i++) {
+    		var desc = Form.Element.getValue("annotation-description" + i);
+
+    		// <http://haacked.com/archive/2004/10/25/usingregularexpressionstomatchhtml.aspx>
+    		var matches = desc.match(/<\/?\w+((\s+\w+(\s*=\s*(?:\".*?\"|\'.*?\'|[^\'\">\s]+))?)+\s*|\s*)\/?>/);
+
+    		if (matches !== null) {
+    			message += "It looks like you have markup in your comment #"+i+" - not supported, sorry!";
+    		}
+        }
+    }
+
 
     if (message.length > 0) {
         document.getElementById("annotation-messages").innerHTML = "<p>" + message + "</p>";
@@ -225,50 +245,19 @@ function processDateForm() {
     }
 
     // serialize the form data
-    var s = Form.serialize("date-query-form", true);
+    var s = Form.serialize("annotation-comment-form", true);
 
     // we don't need to send the submit
     delete s.submit;
 
     // send the form details
     var req = new Ajax.Request(uri, {
-        method:'get',
+        method:'post',
         parameters: s,
-        requestHeaders: {Accept: APPLICATION_JSON},
-        onSuccess: displayAnnotations,
-        onFailure: annotationFailure
-    });
-
-}
-
-function processSearchForm() {
-
-    var uri = "./annotation/about/";
-
-    var message = "";
-
-    if (!Form.Element.present("search-term")) {
-        message += "You need to provide a search term.";
-    }
-
-    if (message.length > 0) {
-        document.getElementById("annotation-messages").innerHTML = "<p>" + message + "</p>";
-        return;
-    }
-
-    // serialize the form data
-    var s = Form.serialize("search-query-form", true);
-
-    // we don't need to send the submit
-    delete s.submit;
-
-    // send the form details
-    var req = new Ajax.Request(uri, {
-        method:'get',
-        parameters: s,
-        requestHeaders: {Accept: APPLICATION_JSON},
-        onSuccess: displayAnnotations,
-        onFailure: annotationFailure
+        onSuccess: findAnnotations,
+        onFailure: function(transport) {
+            alert(transport.responseText);
+        }
     });
 
 }
@@ -276,14 +265,13 @@ function processSearchForm() {
 function initializeAnnotations() {
 
     // hides the js support message..
-//    displayMessage("<p>Loading annotations..</p>");
-    displayMessage("");
-    
+    displayMessage("<p>Loading annotations..</p>");
+
     // enable the form
     clearForm();
 
     // get the annotations
-//    findAnnotations();
+    findAnnotations();
 }
 
 function deleteAnnotation(uri) {
