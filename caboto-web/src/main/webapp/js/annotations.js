@@ -123,6 +123,16 @@ function formatAnnotation(annotation, uid, admin) {
 
 function clearForm() {
 
+    if (document.getElementById('search-query-form')) {
+        Form.Element.enable('search-query-submit');
+        Form.Element.clear('search-term');
+    }
+    if (document.getElementById('date-query-form')) {
+        Form.Element.enable('date-query-submit');
+        Form.Element.clear('start-date');
+        Form.Element.clear('end-date');
+    }
+
     if (document.getElementById('annotation-comment-form')) {
         Form.Element.enable('annotation-submit');
         Form.Element.clear('annotation-title');
@@ -130,6 +140,16 @@ function clearForm() {
         Form.Element.clear('annotation-description2');
     }
     document.getElementById("annotation-messages").innerHTML = "";
+}
+
+function clearDateForm() {
+
+    if (document.getElementById('date-query-form')) {
+        Form.Element.enable('date-query-submit');
+        Form.Element.clear('start-date');
+        Form.Element.clear('end-date');
+    }
+    findAnnotations();
 }
 
 /*
@@ -157,9 +177,7 @@ function displayAnnotations(transport) {
         output = "<p>There are no annotations.</p>";
     }
 
-
     displayMessage(output);
-    clearForm();
 }
 
 
@@ -258,6 +276,70 @@ function processForm(username) {
         onFailure: function(transport) {
             alert(transport.responseText);
         }
+    });
+
+}
+
+function processSearchForm() {
+
+    var uri = "./annotation/about/";
+
+    var message = "";
+
+    if (!Form.Element.present("search-term")) {
+        message += "You need to provide a search term.";
+    }
+
+    if (message.length > 0) {
+        document.getElementById("annotation-messages").innerHTML = "<p>" + message + "</p>";
+        return;
+    }
+
+    // serialize the form data
+    var s = Form.serialize("search-query-form", true);
+
+    // we don't need to send the submit
+    delete s.submit;
+
+    // send the form details
+    var req = new Ajax.Request(uri, {
+        method:'get',
+        parameters: s,
+        requestHeaders: {Accept: APPLICATION_JSON},
+        onSuccess: displayAnnotations,
+        onFailure: annotationFailure
+    });
+
+}
+
+function processDateForm() {
+
+    var uri = "./annotation/about/";
+
+    var message = "";
+
+    if (!Form.Element.present("start-date") && !Form.Element.present("end-date")) {
+        message += "You need to provide at least one of start date and end date.";
+    }
+
+    if (message.length > 0) {
+        document.getElementById("annotation-messages").innerHTML = "<p>" + message + "</p>";
+        return;
+    }
+
+    // serialize the form data
+    var s = Form.serialize("date-query-form", true);
+
+    // we don't need to send the submit
+    delete s.submit;
+
+    // send the form details
+    var req = new Ajax.Request(uri, {
+        method:'get',
+        parameters: s,
+        requestHeaders: {Accept: APPLICATION_JSON},
+        onSuccess: displayAnnotations,
+        onFailure: annotationFailure
     });
 
 }
