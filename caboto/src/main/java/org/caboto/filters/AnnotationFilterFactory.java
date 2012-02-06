@@ -59,6 +59,18 @@ public class AnnotationFilterFactory {
         			filters.add(new TypeAnnotationFilter(value));
         		}
         	}
+                else if (attVal.getKey().equalsIgnoreCase("from")) {
+        		for (String value: attVal.getValue()) {
+                            if(value != null && value.trim().length() > 0)
+        			filters.add(new DateAnnotationFilter(value, true));
+        		}
+        	}
+                else if (attVal.getKey().equalsIgnoreCase("to")) {
+        		for (String value: attVal.getValue()) {
+                            if(value != null && value.trim().length() > 0)
+        			filters.add(new DateAnnotationFilter(value, false));
+        		}
+        	}
         	else if (attVal.getKey().contains(":")) {
                 for (String value: attVal.getValue()) {
                     filters.add(new PropValAnnotationFilter(attVal.getKey(),
