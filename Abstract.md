@@ -1,0 +1,5 @@
+I say Caboto you say Cabato
+
+This talk introduces “Caboto”, a RESTful RDF-based annotation system designed to meet the requirements of three projects involving the Universities of Bristol and Manchester. Annotations might be comments and criticisms about a presentation, linking to a relevant paper or resource such as a photo or rating an event.
+
+The talk will explore issues around implementing a RESTful, SPARQL-backed service using Jena SDB, ARQ, Spring and JSR 311 (Jersey). The novel part of the system lies in the privacy layer, which uses named graphs as the basic unit of access. The talk will discuss issues surrounding authentication (OpenID) and authorization since the  system  matches restful URL requests to RDF graphs and applies security to them so there is the concept of public and private annotations.
